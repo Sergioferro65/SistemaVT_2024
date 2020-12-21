@@ -1,0 +1,137 @@
+﻿@model IEnumerable<BugsMVC.Models.ViewModels.TerminalViewModel>
+
+@using Microsoft.AspNet.Identity
+@using Microsoft.AspNet.Identity.EntityFramework
+@using BugsMVC.Models
+@using BugsMVC.DAL
+@using BugsMVC.Helpers
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    @Styles.Render("~/bundles/datatablesCss")
+    @Styles.Render("~/bundles/jqGridCss")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/datatables")
+    @Scripts.Render("~/bundles/jqGrid")
+}
+
+<script>
+    (function (window, document, $, undefined) {
+
+        $(function () {
+
+            var gridJSON = $("#jqGridJSON");
+
+            gridJSON.jqGrid({
+                url: 'Terminal/GetAllTerminales',
+                datatype: "json",
+                colModel: [
+                    {
+                        label: '',
+                        name: '',
+                        width: 65,
+                        fixed: true,
+                        search: false,
+                        sortable: false,
+                        resize: false,
+                        formatter: actionButtonsFormatter
+                    },
+                    { label: 'N° Serie', name: 'NumeroSerie', width: 150, sorttype: 'number', searchoptions: { sopt: ['eq'] } },
+                    { label: 'Máquina Asignada', name: 'MaquinaAsignada', width: 200, formatter: booleanFormatter, searchoptions: getDefaultSearchOptionsForBoolean(), stype: 'select' },
+                    { label: 'N° Serie Máquina', name: 'Maquina', width: 200, sorttype: 'number', searchoptions: { sopt: ['eq'] } },
+                    { label: 'Modelo', name: 'ModeloTerminal', width: 200 },
+                    { label: 'Versión', name: 'Version', width: 150, sorttype: 'number', searchoptions: { sopt: ['eq'] } },
+                    { label: 'Interfaz', name: 'Interfaz', width: 100 },
+                    { label: 'Módulo Comunicación', name: 'ModuloComunicacion', width: 150 },
+                    { label: 'Sim Card', name: 'SimCard', width: 100 },
+                    { label: 'NivelSenal1', name: 'NivelSenal1', hidden: true },
+                    { label: 'NivelSenal2', name: 'NivelSenal2', hidden: true },
+                    { label: 'NivelSenal3', name: 'NivelSenal3', hidden: true },
+                    { label: 'FechaNivel1', name: 'FechaNivel1', formatoptions: { "srcformat": "d/m/Y H:i:s", "newformat": "d/m/Y H:i:s" }, hidden: true },
+                    { label: 'FechaNivel2', name: 'FechaNivel2', formatoptions: { "srcformat": "d/m/Y H:i:s", "newformat": "d/m/Y H:i:s" }, hidden: true },
+                    { label: 'FechaNivel3', name: 'FechaNivel3', formatoptions: { "srcformat": "d/m/Y H:i:s", "newformat": "d/m/Y H:i:s" }, hidden: true },
+                    { label: 'Fecha/Nivel', search: false, name: 'NivelFechaSenal', width: 300, sortable: false, formatter: NivelFechaSenalColumnFormatter },
+                    { label: 'Periféricos Habilitados', name: 'PerifericoDescripcion', width: 150 },
+                    { label: 'Fecha Alta', name: 'FechaAlta', search: true, searchOnEnter: true, sorttype: 'date', width: 150, formatter: 'date', formatoptions: { "srcformat": "d/m/Y H:i:s", "newformat": "d/m/Y H:i:s" }, searchoptions: getDefaultSearchOptionsForDate() },
+                    { label: 'TerminalID', name: 'TerminalID', width: 75, hidden: true },
+                    { label: 'Operador', name: 'OperadorNombre', hidden : @Json.Encode((!User.IsInRole("SuperAdmin"))) },
+                ],
+                viewrecords: true, // show the current page, data rang and total records on the toolbar
+                autowidth: true,
+                shrinkToFit: false,
+                height: 240,
+                rowNum: 20,
+                rowList: [10, 20, 30],
+                loadonce: true, // this is just for the demo
+                caption: "Terminales",
+                hidegrid: false,
+                ignoreCase: true,
+                pager: "#jqGridJSONPager"
+            });
+
+            //
+            // Filtering by Columns
+            //
+            gridJSON.jqGrid('filterToolbar', { stringResult: true, searchOnEnter: false, defaultSearch: "cn" });
+        });
+
+    })(window, document, window.jQuery);
+
+    function exportToExcel() {
+        var data = JSON.stringify($('#jqGridJSON').jqGrid('getGridParam', 'postData'));
+        $('#jqGridPostData').val(data);
+    }
+
+    function maquinaColumnFormatter(cellvalue, options, rowObject) {
+        return (cellvalue)? "Si":"No";
+    }
+
+    function NivelFechaSenalColumnFormatter(cellvalue, options, rowObject) {
+        var NivelFechaSenal = '';
+
+        if (rowObject.NivelSenal1 != 0 && rowObject.NivelSenal1 != null) NivelFechaSenal += '<div>Nivel Señal 1 = ' + rowObject.NivelSenal1.toString().replace('.', ',') + '</div>';
+        if (rowObject.FechaNivel1 != "" && rowObject.FechaNivel1 != null) NivelFechaSenal += '<div>Fecha Nivel 1 = ' + rowObject.FechaNivel1.toString().replace('.', ',') + '</div>';
+        if (rowObject.NivelSenal2 != 0 && rowObject.NivelSenal2 != null) NivelFechaSenal += '<div>Nivel Señal 2 = ' + rowObject.NivelSenal2.toString().replace('.', ',') + '</div>';
+        if (rowObject.FechaNivel2 != "" && rowObject.FechaNivel2 != null) NivelFechaSenal += '<div>Fecha Nivel 2 = ' + rowObject.FechaNivel2.toString().replace('.', ',') + '</div>';
+        if (rowObject.NivelSenal3 != 0 && rowObject.NivelSenal3 != null) NivelFechaSenal += '<div>Nivel Señal 3 = ' + rowObject.NivelSenal3.toString().replace('.', ',') + '</div>';
+        if (rowObject.FechaNivel3 != "" && rowObject.FechaNivel3 != null) NivelFechaSenal += '<div>Fecha Nivel 3 = ' + rowObject.FechaNivel3.toString().replace('.', ',') + '</div>';
+
+        return NivelFechaSenal;
+    }
+
+    function actionButtonsFormatter(cellvalue, options, rowObject) {
+        var linkButton = @Json.Encode(SecurityHelper.IsAllowed((int)Permissions.Terminal.Update))? '<a href="Terminal/Edit/' + rowObject.TerminalID + '" data-toggle="tooltip" data-placement="left" data-original-title="Editar" class="fa fa-edit"> </a>' : '';
+        linkButton += '<a href="Terminal/Details/' + rowObject.TerminalID + '" data-toggle="tooltip" data-placement="left" data-original-title="Editar" class="fa fa-eye"> </a>';
+        linkButton = @Json.Encode(SecurityHelper.IsAllowed((int)Permissions.Terminal.Delete))? linkButton + '<a href="Terminal/Delete/' + rowObject.TerminalID + '" data-toggle="tooltip" data-placement="left" data-original-title="Editar" class="fa fa-remove"> </a>' : linkButton;
+
+        return linkButton;
+    }
+</script>
+
+    <h3>
+        Terminales
+        <small>Administración de terminales.</small>
+    </h3>
+
+    <div>
+        @if (SecurityHelper.IsAllowed((int)Permissions.Terminal.Create))
+        { 
+            @Html.ActionLink("Crear Nueva", "Create", null, new { @class = "btn btn-default" })
+        }
+        @using (Html.BeginForm("ExportData", "Terminal", FormMethod.Post, new { enctype = "multipart/form-data", style = "display: inline;" }))
+        {
+            <input type="submit" name="Export" id="Export" value="Excel" onclick="exportToExcel();" class="btn btn-default" />
+            <input type="hidden" name="jqGridPostData" id="jqGridPostData" />
+        }
+    </div>
+    <br />
+<div class="jqgrid-responsive mb-lg">
+    <table id="jqGridJSON"></table>
+    <div id="jqGridJSONPager"></div>
+</div>

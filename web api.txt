@@ -1,0 +1,72 @@
+
+Descripción del servicio:
+
+
+Solicitud de pago
+
+El cliente enviará un request con las siguientes características:
+
+url: https://www.bugs.com/api/pago (a definir)
+method: POST
+headers:
+  Authorization : Bearer Token
+  Content-Type: application/json
+
+body:
+{
+    "MaquinaId" : "xxxx",
+    "Importe": 150.50,
+    "UrlDevolucion": "https://dominio-cliente/api/rehazo",
+    "TokenCliente" :"xxxxxxxxxxxxxxxxxxxxx"
+    "RefCliente" : "xxxxxxx"
+}
+
+Donde:
+Token es la llave encriptada generada por el sistema de Bugs en el perfil del cliente.
+MaquinaId es la identificación de la maquina donde se está efectuando la transacción.
+Importe es el valor en pesos con dos decimales de la transacción.
+UrlDevolucion es la dirección donde se notificará al cliente en caso de no poderse imputar el importe en la máquina.
+TokenCliente es la clave generada por el cliente para ser usada en caso de necesitar informar la falla.
+RefCliente es una referencia interna del cliente para identificar la transacción cuando falla la imputación.
+
+La respuesta devolverá el siguiente registro:
+
+{
+    "TransaccionId": 1234567,
+    "EstadoId": 99
+}
+
+Donde:
+TransaccionId es el numero único generado por Bugs para cada transacción.
+EstadoId es un indicador que representa el motivo de la falla en caso que ocurra.
+
+
+
+
+Servicio de notificación al cliente por devolución:
+
+En caso de no poderse imputar el importe en la maquina se enviará al cliente un request POST a la url indicada en el campo UrlDevolucion,
+con los siguientes datos:
+
+{
+    "RefCliente": "xxxxxxx",
+    "MaquinaId": "xxxx",
+    "Importe": 150.50,
+    "EstadoId": 99
+}
+
+Donde:
+RefCliente es el campo consignado por el cliente como referencia en la llamada original.
+MaquinaId es el identificador de la maquina en donde se intentó transaccionar.
+Importe es el monto de dinero a devolver.
+EstadoId es el motivo por el cual se anula la transacción.
+
+
+
+
+
+
+
+
+
+

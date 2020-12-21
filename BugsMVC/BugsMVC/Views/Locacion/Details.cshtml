@@ -1,0 +1,123 @@
+﻿@model BugsMVC.Models.ViewModels.LocacionViewModel
+@using BugsMVC.Helpers
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>
+    Detalles
+    <small>Detalles de la locación seleccionada.</small>
+</h3>
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        <h4>Datos generales</h4>
+
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Nombre)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Nombre)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Numero)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Numero)
+            </dd>
+        </dl>
+
+        <dl class="dl-horizontal @(!String.IsNullOrEmpty(Model.NombreZona1)?String.Empty:"hidden")">
+            <dt>
+                Zona 1
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.NombreZona1)
+            </dd>
+        </dl>
+
+        <dl class="dl-horizontal @(!String.IsNullOrEmpty(Model.NombreZona2)?String.Empty:"hidden")">
+            <dt>
+                Zona 2
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.NombreZona2)
+            </dd>
+
+        </dl>
+
+        <dl class="dl-horizontal @(!String.IsNullOrEmpty(Model.NombreZona3) ? String.Empty : "hidden")">
+            <dt>
+                Zona 3
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.NombreZona3)
+            </dd>
+        </dl>
+
+        <dl class="dl-horizontal @(!String.IsNullOrEmpty(Model.NombreZona4) ? String.Empty : "hidden")">
+            <dt>
+                Zona 4
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.NombreZona4)
+            </dd>
+        </dl>
+
+        <dl class="dl-horizontal @(!String.IsNullOrEmpty(Model.NombreZona5) ? String.Empty : "hidden")">
+            <dt>
+                Zona 5
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.NombreZona5)
+            </dd>
+        </dl>
+
+        <dl class="dl-horizontal">
+
+            <dt>
+                @Html.DisplayNameFor(model => model.CUIT)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.CUIT)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Direccion)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Direccion)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Localidad)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Localidad)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Provincia)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Provincia)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.CodigoPostal)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.CodigoPostal)
+            </dd>
+        </dl>
+
+    </div>
+</div>
+
+<p>
+@if (SecurityHelper.IsAllowed((int)Permissions.Locacion.Update))
+{
+    @Html.ActionLink("Editar", "Edit", new { id = Model.LocacionID }, new { @class = "btn btn-default" })
+}
+    @Html.ActionLink("Volver", "Index", "Locacion", null, new { @class = "btn btn-default" })
+</p>

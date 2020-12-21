@@ -1,0 +1,36 @@
+﻿@model BugsMVC.Models.MarcaModelo
+
+@{
+    ViewBag.Title = "Eliminar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>
+    Eliminar
+    <small>Eliminar el modelo de máquina seleccionado.</small>
+</h3>
+
+<div class="panel panel-default">
+    <div class="panel-heading">¿Estás seguro de querer eliminar este modelo de máquina?</div>
+    <div class="panel-body">
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.MarcaModeloNombre)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.MarcaModeloNombre)
+            </dd>
+        </dl>
+    </div>
+</div>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-actions no-color">
+        <input type="submit" value="Eliminar" class="btn btn-default" />
+        @Html.ActionLink("Volver", "Index", "MarcaModelo", null, new { @class = "btn btn-default" })
+    </div>
+}

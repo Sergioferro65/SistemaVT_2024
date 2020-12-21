@@ -1,0 +1,119 @@
+﻿@model BugsMVC.Models.ViewModels.TerminalViewModel
+
+@{
+    ViewBag.Title = "Eliminar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>
+    Eliminar
+    <small>Eliminar la Terminal seleccionada.</small>
+</h3>
+
+<div class="panel panel-default">
+    <div class="panel-heading">¿Estás seguro de querer eliminar esta terminal?</div>
+    <div class="panel-body">
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.NumeroSerie)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.NumeroSerie)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.ModeloTerminal)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.ModeloTerminal)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Interfaz)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Interfaz)
+            </dd>
+        </dl>
+
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Version)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Version)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.FechaAlta)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.FechaAlta)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.NumeroSerieMaquinaJonathan)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.NumeroSerieMaquinaJonathan)
+            </dd>
+        </dl>
+
+    </div>
+</div>
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "confirmationForm" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-actions no-color">
+        <button type="button" data-toggle="modal" data-target="#myModal" class="btn btn-default">Eliminar</button>
+        @Html.ActionLink("Volver", "Index", "Terminal", null, new { @class = "btn btn-default" })
+    </div>
+}
+
+@section BodyArea {
+    <div id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content confirm1">
+                <div class="modal-header">
+                    <button type="button" data-dismiss="modal" aria-label="Close" class="close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 id="myModalLabel" class="modal-title">Eliminar</h4>
+                </div>
+                <div class="modal-body">¿ Desea Ud. eliminar la Terminal seleccionada ?</div>
+                <div class="modal-footer">
+                    
+                    <button type="button" onclick="$('#myModal .modal-content.confirm1').hide(); $('#myModal .modal-content.confirm2').show(); return false;" class="btn btn-primary">Confirmar</button>
+                    @Html.ActionLink("Volver", "Index", "Terminal", null, new { @class = "btn btn-default" })
+                </div>
+            </div>
+            <div class="modal-content confirm2" style="display:none;">
+                <div class="modal-header">
+                    <button type="button" data-dismiss="modal" aria-label="Close" class="close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 id="myModalLabel" class="modal-title">Alerta</h4>
+                </div>
+                <div class="modal-body">
+                    Al eliminar la Terminal seleccionada se borrarán las siguentes dependencias.
+                    <ul>
+                        <li>Maquinas</li>
+                    </ul>
+                    Y se borrarán las siguentes.
+                    <ul>
+                        <li>Transacciones</li>
+                        <li>Transacciones Mal</li>
+                    </ul>
+                    Los datos serán borrados permantentemente y no podrán ser recuperados.
+                    <br />Si usted está seguro presione el botón 'Eliminar'.
+                </div>
+                <div class="modal-footer">
+                    <button onclick="$('#confirmationForm').submit();" type="button" class="btn btn-primary">Eliminar</button>
+                    @Html.ActionLink("Volver", "Index", "Terminal", null, new { @class = "btn btn-default" })
+                </div>
+            </div>
+        </div>
+    </div>
+}

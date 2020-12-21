@@ -1,0 +1,82 @@
+﻿@model BugsMVC.Models.StockViewModel
+@using BugsMVC.Helpers
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>
+    Detalles
+    <small>Detalles del stock seleccionado.</small>
+</h3>
+
+<div class="panel panel-default">
+    <div class="panel-heading">Stock</div>
+    <div class="panel-body">
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.LocacionID)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Locacion)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.ArticuloID)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Articulo)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.NroZona)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.NroZona)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.MaquinaID)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Maquina)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Cantidad)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Cantidad)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.FechaAviso)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.FechaAviso)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.FechaEdicionWeb)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.FechaEdicionWeb)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.FechaEdicionVT)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.FechaEdicionVT)
+            </dd>
+        </dl>
+    </div>
+</div>
+
+<p>
+@if (SecurityHelper.IsAllowed((int)Permissions.Stock.Update))
+{
+    @Html.ActionLink("Editar", "Edit", "Stock", new { id = Model.StockID }, new { @class = "btn btn-default" })
+}
+    @Html.ActionLink("Volver", "Index", "Stock", null, new { @class = "btn btn-default" })
+</p>

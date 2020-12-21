@@ -1,0 +1,145 @@
+﻿@model IEnumerable<BugsMVC.Models.Transaccion>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    @Styles.Render("~/bundles/datatablesCss")
+    @Styles.Render("~/bundles/jqGridCss")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/datatables")
+    @Scripts.Render("~/bundles/jqGrid")
+}
+
+<script>
+    (function (window, document, $, undefined) {
+
+        $(function () {
+
+            var gridJSON = $("#jqGridJSON");
+
+            gridJSON.jqGrid({
+                url: '/Transaccion/GetAllTransacciones',
+                datatype: "json",
+                colModel: [
+                    { label: 'TransaccionID', name: 'TransaccionID', hidden: true },
+                    { label: 'CreditoInicialZona1', name: 'CreditoInicialZona1', hidden: true },
+                    { label: 'CreditoInicialZona2', name: 'CreditoInicialZona2', hidden: true },
+                    { label: 'CreditoInicialZona3', name: 'CreditoInicialZona3', hidden: true },
+                    { label: 'CreditoInicialZona4', name: 'CreditoInicialZona4', hidden: true },
+                    { label: 'CreditoInicialZona5', name: 'CreditoInicialZona5', hidden: true },
+                    { label: 'CreditoInicialZona6', name: 'CreditoInicialZona6', hidden: true },
+                    { label: 'CreditoInicialZona7', name: 'CreditoInicialZona7', hidden: true },
+                    { label: 'CreditoInicialZona8', name: 'CreditoInicialZona8', hidden: true },
+                    { label: 'CreditoInicialZona9', name: 'CreditoInicialZona9', hidden: true },
+                    { label: 'CreditoInicialZona10', name: 'CreditoInicialZona10', hidden: true },
+                    { label: 'CreditoFinalZona1', name: 'CreditoFinalZona1', hidden: true },
+                    { label: 'CreditoFinalZona2', name: 'CreditoFinalZona2', hidden: true },
+                    { label: 'CreditoFinalZona3', name: 'CreditoFinalZona3', hidden: true },
+                    { label: 'CreditoFinalZona4', name: 'CreditoFinalZona4', hidden: true },
+                    { label: 'CreditoFinalZona5', name: 'CreditoFinalZona5', hidden: true },
+                    { label: 'CreditoFinalZona6', name: 'CreditoFinalZona6', hidden: true },
+                    { label: 'CreditoFinalZona7', name: 'CreditoFinalZona7', hidden: true },
+                    { label: 'CreditoFinalZona8', name: 'CreditoFinalZona8', hidden: true },
+                    { label: 'CreditoFinalZona9', name: 'CreditoFinalZona9', hidden: true },
+                    { label: 'CreditoFinalZona10', name: 'CreditoFinalZona10', hidden: true },
+                    { label: 'FechaTransaccion', name: 'FechaTransaccion', formatter: 'date', fixed: true, width: 130 },
+                    { label: 'FechaAltaBase', name: 'FechaAltaBase', formatter: 'date', fixed: true, width: 130 },
+                    { label: 'CodigoTransaccion', name: 'CodigoTransaccion', fixed: true, width: 130 },
+                    { label: 'EfectivoInicial', name: 'EfectivoInicial', fixed: true, width: 100 },
+                    { label: 'EfectivoFinal', name: 'EfectivoFinal', fixed: true, width: 100 },
+                    { label: 'CreditoInicialZona', name: 'CreditoInicialZona', sortable: false, formatter: creditoInicialZonaColumnFormatter, fixed: true, width: 130 },
+                    { label: 'CreditoFinalZona', name: 'CreditoFinalZona', sortable: false, formatter: CreditoFinalZonaColumnFormatter, fixed: true, width: 130 },
+                    { label: 'ValorVenta', name: 'ValorVenta', fixed: true, width: 80 },
+                    { label: 'ValorRecarga', name: 'ValorRecarga', fixed: true, width: 80 },
+                    { label: 'DescuentoAplicado', name: 'DescuentoAplicado', fixed: true, width: 130 },
+                    { label: 'UsuarioService', name: 'UsuarioService', fixed: true, width: 130 },
+                    { label: 'TransaccionTexto', name: 'TransaccionTexto', fixed: true, width: 130 },
+                    {
+                        label: '',
+                        name: '',
+                        width: 65,
+                        fixed: true,
+                        search: false,
+                        sortable: false,
+                        resize: false,
+                        formatter: actionButtonsFormatter
+                    },
+                ],
+                viewrecords: true, // show the current page, data rang and total records on the toolbar
+                autowidth: true,
+                shrinkToFit: false,
+                height: 240,
+                rowNum: 20,
+                rowList: [10, 20, 30],
+                loadonce: true, // this is just for the demo
+                caption: "Transacciones",
+                hidegrid: false,
+                ignoreCase: true,
+                pager: "#jqGridJSONPager"
+            });
+
+            //
+            // Filtering by Columns
+            //
+            gridJSON.jqGrid('filterToolbar', { stringResult: true, searchOnEnter: false, defaultSearch: "cn" });
+
+            gridJSON.closest(".ui-jqgrid-hdiv").css({ "overflow-y": "scroll" });
+        });
+
+    })(window, document, window.jQuery);
+
+    function actionButtonsFormatter(cellvalue, options, rowObject) {
+
+        var linkButton = '<a href="/Transaccion/Edit/' + rowObject.TransaccionID + '" data-toggle="tooltip" data-placement="left" data-original-title="Editar" class="fa fa-edit"> </a>'
+                        + '<a href="/Transaccion/Details/' + rowObject.TransaccionID + '" data-toggle="tooltip" data-placement="left" data-original-title="Editar" class="fa fa-eye"> </a>'
+                        + '<a href="/Transaccion/Delete/' + rowObject.TransaccionID + '" data-toggle="tooltip" data-placement="left" data-original-title="Editar" class="fa fa-remove"> </a>';;
+
+        return linkButton;
+    }
+
+    function creditoInicialZonaColumnFormatter(cellvalue, options, rowObject) {
+        var creditoInicialZona = '';
+        if (rowObject.CreditoInicialZona1 != 0) creditoInicialZona += '<div>Zona 1 = ' + rowObject.CreditoInicialZona1 + '</div>';
+        if (rowObject.CreditoInicialZona2 != 0) creditoInicialZona += '<div>Zona 2 = ' + rowObject.CreditoInicialZona2 + '</div>';
+        if (rowObject.CreditoInicialZona3 != 0) creditoInicialZona += '<div>Zona 3 = ' + rowObject.CreditoInicialZona3 + '</div>';
+        if (rowObject.CreditoInicialZona4 != 0) creditoInicialZona += '<div>Zona 4 = ' + rowObject.CreditoInicialZona4 + '</div>';
+        if (rowObject.CreditoInicialZona5 != 0) creditoInicialZona += '<div>Zona 5 = ' + rowObject.CreditoInicialZona5 + '</div>';
+        if (rowObject.CreditoInicialZona6 != 0) creditoInicialZona += '<div>Zona 6 = ' + rowObject.CreditoInicialZona6 + '</div>';
+        if (rowObject.CreditoInicialZona7 != 0) creditoInicialZona += '<div>Zona 7 = ' + rowObject.CreditoInicialZona7 + '</div>';
+        if (rowObject.CreditoInicialZona8 != 0) creditoInicialZona += '<div>Zona 8 = ' + rowObject.CreditoInicialZona8 + '</div>';
+        if (rowObject.CreditoInicialZona9 != 0) creditoInicialZona += '<div>Zona 9 = ' + rowObject.CreditoInicialZona9 + '</div>';
+        if (rowObject.CreditoInicialZona10 != 0) creditoInicialZona += '<div>Zona 10 = ' + rowObject.CreditoInicialZona10 + '</div>';
+        return creditoInicialZona;
+    }
+
+    function CreditoFinalZonaColumnFormatter(cellvalue, options, rowObject) {
+        var CreditoFinalZona = '';
+        if (rowObject.CreditoFinalZona1 != 0) CreditoFinalZona += '<div>Zona 1 = ' + rowObject.CreditoFinalZona1 + '</div>';
+        if (rowObject.CreditoFinalZona2 != 0) CreditoFinalZona += '<div>Zona 2 = ' + rowObject.CreditoFinalZona2 + '</div>';
+        if (rowObject.CreditoFinalZona3 != 0) CreditoFinalZona += '<div>Zona 3 = ' + rowObject.CreditoFinalZona3 + '</div>';
+        if (rowObject.CreditoFinalZona4 != 0) CreditoFinalZona += '<div>Zona 4 = ' + rowObject.CreditoFinalZona4 + '</div>';
+        if (rowObject.CreditoFinalZona5 != 0) CreditoFinalZona += '<div>Zona 5 = ' + rowObject.CreditoFinalZona5 + '</div>';
+        if (rowObject.CreditoFinalZona6 != 0) CreditoFinalZona += '<div>Zona 6 = ' + rowObject.CreditoFinalZona6 + '</div>';
+        if (rowObject.CreditoFinalZona7 != 0) CreditoFinalZona += '<div>Zona 7 = ' + rowObject.CreditoFinalZona7 + '</div>';
+        if (rowObject.CreditoFinalZona8 != 0) CreditoFinalZona += '<div>Zona 8 = ' + rowObject.CreditoFinalZona8 + '</div>';
+        if (rowObject.CreditoFinalZona9 != 0) CreditoFinalZona += '<div>Zona 9 = ' + rowObject.CreditoFinalZona9 + '</div>';
+        if (rowObject.CreditoFinalZona10 != 0) CreditoFinalZona += '<div>Zona 10 = ' + rowObject.CreditoFinalZona10 + '</div>';
+        return CreditoFinalZona;
+    }
+
+</script>
+
+<h3>
+    Transacciones
+    <small>Listado de transacciones.</small>
+</h3>
+
+<div class="jqgrid-responsive mb-lg">
+    <table id="jqGridJSON"></table>
+    <div id="jqGridJSONPager"></div>
+</div>

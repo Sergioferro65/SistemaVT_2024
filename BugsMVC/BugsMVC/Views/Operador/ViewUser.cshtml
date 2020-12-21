@@ -1,0 +1,105 @@
+﻿@model BugsMVC.Models.OperadorViewModel
+
+<div class="panel panel-default">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        <div class="panel-body">
+            <div class="form-horizontal">
+                @Html.HiddenFor(model => model.OperadorID)
+                @Html.HiddenFor(model => model.IsCreate)
+                @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Nombre, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Nombre, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Nombre, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Numero, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Numero, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Numero, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                        @Html.LabelFor(model => model.TiempoAvisoConexion, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.TiempoAvisoConexion, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.TiempoAvisoConexion, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TiempoAvisoInhibicion, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.TiempoAvisoInhibicion, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.TiempoAvisoInhibicion, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                @if (Model.IsCreate)
+                {
+                    <div class="form-group">
+                        <label class="control-label col-md-2"></label>
+                        <div class="col-sm-10">
+                            <div id="panelDatosWeb" class="panel panel-default">
+                                <div class="panel-heading panel-heading-collapsed">
+                                    Credenciales de acceso Web - Sistema VT
+                                    <a href="#panelDatosWeb" data-tool="panel-collapse" data-toggle="tooltip" class="pull-right">
+                                        <em class="fa fa-minus"></em>
+                                    </a>
+                                </div>
+                                <!-- .panel-wrapper is the element to be collapsed-->
+                                <div class="panel-wrapper collapse in">
+                                    <div class="panel-body">
+                                        <fieldset>
+                                            <div class="form-group">
+                                                @Html.LabelFor(m => Model.ApplicationUser.Email, new { @class = "col-md-2 control-label" })
+                                                <div class="col-md-10">
+                                                    @Html.TextBoxFor(m => Model.ApplicationUser.Email, new { @class = "form-control" })
+                                                    @Html.ValidationMessageFor(model => model.ApplicationUser.Email, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                        <fieldset>
+                                            <div class="form-group">
+                                                @Html.LabelFor(m => Model.ApplicationUser.Password, new { @class = "col-md-2 control-label" })
+                                                <div class="col-md-10">
+                                                    @Html.PasswordFor(m => Model.ApplicationUser.Password, new { @class = "form-control" })
+                                                    @Html.ValidationMessageFor(model => Model.ApplicationUser.Password, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                        <fieldset>
+                                            <div class="form-group">
+                                                @Html.LabelFor(m => Model.ApplicationUser.ConfirmPassword, new { @class = "col-md-2 control-label" })
+                                                <div class="col-md-10">
+                                                    @Html.PasswordFor(m => m.ApplicationUser.ConfirmPassword, new { @class = "form-control" })
+                                                    @Html.ValidationMessageFor(model => model.ApplicationUser.ConfirmPassword, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Guardar" class="btn btn-default" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div>
+    @Html.ActionLink("Volver", "Index", "Operador", null, new { @class = "btn btn-default" })
+</div>

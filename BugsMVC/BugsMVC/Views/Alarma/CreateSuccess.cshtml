@@ -1,0 +1,22 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>
+    Alarma
+</h3>
+
+<div class="panel panel-default col-4">
+    <div class="panel-body">
+        <p>Los datos se actualizaron correctamente</p>
+    </div>
+</div>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-actions no-color">
+        @Html.ActionLink("Volver", "Create", "Alarma", null, new { @class = "btn btn-default" })
+    </div>
+}

@@ -1,0 +1,144 @@
+{
+  "scripts": [
+    //{
+    //  "version": "1.0.0",
+    //  "comments": "",
+    //  "files": [
+    //    { "name": "Bugs 1.0.0.1 - Add columns in Operador.sql" },
+    //    { "name": "Bugs 1.0.0.2 - Alter columns in StockHistorico.sql" },
+    //    { "name": "Bugs 1.0.0.3 - Add new UserRole.sql" },
+    //    { "name": "Bugs 1.0.0.4 - Alter null columns.sql" },
+    //    { "name": "Bugs 1.0.0.5 - Update UserRole.sql" },
+    //    { "name": "Bugs 1.0.0.6 - Update JerarquiaUsuarios.sql" },
+    //    { "name": "Bugs 1.0.0.7 - Add column in Maquina.sql" },
+    //    { "name": "Bugs 1.0.0.8 - Create table ArticuloAsignacion.sql" },
+    //    { "name": "Bugs 1.0.0.9 - Drop table ArticuloMaquina.sql" },
+    //    { "name": "Bugs 1.0.1.0 - Add UnidadMedida in Articulo.sql" },
+    //    { "name": "Bugs 1.0.1.1- Add OperadorID in Articulo.sql" },
+    //    { "name": "Bugs 1.0.1.2- Drop columns in Articulo.sql" },
+    //    { "name": "Bugs 1.0.1.3- Add columns in ArticuloAsignacion.sql" },
+    //    { "name": "Bugs 1.0.1.4- Drop columns in Stock.sql" },
+    //    { "name": "Bugs 1.0.1.5- Alter columns in Stock and ArticuloAsignacion.sql" },
+    //    { "name": "Bugs 1.0.1.6- Trigger on Transaction Creation.sql" },
+    //    { "name": "Bugs 1.0.1.7- Security Tables.sql" },
+    //    { "name": "Bugs 1.0.1.8- Permissions.sql" },
+    //    { "name": "Bugs 1.0.1.9- Create CargaInformeTransacciones SP.sql" },
+    //    { "name": "Bugs 1.0.2.0- Create CargaInformeEntregaEPP SP.sql" },
+    //    { "name": "Bugs 1.0.2.1- Update and Insert in Funcion.sql" },
+    //    { "name": "Bugs 1.0.2.2- Add Column in Maquina.sql" },
+    //    { "name": "Bugs 1.0.2.3- Update and Insert in Funcion.sql" },
+    //    { "name": "Bugs 1.0.2.4- Add Column AspNetRoles.sql" },
+    //    { "name": "Bugs 1.0.2.5- Add Column StockHistorico.sql" },
+    //    { "name": "Bugs 1.0.2.6- Create AlarmaConfiguracion.sql" },
+    //    { "name": "Bugs 1.0.2.7- Alter Column Usuario.sql" },
+    //    { "name": "Bugs 1.0.2.8- Update Transaccion Trigger.sql" },
+    //    { "name": "Bugs 1.0.2.9- Alter CargaInformeTransacciones SP.sql" },
+    //    { "name": "Bugs 1.0.3.0- Alter CargaInformeEntregaEPP SP.sql" },
+    //    { "name": "Bugs 1.0.3.1- Add new Permissions.sql" }
+    //  ]
+    //},
+    //{
+    //  "version": "1.3.1",
+    //  "comments": "",
+    //  "files": [
+    //    { "name": "Bugs 1.3.1.1 - Reemplazar Periodo Quincenal por Semanal.sql" },
+    //    { "name": "Bugs 1.3.1.2 - Alter column Maquina.sql" },
+    //    { "name": "Bugs 1.3.1.3 - Alter CargaInformeTransacciones SP.sql" },
+    //    { "name": "Bugs 1.3.1.4 - Add column in Usuario.sql" },
+    //    { "name": "Bugs 1.3.1.5 - Add column in Maquina.sql" },
+    //    { "name": "Bugs 1.3.1.6 - Add new UserRole.sql" },
+    //    { "name": "Bugs 1.3.1.7 - Rename column Transaccion.sql" },
+    //    { "name": "Bugs 1.3.1.8 - Create table FuncionOperador.sql" },
+    //    { "name": "Bugs 1.3.1.9 - Alter table Funcion.sql" },
+    //    { "name": "Bugs 1.3.1.10 - Add new Permissions.sql" },
+    //    { "name": "Bugs 1.3.1.11 - Update Permissions.sql" },
+    //    { "name": "Bugs 1.3.1.12 - Add column in Operador.sql" },
+    //    { "name": "Bugs 1.3.1.13 - Update Descripcion in TipoDeAlarma.sql" },
+    //    { "name": "Bugs 1.3.1.14 - Create function Split.sql" },
+    //    { "name": "Bugs 1.3.1.15 - Alter procedure CargaInformeEntregaTotalEPP.sql" },
+    //    { "name": "Bugs 1.3.1.16 - Update Weight in AspNetRoles.sql" },
+    //    { "name": "Bugs 1.3.1.17 - Add new Permission.sql" },
+    //    { "name": "Bugs 1.3.1.18 - Rename rol.sql" }
+    //  ]
+    //},
+    //{
+    //  "version": "1.4.0",
+    //  "comments": "",
+    //  "files": [
+    //    { "name": "Bugs 1.4.0 - Create table MercadoPagoEstadoFinanciero y MercadoPagoEstadoTransmision.sql" },
+    //    { "name": "Bugs 1.4.1 - Insert real data in MercadoPagoEstado.sql" },
+    //    { "name": "Bugs 1.4.2 - Create table MercadoPago.sql" },
+    //    { "name": "Bugs 1.4.3 - Create table MercadoPagoLog.sql" },
+    //    { "name": "Bugs 1.4.4 - Add new Permission.sql" },
+    //    { "name": "Bugs 1.4.5 - Add new Funcion Rol.sql" },
+    //    { "name": "Bugs 1.4.6 - Add columns ClientId and SecretToken to Operador.sql" }
+    //  ]
+    //},
+    //{
+    //  "version": "1.5.0",
+    //  "comments": "",
+    //  "files": [
+    //    { "name": "Bugs 1.5.0 - Alter column in Terminal.sql" },
+    //    { "name": "Bugs 1.5.1 - Add new Permissions.sql" }
+    //  ]
+    //},
+    //{
+    //  "version": "1.6.0",
+    //  "comments": "",
+    //  "files": [
+    //    { "name": "Bugs 1.6.1 - Update real data tipo de alarma.sql" },
+    //    { "name": "Bugs 1.6.2 - Update Function.sql" },
+    //    { "name": "Bugs 1.6.3 - Alter trigger registrar venta.sql" },
+    //    { "name": "Bugs 1.6.4 - Add column in Maquina.sql" },
+    //    { "name": "Bugs 1.6.5 - Update real data Function.sql" }
+    //  ]
+    //},
+    //{
+    //  "version": "1.7.0",
+    //  "comments": "",
+    //  "files": [
+    //    { "name": "Bugs 1.0.7.0 - Create view.sql" },
+    //    { "name": "Bugs 1.0.7.1 - Create tables TablasOffline and TransaccionesMal and TransaccionesIn.sql" },
+    //    { "name": "Bugs 1.0.7.2 - Alter table TransaccionesMal.sql" }
+    //  ]
+    //},
+    {
+      "version": "1.8.0",
+      "comments": "",
+      "files": [
+        //{ "name": "Bugs 1.8.0.0 - Drop columns zona6 to zona10.sql" },
+        //{ "name": "Bugs 1.8.0.1 - Drop table Recarga.sql" },
+        //{ "name": "Bugs 1.8.0.2 - Drop column TablasOffline.sql" },
+        //{ "name": "Bugs 1.8.0.3 - Alter ViewTransaccion.sql" },
+        //{ "name": "Bugs 1.8.0.4 - Drop columns in Usuario and TransaccionesIn.sql" },
+        //{ "name": "Bugs 1.8.0.6 - Drop column Jerarquia.sql" },
+        //{ "name": "Bugs 1.8.0.7 - Drop column Maquina.sql" },
+        //{ "name": "Bugs 1.8.0.8 - Drop column Locacion.sql" },
+        //{ "name": "Bugs 1.8.0.9- Add column in Usuario.sql" },
+        //{ "name": "Bugs 1.8.1.0- Add column in Transaccion.sql" },
+        //{ "name": "Bugs 1.8.1.1 - Add column in TransaccionMal.sql" },
+        //{ "name": "Bugs 1.8.1.2 - Create table GrupoTransaccionesMal.sql" },
+        //{ "name": "Bugs 1.8.1.3 - Alter table Jerarquia and Maquina.sql" },
+        //{ "name": "Bugs 1.8.1.4 - Alter table Terminal.sql" },
+        { "name": "Bugs 1.8.1.5 - Alter table Jerarquia.sql" },
+        { "name": "Bugs 1.8.1.6 - Drop columns in table Usuario.sql" },
+        { "name": "Bugs 1.8.1.7 - Create table TipoProducto and Add real data.sql" },
+        { "name": "Bugs 1.8.1.8 - Add Column TipoProductoID into Maquina.sql" },
+        { "name": "Bugs 1.8.1.9 - Add real data into into Maquina.sql" },
+        { "name": "Bugs 1.8.2.0 - Drop column OperadorAdminId from Operador.sql" },
+        { "name": "Bugs 1.8.2.1 - Alter ViewTransaccion add ValorRecorte.sql" },
+        { "name": "Bugs 1.8.2.2 - Add Column TablesOfflineID into TablesOffline.sql" },
+        { "name": "Bugs 1.8.2.3 - Alter column IDGrupoTransaccionesMal into GrupoTransaccionesMal.sql" },
+        { "name": "Bugs 1.8.2.4 - Add columns in Terminal.sql" },
+        { "name": "Bugs 1.8.2.5 - Alter table Transaccion.sql" },
+        { "name": "Bugs 1.8.2.6 - Alter table Maquina.sql" },
+        { "name": "Bugs 1.8.2.7 - Alter table Usuario.sql" },
+        { "name": "Bugs 1.8.2.8 - Alter table Transaccion.sql" },
+        { "name": "Bugs 1.8.2.9 - Nivelador.sql" },
+        { "name": "Bugs 1.8.3.0 - Alter table Usuario.sql" },
+        { "name": "Bugs 1.8.3.1 - Alter  store procedure CargaInformeEntregaTotalEPP.sql" },
+        { "name": "Bugs 1.8.3.2 - Alter  store procedure CargaInformesTransacciones.sql" }
+      ]
+    }
+  ]
+}

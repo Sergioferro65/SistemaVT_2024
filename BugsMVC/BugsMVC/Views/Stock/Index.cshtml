@@ -1,0 +1,110 @@
+﻿@model IEnumerable<BugsMVC.Models.StockViewModel>
+@using BugsMVC.Helpers
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    @Styles.Render("~/bundles/datatablesCss")
+    @Styles.Render("~/bundles/jqGridCss")
+}
+@section Scripts {
+    @Scripts.Render("~/bundles/datatables")
+    @Scripts.Render("~/bundles/jqGrid")
+}
+
+<script>
+    (function (window, document, $, undefined) {
+
+        $(function () {
+
+            var gridJSON = $("#jqGridJSON");
+
+            gridJSON.jqGrid({
+                url: 'Stock/GetAllStock',
+                datatype: "json",
+                colModel: [
+                    { label: '', name: '', width: 65, fixed: true, search: false, sortable: false, resize: false, formatter: actionButtonsFormatter },
+                    { label: 'StockID', name: 'StockID', fixed: false, width: 75, hidden: true },
+                    { label: 'AlarmaBajo', name: 'AlarmaBajo', fixed: false, width: 75, hidden: true },
+                    { label: 'Operador', name: 'OperadorNombre', hidden : @Json.Encode((!User.IsInRole("SuperAdmin"))) },
+                    { label: 'Locación', name: 'Locacion', fixed: false, width: 150 },
+                    { label: 'Artículo', name: 'Articulo', fixed: false, width: 250 },
+                    { label: 'Zona', name: 'Zona', fixed: false, width: 150 },
+                    { label: 'Máquina', name: 'Maquina', fixed: false, width: 200 },
+                    { label: 'Cantidad', name: 'Cantidad', fixed: false, width: 150, sorttype: 'number', searchoptions: { sopt: ['eq'] } },
+                    { label: 'Usuario Edición Web', name: 'UsuarioEdicionWeb', fixed: false, width: 150 },
+                    { label: 'Fecha Aviso', name: 'FechaAviso', search: true, searchOnEnter: true, sorttype: 'date', fixed: false, width: 150, formatter: 'date', formatoptions: { "srcformat": "d/m/Y H:i:s", "newformat": "d/m/Y H:i:s" }, searchoptions: getDefaultSearchOptionsForDate() },
+                    { label: 'Fecha Edición Web', name: 'FechaEdicionWeb', search: true, searchOnEnter: true, sorttype: 'date', fixed: false, width: 150, formatter: 'date', formatoptions: { "srcformat": "d/m/Y H:i:s", "newformat": "d/m/Y H:i:s" }, searchoptions: getDefaultSearchOptionsForDate() },
+                    { label: 'Fecha Edición VT', name: 'FechaEdicionVT', search: true, searchOnEnter: true, sorttype: 'date', fixed: false, width: 150, formatter: 'date', formatoptions: { "srcformat": "d/m/Y H:i:s", "newformat": "d/m/Y H:i:s" }, searchoptions: getDefaultSearchOptionsForDate() }
+                ],
+                viewrecords: true, // show the current page, data rang and total records on the toolbar
+                autowidth: true,
+                shrinkToFit: false,
+                height: 240,
+                rowNum: 20,
+                rowList: [10, 20, 30],
+                loadonce: true, // this is just for the demo
+                caption: "Stock",
+                hidegrid: false,
+                ignoreCase: true,
+                pager: "#jqGridJSONPager",
+                loadComplete: function () {
+                    var ids = $(this).jqGrid("getDataIDs");
+                    for (i = 0; i < ids.length; i++) {
+                        var rowid = ids[i];
+                        var alarmaBajo = parseInt($(this).jqGrid("getCell", rowid, "AlarmaBajo"));
+                        var cantidad = parseInt($(this).jqGrid("getCell", rowid, "Cantidad"));
+                        if (cantidad < alarmaBajo) {
+                            $('#' + $.jgrid.jqID(rowid)).addClass('alarmaBajoON');
+                        }
+                    }
+                }
+            });
+
+            //
+            // Filtering by Columns
+            //
+            gridJSON.jqGrid('filterToolbar', { stringResult: true, searchOnEnter: false, defaultSearch: "cn" });
+        });
+
+    })(window, document, window.jQuery);
+
+        function actionButtonsFormatter(cellvalue, options, rowObject) {
+            var linkButton = @Json.Encode(SecurityHelper.IsAllowed((int)Permissions.Stock.Update))? '<a href="Stock/Edit/' + rowObject.StockID + '" data-toggle="tooltip" data-placement="left" data-original-title="Editar" class="fa fa-edit"> </a>' : '';
+            linkButton += '<a href="Stock/Details/' + rowObject.StockID + '" data-toggle="tooltip" data-placement="left" data-original-title="Editar" class="fa fa-eye"> </a>';
+            linkButton = @Json.Encode(SecurityHelper.IsAllowed((int)Permissions.Stock.Delete))? linkButton + '<a href="Stock/Delete/' + rowObject.StockID + '" data-toggle="tooltip" data-placement="left" data-original-title="Editar" class="fa fa-remove"> </a>' : linkButton;
+
+            return linkButton;
+        }
+
+    function exportToExcel() {
+        var data = JSON.stringify($('#jqGridJSON').jqGrid('getGridParam', 'postData'));
+        $('#jqGridPostData').val(data);
+    }
+
+</script>
+
+<h3>
+    Stock
+    <small>Administración de stock.</small>
+</h3>
+
+<div>
+    @using (Html.BeginForm("ExportData", "Stock", FormMethod.Post, new { enctype = "multipart/form-data", style = "display: inline;" }))
+    {
+        <input type="submit" name="Export" id="Export" value="Excel" onclick="exportToExcel();" class="btn btn-default" />
+        <input type="hidden" name="jqGridPostData" id="jqGridPostData" />
+    }
+</div>
+<br />
+
+<!-- JSON-->
+<div class="jqgrid-responsive mb-lg">
+    <table id="jqGridJSON"></table>
+    <div id="jqGridJSONPager"></div>
+</div>
+
+

@@ -1,0 +1,78 @@
+﻿@model BugsMVC.Models.TransaccionesMal
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>
+    Detalles
+    <small>Detalles de la transacción seleccionada.</small>
+</h3>
+
+<div class="panel panel-default">
+    <div class="panel-heading">Transacción</div>
+    <div class="panel-body">
+        <dl class="dl-horizontal">
+            @*<dt>
+                @Html.DisplayName("Id de Transaccion: ")
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.IdTransaccionMal)
+            </dd>*@
+
+            <dt>
+                @Html.DisplayName("Operador: ")
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Operador.Nombre)
+            </dd>
+
+            <dt>
+                @Html.DisplayName("Número de Serie:  ")
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Terminal.NumeroSerie)
+            </dd>
+
+            <dt>
+                @Html.DisplayName("Locación: ")
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Locacion.Nombre)
+            </dd>
+
+            <dt>
+                @Html.DisplayName("Máquina: ")
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Maquina.NombreAlias)
+            </dd>
+
+            <dt>
+                @Html.DisplayName("Fecha de descarga: ")
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.FechaDescarga)
+            </dd>
+
+            <dt>
+                @Html.DisplayName("Motivo:  ")
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Motivo)
+            </dd>
+
+            <dt>
+                @Html.DisplayName("Campo transacción:  ")
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Transaccion)
+            </dd>
+
+        </dl>
+
+
+<p>
+    @Html.ActionLink("Volver", "IndexMal", "Transaccion", new { clsSession = false}, new { @class = "btn btn-default" })
+</p>

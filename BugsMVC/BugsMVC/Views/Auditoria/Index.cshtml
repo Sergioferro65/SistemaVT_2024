@@ -1,0 +1,127 @@
+﻿@model IEnumerable<BugsMVC.Models.Auditoria>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    @Styles.Render("~/bundles/datatablesCss")
+    @Styles.Render("~/bundles/jqGridCss")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/datatables")
+    @Scripts.Render("~/bundles/jqGrid")
+}
+
+
+<script>
+    (function (window, document, $, undefined) {
+        $('body').append("<div id='myModal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true' class='modal fade'>" +
+        "<div class='modal-dialog' role='document'> " +
+        "<div class='modal-content'>" +
+        "<div class='modal-header'> " +
+        "<button type='button' class='close' data-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>" +
+        "<h4 class='modal-title'>Eliminar Auditoría</h4>" + "</div>" +
+           " <div class='modal-body'>" +
+               " <p>¿ Desea Ud. eliminar todos los registros de Auditoría ?</p>" +
+           " </div>" +
+           " <div class='modal-footer'>" +
+               " <button type='button' class='btn btn-primary' id='removeButton'>Confirmar</button>" +
+               " <button type='button' class='btn btn-default' data-dismiss='modal'>Volver</button>" +
+            "</div>" +
+        "</div>" +
+        " </div>" +
+        "</div>"
+        );
+
+        $("#removeButton").click(function (e) {
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("DeleteAll", "Auditoria")',
+                dataType: 'json',
+                success: function () {
+                    window.location.reload();
+                },
+                error: function (ex) {
+                    alert('Hubo un error al eliminar los registros de auditoria.' + ex);
+                }
+            });
+
+            $('#myModal').modal('toggle');
+
+        });
+
+        $(function () {
+
+            var gridJSON = $("#jqGridJSON");
+
+            gridJSON.jqGrid({
+                url: 'Auditoria/GetAllAuditorias',
+                datatype: "json",
+                colModel: [
+                    {
+                        label: '',
+                        name: '',
+                        width: 30,
+                        fixed: true,
+                        search: false,
+                        sortable: false,
+                        resize: false,
+                        formatter: actionButtonsFormatter
+                    },
+                    { label: 'AuditoriaID', name: 'MaquinaID', width: 75, hidden: true },
+                    { label: 'Usuario', name: 'UserName', width: 200 },
+                    { label: 'Dirección IP', name: 'IPAddress', width: 150, sorttype: 'number' },
+                    { label: 'Área Accedida', name: 'AreaAccessed', width: 450 },
+                    { label: 'Fecha Acceso', name: 'TimeAccessed', width: 150, formatter: 'date', formatoptions: {"srcformat": "d/m/Y H:i:s", "newformat": "d/m/Y H:i:s" }},
+                ],
+                viewrecords: true, // show the current page, data rang and total records on the toolbar
+                autowidth: true,
+                shrinkToFit: false,
+                height: 240,
+                rowNum: 20,
+                rowList: [10, 20, 30],
+                loadonce: true, // this is just for the demo
+                caption: "Auditoría",
+                hidegrid: false,
+                ignoreCase: true,
+                pager: "#jqGridJSONPager"
+            });
+
+            //
+            // Filtering by Columns
+            //
+            gridJSON.jqGrid('filterToolbar', { stringResult: true, searchOnEnter: false, defaultSearch: "cn" });
+        });
+
+    })(window, document, window.jQuery);
+
+    function actionButtonsFormatter(cellvalue, options, rowObject) {
+
+        var linkButton = '<a href="Auditoria/Details/' + rowObject.AuditoriaID + '" data-toggle="tooltip" data-placement="left" data-original-title="Detalles" class="fa fa-eye"> </a>';
+
+        return linkButton;
+    }
+
+</script>
+
+<h3>
+    Auditoría
+    <small>Se puede ver el historial de acciones que se realizaron en el sistema.</small>
+</h3>
+
+<p>
+    <div>
+        <a href="#" data-toggle="modal" data-target="#myModal" class="removeButton btn btn-default">
+            Borrar Todas
+        </a>
+    </div>
+</p>
+
+<div class="jqgrid-responsive mb-lg">
+    <table id="jqGridJSON"></table>
+    <div id="jqGridJSONPager"></div>
+</div>
