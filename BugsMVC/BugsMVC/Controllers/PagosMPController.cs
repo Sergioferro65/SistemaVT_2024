@@ -55,25 +55,46 @@ namespace BugsMVC.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult Index(string topic, long id)
+        public ActionResult Index(long? operador,string topic, long? id)
         {
             _userManager = Request.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            Task.Run(() => RegistrarPago(topic, id));
+            Task.Run(() => RegistrarPago(topic, id,operador));
             return Json(new { result = "OK"},JsonRequestBehavior.AllowGet);
         }
         
-        private void RegistrarPago(string topic, long id)
+        private void RegistrarPago(string topic, long? id,long? operador)
 
 
         {
+
+            if (id == null) {
+                Log.Info("No existe id");
+                return;
+            }
+
+            Operador op = db.Operadores.FirstOrDefault(o=>  o.Numero == operador);
+
+            if (op == null) {
+                Log.Info("No existe el operador número:" + operador);
+                return;
+            }
+
+            if (op.ClientId == null || op.SecretToken == null) {
+                Log.Info("Las credenciales del operador número:" + operador+" no estan cargadas");
+                return;
+            }
+
             MercadoPago.SDK.CleanConfiguration();
-            MercadoPago.SDK.ClientId = ConfigurationManager.AppSettings["ClientIDMercadoPago"];
-            MercadoPago.SDK.ClientSecret = ConfigurationManager.AppSettings["ClientSecretMercadoPago"];
+            MercadoPago.SDK.ClientId = op.ClientId;
+            MercadoPago.SDK.ClientSecret = op.SecretToken;
+
+            //MercadoPago.SDK.ClientId = ConfigurationManager.AppSettings["ClientIDMercadoPago"];
+            //MercadoPago.SDK.ClientSecret = ConfigurationManager.AppSettings["ClientSecretMercadoPago"];
 
             //var mp = new MP(ConfigurationManager.AppSettings["ClientIDMercadoPago"],
             //            ConfigurationManager.AppSettings["ClientSecretMercadoPago"]);
 
-            Log.Info("Llega notificacion de pago al sistema: topic=" + topic + ", id=" + id);
+            Log.Info("Llega notificacion de pago al sistema: topic=" + topic + ", id=" + id+"Operador="+operador);
 
             if (topic != "payment")
                 return;
@@ -96,9 +117,13 @@ namespace BugsMVC.Controllers
 
                         monto = (decimal)payment.TransactionAmount.Value;
 
-                        maquinaId = new Guid(payment.ExternalReference);
+                        Log.Info("External Reference:"+ payment.ExternalReference);
 
-                        Maquina maquina = db.Maquinas.Where(x => x.MaquinaID == maquinaId).FirstOrDefault();
+                        //maquinaId = new Guid(payment.ExternalReference);
+
+                        Guid maqId = new Guid((string)payment.ExternalReference);
+
+                        Maquina maquina = db.Maquinas.Where(x => x.MaquinaID == maqId).FirstOrDefault();
 
                         if (maquina != null) {
                             var paymentEntity = new MercadoPagoTable
@@ -109,7 +134,8 @@ namespace BugsMVC.Controllers
                                 MercadoPagoEstadoTransmisionId = (int)MercadoPagoEstadoTransmision.States.EN_PROCESO,
                                 Maquina = maquina,
                                 FechaModificacionEstadoTransmision = null,
-                                Comprobante = id.ToString()
+                                Comprobante = id.ToString(),
+                                Entidad = "MP"
                             };
 
                             db.MercadoPago.Add(paymentEntity);
@@ -120,7 +146,7 @@ namespace BugsMVC.Controllers
                         }
                     }
                     else {
-                        Log.Error("No se encontró la máquina" + maquinaId);
+                        Log.Error("Mercado Pago status:" + payment.Status);
                     }
 
 
@@ -226,11 +252,16 @@ namespace BugsMVC.Controllers
                     if (intentos >= 3)
                     {
                         //Devolver 
-                        MercadoPago.SDK.CleanConfiguration();
-                        MercadoPago.SDK.ClientId = ConfigurationManager.AppSettings["ClientIDMercadoPago"];
-                        MercadoPago.SDK.ClientSecret = ConfigurationManager.AppSettings["ClientSecretMercadoPago"];
+                        //MercadoPago.SDK.CleanConfiguration();
+                        //MercadoPago.SDK.ClientId = ConfigurationManager.AppSettings["ClientIDMercadoPago"];
+                        //MercadoPago.SDK.ClientSecret = ConfigurationManager.AppSettings["ClientSecretMercadoPago"];
 
                         MercadoPagoTable entity = db.MercadoPago.Where(x => x.Comprobante == mercadoPago.Comprobante).First();
+
+                        MercadoPago.SDK.CleanConfiguration();
+                        MercadoPago.SDK.ClientId = entity.Maquina.Operador.ClientId;
+                        MercadoPago.SDK.ClientSecret = entity.Maquina.Operador.SecretToken;
+
                         long id = 0;
                         long.TryParse(entity.Comprobante, out id);
                         Payment payment = Payment.FindById(id);
@@ -242,6 +273,8 @@ namespace BugsMVC.Controllers
 
                                 entity.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.DEVUELTO;
                                 entity.MercadoPagoEstadoTransmisionId = (int)MercadoPagoEstadoTransmision.States.ERROR_CONEXION;
+                                entity.Descripcion = "Error al conectar socket";
+                                entity.FechaModificacionEstadoTransmision = DateTime.Now;
                                 Log.Error("No se pudo realizar la conexión y se devolvio el dinero", e);
                                 db.Entry(entity).State = EntityState.Modified;
                                 db.SaveChanges();

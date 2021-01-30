@@ -123,7 +123,9 @@ namespace BugsMVC.Controllers
                 FechaModificacionEstadoTransmision = null,
                 MaquinaId = new Guid((string)maquinaId),
                 Comprobante = refCliente,
-                Descripcion = urlDevolucion
+                Descripcion = urlDevolucion,
+                Entidad="BG",
+                UrlDevolucion = urlDevolucion 
             };
 
             db.MercadoPago.Add(paymentEntity);
@@ -179,6 +181,8 @@ namespace BugsMVC.Controllers
                         {
                             entity.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.DEVUELTO;
                             entity.MercadoPagoEstadoTransmisionId = (int)MercadoPagoEstadoTransmision.States.ERROR_CONEXION;
+                            entity.Descripcion = "Error al conectar socket";
+                            entity.FechaModificacionEstadoTransmision = DateTime.Now;
                             Log.Error("No se pudo realizar la conexión y se devolvio el dinero", e);
                             db.Entry(entity).State = EntityState.Modified;
                             db.SaveChanges();
@@ -203,7 +207,7 @@ namespace BugsMVC.Controllers
             public int EstadoId;
         }
 
-        static async Task<HttpResponseMessage> EnviarRechazoAsync(MercadoPagoTable entity)
+        public static async Task<HttpResponseMessage> EnviarRechazoAsync(MercadoPagoTable entity)
         {
             Rechazo rechazo = new Rechazo();
             rechazo.RefCliente = entity.Comprobante;
@@ -214,7 +218,7 @@ namespace BugsMVC.Controllers
             var json = new JavaScriptSerializer().Serialize(rechazo);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            return await client.PostAsync(entity.Descripcion, content);
+            return await client.PostAsync(entity.UrlDevolucion , content);
 
         }
     }

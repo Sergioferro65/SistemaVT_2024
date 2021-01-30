@@ -18,9 +18,14 @@ namespace BugsMVC.Models
         public string Comprobante { get; set; }
         public string Descripcion { get; set; }
         public DateTime? FechaModificacionEstadoTransmision { get; set; }
+        public string Entidad { get; set; }
+
+        public string UrlDevolucion { get; set; }
 
         public virtual Maquina Maquina { get; set; }
         public virtual MercadoPagoEstadoTransmision MercadoPagoEstadoTransmision { get; set; }
         public virtual MercadoPagoEstadoFinanciero MercadoPagoEstadoFinanciero { get; set; }
+
+
     }
 }

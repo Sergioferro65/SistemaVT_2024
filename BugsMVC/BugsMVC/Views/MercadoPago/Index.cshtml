@@ -18,7 +18,7 @@
 
 
 <h3>
-    Mercado Pago
+    Pagos Externos
     <small>Operaciones realizadas.</small>
 </h3>
 
@@ -84,7 +84,9 @@
                     { label: 'Monto', name: 'Monto', sorttype: 'number', formatter: 'number', formatoptions:{decimalSeparator:",", thousandsSeparator: ".", decimalPlaces: 2, prefix: "$ "}, searchoptions: { sopt: ['eq'] }  },
                     { label: 'Fecha', name: 'Fecha', search: true, searchOnEnter: true, sorttype: 'date', formatter: 'date', formatoptions: { "srcformat": "d/m/Y H:i:s", "newformat": "d/m/Y H:i:s" }
                         , searchoptions: getDefaultSearchOptionsForDate()
-                    }
+                    },
+                    { label: 'Entidad', name: 'Entidad' },
+                    { label: 'Url Devolucion', name: 'UrlDevolucion' },
                 ],
                 viewrecords: true, // show the current page, data rang and total records on the toolbar
                 autowidth: true,
@@ -93,7 +95,7 @@
                 rowNum: 20,
                 rowList: [10, 20, 30],
                 loadonce: true, // this is just for the demo
-                caption: "Mercado Pago",
+                caption: "Pagos Externos",
                 hidegrid: false,
                 ignoreCase: true,
                 pager: "#jqGridJSONPager"

@@ -5,19 +5,36 @@ using BugsMVC.DAL;
 using System.Net.Mail;
 using BugsMVC.Models;
 using System.Configuration;
-using mercadopago;
+
+using MercadoPago.Resources;
+using MercadoPago.DataStructures.Payment;
+using MercadoPago.Common;
+
 using System.Collections;
 using System.Data.Entity;
+using System.IO;
+using BugsMVC.Controllers;
+using System.Net.Http;
 
 namespace StockNotifier
 {
     class Program
     {
         public static BugsContext db;
+
+
+        static async void EnviarRechazo(MercadoPagoTable entity)
+        {
+            await PagosClienteController.EnviarRechazoAsync(entity);
+        }
         static void Main(string[] args)
         {
-            db= new BugsContext();
+            try { 
 
+            writeLog("Main");
+
+            db= new BugsContext();
+            
             var stocks = db.Stocks.ToList();
             var maquinas = db.Maquinas.ToList();
             var mercadoPagos = db.MercadoPago;
@@ -27,6 +44,8 @@ namespace StockNotifier
             var mailsStockBajo = new List<Stock>();
             var mailsMaquinaSinConexion = new List<Maquina>();
             var mailsMaquinaInhibidas = new List<Maquina>();
+
+            writeLog("Control de stock");
 
             foreach (var stock in stocks)
             {
@@ -42,6 +61,8 @@ namespace StockNotifier
                     }
                 }
             }
+
+            writeLog("Control Maquinas Conectadas");
 
             foreach (var maquina in maquinas.Where(x => x.Estado == "Asignada"))
             {
@@ -98,51 +119,55 @@ namespace StockNotifier
                 db.SaveChanges();
             }
 
+            writeLog("Control Devoluciones");
+
             foreach (var mercadoPago in mercadoPagos.Where(x=>x.MercadoPagoEstadoFinancieroId == (int)MercadoPagoEstadoFinanciero.States.ACREDITADO
                                                         && (x.MercadoPagoEstadoTransmisionId != (int)MercadoPagoEstadoTransmision.States.TERMINADO_OK)
                                                         ).ToList())
             {
+                writeLog("Maquina:"+mercadoPago.MaquinaId );
                 if ((DateTime.Now - mercadoPago.Fecha).TotalMinutes >= tiempoMP)
                 {
                     //Devolver dinero
                     Maquina maquina = db.Maquinas.Where(x => x.MaquinaID == mercadoPago.MaquinaId).FirstOrDefault();
                     Operador operador = db.Operadores.Where(x => x.OperadorID == maquina.OperadorID).FirstOrDefault();
 
-                    if(operador.ClientId != null && operador.SecretToken != null)
+                    
+
+                    if (operador.ClientId != null && operador.SecretToken != null && mercadoPago.Comprobante != "" && mercadoPago.Entidad == "MP")
                     {
-                        var mp = new MP(operador.ClientId, operador.SecretToken);
-                        Dictionary<string, string> filters = new Dictionary<string, string> { { "id", mercadoPago.Comprobante } };
-                        Hashtable searchResult = mp.searchPayment(filters);
 
-                        int status = Convert.ToInt32(searchResult["status"]);
-                        if (searchResult != null && searchResult.Count > 0 && status == 200)
-                        {
-                            var responseValues = (ArrayList)((Hashtable)searchResult["response"])["results"];
-                            Hashtable firstItem = (Hashtable)responseValues[0];
-                            Hashtable resultCollection = (Hashtable)firstItem["collection"];
+                        writeLog("Devolviendo al Operador:" + operador.ClientId);
+                        
+                        MercadoPago.SDK.CleanConfiguration();
+                        MercadoPago.SDK.ClientId = operador.ClientId;
+                        MercadoPago.SDK.ClientSecret = operador.SecretToken;
 
-                            if (resultCollection["status"].ToString() == "refunded")
+                        long id = 0;
+                        long.TryParse(mercadoPago.Comprobante, out id);
+                        writeLog("Buscando comprobante "+ mercadoPago.Comprobante + " en MP");
+                        Payment payment = Payment.FindById(id);
+                        
+                        if (payment.Errors == null) {
+
+                            writeLog("Comprobante encontrado");
+
+                            payment.Refund();
+                            writeLog("Respuesta Mercado Pago "+ payment.Status);
+                            if (payment.Status == PaymentStatus.refunded)
                             {
-                                //El pago ya se devolvio, seguramente desde la pagina de mercadoPago
+                                writeLog("Actualizando registro en MercadoPagoTable");
+
                                 mercadoPago.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.DEVUELTO;
-
-                                db.Entry(mercadoPago).State = EntityState.Modified;
-                                db.SaveChanges();
-                            }
-                            else
-                            {
-                                Hashtable result = mp.refundPayment(mercadoPago.Comprobante);
-                                if (result["status"].ToString() == "200")
-                                {
-                                    mercadoPago.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.DEVUELTO;
-
                                     db.Entry(mercadoPago).State = EntityState.Modified;
                                     db.SaveChanges();
                                 }
-                            }
+                            
                         }
                         else
                         {
+
+                            writeLog("No se encontro el pago");
                             //No se encontró el pago,  no deberia suceder.
                             //El clientID o secret son incorrectos
                         }
@@ -150,8 +175,15 @@ namespace StockNotifier
                     }
                     else
                     {
-                        //Aca deberia registrar un estado correspondiente cuando el operador no tiene cargado clientID o secretToken.
-                    }
+                            //Aca deberia registrar un estado correspondiente cuando el operador no tiene cargado clientID o secretToken.
+                            writeLog("Se envia mensaje de rechazo la entidad pagadora");
+                            EnviarRechazo(mercadoPago);
+                            writeLog("Actualizando registro en MercadoPagoTable");
+                            mercadoPago.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.DEVUELTO;
+                            db.Entry(mercadoPago).State = EntityState.Modified;
+                            db.SaveChanges();
+
+                        }
                 }
             }
 
@@ -160,6 +192,16 @@ namespace StockNotifier
 
             ProcesarListaMaquina("SistemaVT - Alarma Máquina Sin Conexión", mailsMaquinaSinConexion);
             ProcesarListaMaquina("SistemaVT - Alarma Máquina Inactiva", mailsMaquinaInhibidas);
+
+            }
+
+            catch (Exception ex)
+            {
+
+                writeLog(ex.InnerException.Message);
+
+
+            }
         }
 
         private static void ProcesarListaStock(string subject, List<Stock> Lowstocks)
@@ -254,6 +296,30 @@ namespace StockNotifier
                 mail.Body = body;
                 mail.IsBodyHtml = true;
                 client.Send(mail);
-        }               
+        }
+
+
+        static public void writeLog(string massage)
+        {
+            if (true)
+            {
+                StreamWriter log;
+
+                if (!File.Exists("StockNotifier.log"))
+                {
+                    log = new StreamWriter("StockNotifier.log");
+                }
+                else
+                {
+                    log = File.AppendText("StockNotifier.log");
+                }
+                log.WriteLine(DateTime.Now);
+                log.WriteLine(massage);
+                log.WriteLine();
+
+                log.Close();
+            }
+        }
+
     }
 }

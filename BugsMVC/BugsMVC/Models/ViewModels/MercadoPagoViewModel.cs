@@ -21,6 +21,9 @@ namespace BugsMVC.Models.ViewModels
         public string OperadorNombre { get; set; }
         public string Descripcion { get; set; }
         public DateTime? FechaModificacionEstadoTransmision { get; set; }
+        public string Entidad { get; set; }
+
+        public string UrlDevolucion { get; set; }
 
         public static MercadoPagoViewModel From(MercadoPagoTable entity)
         {
@@ -40,6 +43,8 @@ namespace BugsMVC.Models.ViewModels
             viewModel.MostrarDevolverDinero = entity.MercadoPagoEstadoFinancieroId == (int)MercadoPagoEstadoFinanciero.States.ACREDITADO ||
                                               entity.MercadoPagoEstadoTransmisionId == (int)MercadoPagoEstadoTransmision.States.TERMINADO_MAL;
             viewModel.OperadorNombre = entity.Maquina.Operador.Nombre;
+            viewModel.Entidad = entity.Entidad;
+            viewModel.UrlDevolucion = entity.UrlDevolucion;
             return viewModel;
         }
 
@@ -56,6 +61,8 @@ namespace BugsMVC.Models.ViewModels
             entity.Comprobante = this.Comprobante;
             entity.Descripcion = this.Descripcion;
             entity.FechaModificacionEstadoTransmision = this.FechaModificacionEstadoTransmision;
+            entity.Entidad = this.Entidad;
+            entity.UrlDevolucion = this.UrlDevolucion;
         }
     }
 }
