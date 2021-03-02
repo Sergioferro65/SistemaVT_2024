@@ -15,6 +15,7 @@ using System.Data.Entity;
 using System.IO;
 using BugsMVC.Controllers;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace StockNotifier
 {
@@ -22,12 +23,7 @@ namespace StockNotifier
     {
         public static BugsContext db;
 
-
-        static async void EnviarRechazo(MercadoPagoTable entity)
-        {
-            await PagosClienteController.EnviarRechazoAsync(entity);
-        }
-        static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             try { 
 
@@ -126,7 +122,15 @@ namespace StockNotifier
                                                         ).ToList())
             {
                 writeLog("Maquina:"+mercadoPago.MaquinaId );
-                if ((DateTime.Now - mercadoPago.Fecha).TotalMinutes >= tiempoMP)
+                    
+                bool devolver = true;
+
+                if (mercadoPago.MercadoPagoEstadoTransmisionId  == (int)MercadoPagoEstadoTransmision.States.EN_PROCESO  && (DateTime.Now - mercadoPago.Fecha).TotalMinutes < tiempoMP)
+                {
+                    devolver = false;
+                }
+
+                if (devolver)
                 {
                     //Devolver dinero
                     Maquina maquina = db.Maquinas.Where(x => x.MaquinaID == mercadoPago.MaquinaId).FirstOrDefault();
@@ -154,16 +158,20 @@ namespace StockNotifier
 
                             payment.Refund();
                             writeLog("Respuesta Mercado Pago "+ payment.Status);
-                            if (payment.Status == PaymentStatus.refunded)
-                            {
-                                writeLog("Actualizando registro en MercadoPagoTable");
-
-                                mercadoPago.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.DEVUELTO;
-                                    db.Entry(mercadoPago).State = EntityState.Modified;
-                                    db.SaveChanges();
+                                if (payment.Status == PaymentStatus.refunded)
+                                {
+                                    writeLog("Actualizando registro en MercadoPagoTable");
+                                    mercadoPago.MercadoPagoEstadoTransmisionId = (int)MercadoPagoEstadoTransmision.States.ERROR_CONEXION;
+                                    mercadoPago.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.DEVUELTO;
                                 }
-                            
-                        }
+                                else {
+                                    mercadoPago.MercadoPagoEstadoTransmisionId = (int)MercadoPagoEstadoTransmision.States.ERROR_CONEXION;
+                                    mercadoPago.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.AVISO_FALLIDO;
+                                }
+                                db.Entry(mercadoPago).State = EntityState.Modified;
+                                db.SaveChanges();
+
+                            }
                         else
                         {
 
@@ -177,14 +185,24 @@ namespace StockNotifier
                     {
                             //Aca deberia registrar un estado correspondiente cuando el operador no tiene cargado clientID o secretToken.
                             writeLog("Se envia mensaje de rechazo la entidad pagadora");
-                            EnviarRechazo(mercadoPago);
-                            writeLog("Actualizando registro en MercadoPagoTable");
-                            mercadoPago.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.DEVUELTO;
+                            HttpResponseMessage response = await PagosClienteController.EnviarRechazoAsync(mercadoPago );
+                            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                            {
+                                mercadoPago.MercadoPagoEstadoTransmisionId = (int)MercadoPagoEstadoTransmision.States.ERROR_CONEXION;
+                                mercadoPago.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.DEVUELTO;
+                            }
+                            else
+                            {
+                                writeLog("No se pudo enviar mensaje a la entidad pagadora");
+                                mercadoPago.MercadoPagoEstadoTransmisionId = (int)MercadoPagoEstadoTransmision.States.ERROR_CONEXION;
+                                mercadoPago.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.AVISO_FALLIDO;
+                            }
+
                             db.Entry(mercadoPago).State = EntityState.Modified;
                             db.SaveChanges();
 
                         }
-                }
+                    }
             }
 
             ProcesarListaStock("SistemaVT - Alarma Stock Muy Bajo", mailsStockMuyBajo);
@@ -203,6 +221,7 @@ namespace StockNotifier
 
             }
         }
+
 
         private static void ProcesarListaStock(string subject, List<Stock> Lowstocks)
         {

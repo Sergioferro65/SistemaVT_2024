@@ -123,14 +123,13 @@ namespace BugsMVC.Controllers
                 FechaModificacionEstadoTransmision = null,
                 MaquinaId = new Guid((string)maquinaId),
                 Comprobante = refCliente,
-                Descripcion = urlDevolucion,
                 Entidad="BG",
                 UrlDevolucion = urlDevolucion 
             };
 
             db.MercadoPago.Add(paymentEntity);
             db.SaveChanges();
-            EnviarPagoAMaquina(paymentEntity.MercadoPagoId, maquinaId, importe, urlDevolucion, tokenCliente, refCliente);
+            EnviarPagoAMaquina(paymentEntity.MercadoPagoId, maquinaId, paymentEntity.Monto , urlDevolucion, tokenCliente, refCliente);
             
         }
 
@@ -138,7 +137,7 @@ namespace BugsMVC.Controllers
         {
             int intentos = 0;
             bool volverAintentar = true;
-            string mensaje = '$' + idPago.ToString() + ',' + maquinaId.ToString() + ',' + (importe).ToString() + '!';
+            string mensaje = '$' + idPago.ToString() + ',' + maquinaId.ToString() + ',' + Math.Truncate( importe*100).ToString() + '!';
 
             while (intentos < 3 && volverAintentar)
             {
@@ -166,6 +165,8 @@ namespace BugsMVC.Controllers
                     int k = stm.Read(bb, 0, 100);
 
                     tcpclnt.Close();
+
+                    tcpclnt = null;
                 }
                 catch (Exception e)
                 {
@@ -179,15 +180,30 @@ namespace BugsMVC.Controllers
 
                         if (entity != null)
                         {
-                            entity.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.DEVUELTO;
-                            entity.MercadoPagoEstadoTransmisionId = (int)MercadoPagoEstadoTransmision.States.ERROR_CONEXION;
-                            entity.Descripcion = "Error al conectar socket";
-                            entity.FechaModificacionEstadoTransmision = DateTime.Now;
-                            Log.Error("No se pudo realizar la conexión y se devolvio el dinero", e);
-                            db.Entry(entity).State = EntityState.Modified;
-                            db.SaveChanges();
+                            
+                            HttpResponseMessage response = await EnviarRechazoAsync(entity);
 
-                            await EnviarRechazoAsync(entity);
+                            if (response.StatusCode == HttpStatusCode.OK)
+                            {
+
+                                entity.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.DEVUELTO;
+                                entity.MercadoPagoEstadoTransmisionId = (int)MercadoPagoEstadoTransmision.States.ERROR_CONEXION;
+                                entity.Descripcion = "Error al conectar socket";
+                                entity.FechaModificacionEstadoTransmision = DateTime.Now;
+                                Log.Error("No se pudo realizar la conexión y se devolvio el dinero", e);
+                                db.Entry(entity).State = EntityState.Modified;
+                                db.SaveChanges();
+                            }
+                            else {
+                                entity.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.AVISO_FALLIDO;
+                                entity.MercadoPagoEstadoTransmisionId = (int)MercadoPagoEstadoTransmision.States.ERROR_CONEXION;
+                                entity.Descripcion = "Error al conectar socket";
+                                entity.FechaModificacionEstadoTransmision = DateTime.Now;
+                                Log.Error("No se pudo realizar la conexión y no se pudo notificar al operador ("+response.ReasonPhrase +")", e);
+                                db.Entry(entity).State = EntityState.Modified;
+                                db.SaveChanges();
+                            }
+
                         }
                         else
                         {
@@ -218,8 +234,14 @@ namespace BugsMVC.Controllers
             var json = new JavaScriptSerializer().Serialize(rechazo);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            return await client.PostAsync(entity.UrlDevolucion , content);
+            try { 
+                return await client.PostAsync(entity.UrlDevolucion, content); } 
+            catch (Exception ex) {
+                HttpResponseMessage response = new HttpResponseMessage();
+                response.StatusCode = HttpStatusCode.NotFound;
+                return response;
 
+            }
         }
     }
 }

@@ -15,7 +15,8 @@ namespace BugsMVC.Models
         public enum States
         {
             DEVUELTO = 1,
-            ACREDITADO
+            ACREDITADO,
+            AVISO_FALLIDO
         }
 
 

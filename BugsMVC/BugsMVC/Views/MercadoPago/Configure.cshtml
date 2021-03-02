@@ -5,12 +5,12 @@
 }
 
 <h3>
-    Mercado Pago
+    Credenciales Pagos Externos
     <small>Configuración.</small>
 </h3>
 
 @*@using (Html.BeginForm())*@
-@using (Html.BeginForm("Configure", "MercadoPago", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", @id = "idForm" }))
+@using (Html.BeginForm( "Configure", "MercadoPago", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", @id = "idForm" }))
 {
     @Html.AntiForgeryToken()
 

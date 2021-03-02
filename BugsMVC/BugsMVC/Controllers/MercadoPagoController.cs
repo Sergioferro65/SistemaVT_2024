@@ -166,12 +166,14 @@ namespace BugsMVC.Controllers
                             .Select(x => new
                             {
                                 Operador = x.Maquina.Operador.Nombre,
+                                Comprobante = x.Comprobante ,
                                 //Maquina = x.Maquina.getDescripcionMaquina(),
                                 Maquina = x.Maquina.NombreAlias != null ? x.Maquina.MarcaModelo.MarcaModeloNombre + " - " + x.Maquina.NumeroSerie + "(" + x.Maquina.NombreAlias + ")" : x.Maquina.MarcaModelo.MarcaModeloNombre + "-" + x.Maquina.NumeroSerie,
             EstadoTransmision = x.MercadoPagoEstadoTransmision.Descripcion,
                                 EstadoFinanciero = x.MercadoPagoEstadoFinanciero.Descripcion,
                                 Monto = x.Monto,
-                                Fecha = x.Fecha
+                                Fecha = x.Fecha,
+                                Entidad = x.Entidad 
                             })
                             .Where(filters);
 
@@ -190,11 +192,13 @@ namespace BugsMVC.Controllers
             // Set the column names in the header row
             if (esSuperAdmin)
                 headerRow.CreateCell(amountOfColumns++).SetCellValue("Operador");
+            headerRow.CreateCell(amountOfColumns++).SetCellValue("Comprobante");
             headerRow.CreateCell(amountOfColumns++).SetCellValue("Máquina");
             headerRow.CreateCell(amountOfColumns++).SetCellValue("Estado Transmisión");
             headerRow.CreateCell(amountOfColumns++).SetCellValue("Estado Financiero");
             headerRow.CreateCell(amountOfColumns++).SetCellValue("Monto");
             headerRow.CreateCell(amountOfColumns++).SetCellValue("Fecha");
+            headerRow.CreateCell(amountOfColumns++).SetCellValue("Entidad");
 
             // Define a cell style for the header row values
             XSSFCellStyle headerCellStyle = ExcelHelper.GetHeaderCellStyle(workbook);
@@ -226,11 +230,13 @@ namespace BugsMVC.Controllers
                 // Set values for the cells
                 if (esSuperAdmin)
                     row.CreateCell(colIdx++).SetCellValue(mercadoPago.Operador);
+                row.CreateCell(colIdx++).SetCellValue(mercadoPago.Comprobante );
                 row.CreateCell(colIdx++).SetCellValue(mercadoPago.Maquina);
                 row.CreateCell(colIdx++).SetCellValue(mercadoPago.EstadoTransmision);
                 row.CreateCell(colIdx++).SetCellValue(mercadoPago.EstadoFinanciero);
                 row.CreateCell(colIdx++).SetCellValue(Convert.ToDouble(mercadoPago.Monto));
                 row.CreateCell(colIdx++).SetCellValue(mercadoPago.Fecha.ToString("dd/MM/yyyy HH:mm"));
+                row.CreateCell(colIdx++).SetCellValue(mercadoPago.Entidad );
 
                 for (int j = 0; j < colIdx; j++)
                 {
@@ -259,7 +265,7 @@ namespace BugsMVC.Controllers
             MemoryStream output = new MemoryStream();
             workbook.Write(output);
 
-            return File(output.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Reporte de Mercado Pago " + DateTime.Now.ToString("dd-MM-yyyy hhmmss") + ".xlsx");
+            return File(output.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Reporte de Pagos Externos " + DateTime.Now.ToString("dd-MM-yyyy hhmmss") + ".xlsx");
         }
 
         public Guid GetUserOperadorID()

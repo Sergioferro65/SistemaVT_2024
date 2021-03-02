@@ -79,32 +79,40 @@ namespace BugsMVC.Controllers
                 return;
             }
 
-            if (op.ClientId == null || op.SecretToken == null) {
-                Log.Info("Las credenciales del operador número:" + operador+" no estan cargadas");
+            string clientId = ConfigurationManager.AppSettings["ID_"+ op.Numero.ToString() ];
+            string secretToken = ConfigurationManager.AppSettings["TOKEN_"+ op.Numero.ToString()];
+
+
+            if (clientId == null || secretToken == null) {
+                Log.Info("Las credenciales del operador número:" + operador+" no estan registradas");
                 return;
             }
 
             MercadoPago.SDK.CleanConfiguration();
-            MercadoPago.SDK.ClientId = op.ClientId;
-            MercadoPago.SDK.ClientSecret = op.SecretToken;
+            //MercadoPago.SDK.ClientId = op.ClientId;
+            //MercadoPago.SDK.ClientSecret = op.SecretToken;
+            MercadoPago.SDK.ClientId = clientId;
+            MercadoPago.SDK.ClientSecret = secretToken;
 
-            //MercadoPago.SDK.ClientId = ConfigurationManager.AppSettings["ClientIDMercadoPago"];
-            //MercadoPago.SDK.ClientSecret = ConfigurationManager.AppSettings["ClientSecretMercadoPago"];
-
-            //var mp = new MP(ConfigurationManager.AppSettings["ClientIDMercadoPago"],
-            //            ConfigurationManager.AppSettings["ClientSecretMercadoPago"]);
 
             Log.Info("Llega notificacion de pago al sistema: topic=" + topic + ", id=" + id+"Operador="+operador);
 
             if (topic != "payment")
                 return;
 
+            if (db.MercadoPago.FirstOrDefault((e) => e.Comprobante == id.ToString() && e.Entidad == "MP") != null)
+            {
+                Log.Info("La notificación ya fue recibida y procesada anteriormente");
+                return;
+            }
+
             decimal monto = 0;
             Guid maquinaId = Guid.Empty;
             try
             {
-                // Hacemos una busqueda por id de pago
-                //Dictionary<string, string> filters = new Dictionary<string, string> { { "id", id } };
+
+
+                
 
                 Payment payment = Payment.FindById(id);
 
@@ -149,56 +157,6 @@ namespace BugsMVC.Controllers
                         Log.Error("Mercado Pago status:" + payment.Status);
                     }
 
-
-
-                    //Hashtable searchResult = mp.searchPayment(filters);
-
-                    //if (searchResult != null && searchResult.Count > 0 && (int)searchResult["status"] == 200)
-                    //{
-                    //    var responseValues = (ArrayList)((Hashtable)searchResult["response"])["results"];
-                    //    if (responseValues.Count > 0)
-                    //    {
-                    //        Log.Info("El pago fue encontrado y se encuentra procesando los datos");
-                    //        Hashtable firstItem = (Hashtable)responseValues[0];
-                    //        Hashtable resultCollection = (Hashtable)firstItem["collection"];
-
-                    //        string[] referencias = resultCollection["external_reference"].ToString().Split('_');
-
-                    //        if (referencias.Length > 0)
-                    //        {
-                    //            maquinaId = new Guid(referencias[1].ToString());
-                    //            Maquina maquina = db.Maquinas.Where(x => x.MaquinaID == maquinaId).FirstOrDefault();
-                    //            if (maquina != null && resultCollection["status"].ToString() == "approved")
-                    //            {
-                    //                monto = Convert.ToDecimal(resultCollection["total_paid_amount"]);
-
-                    //                //if (resultCollection["status"].ToString() == "approved")
-                    //                //{
-                    //                mercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.ACREDITADO;
-                    //                mercadoPagoEstadoTransmisionId = (int)MercadoPagoEstadoTransmision.States.EN_PROCESO;
-                    //                //}
-                    //                var payment = new MercadoPago
-                    //                {
-                    //                    Fecha = DateTime.Now,
-                    //                    Monto = monto,
-                    //                    MercadoPagoEstadoFinancieroId = mercadoPagoEstadoFinancieroId,
-                    //                    MercadoPagoEstadoTransmisionId = mercadoPagoEstadoTransmisionId,
-                    //                    Maquina = maquina,
-                    //                    FechaModificacionEstadoTransmision = null,
-                    //                    Comprobante = id
-                    //                };
-
-                    //                db.MercadoPago.Add(payment);
-                    //                db.SaveChanges();
-
-                    //                EnviarPagoAMaquina(payment);
-                    //            }
-                    //            else
-                    //            {
-                    //                Log.Error("No se encontró la máquina o el pago no esta aprobado: " + maquinaId);
-                    //            }
-                    //        }
-                    //    }
                 }
 
                 else
@@ -251,10 +209,6 @@ namespace BugsMVC.Controllers
 
                     if (intentos >= 3)
                     {
-                        //Devolver 
-                        //MercadoPago.SDK.CleanConfiguration();
-                        //MercadoPago.SDK.ClientId = ConfigurationManager.AppSettings["ClientIDMercadoPago"];
-                        //MercadoPago.SDK.ClientSecret = ConfigurationManager.AppSettings["ClientSecretMercadoPago"];
 
                         MercadoPagoTable entity = db.MercadoPago.Where(x => x.Comprobante == mercadoPago.Comprobante).First();
 
@@ -282,30 +236,18 @@ namespace BugsMVC.Controllers
                             else
                             {
                                 Log.Info("Ya se devolvio el comprobante: " + mercadoPago.Comprobante);
-                                //    //ver como registrar porque no pudo devolver el pago
+                                entity.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.AVISO_FALLIDO ;
+                                entity.MercadoPagoEstadoTransmisionId = (int)MercadoPagoEstadoTransmision.States.ERROR_CONEXION;
+                                entity.Descripcion = "Error al conectar socket y al conectar servidor de MP";
+                                entity.FechaModificacionEstadoTransmision = DateTime.Now;
+                                Log.Error("No se pudo realizar la conexión y no se pudo devolver el dinero", e);
+                                db.Entry(entity).State = EntityState.Modified;
+                                db.SaveChanges();
                             }
                         } else
                         {
                             Log.Info("No se encontro el comprobante: " + mercadoPago.Comprobante);
                         }
-
-                        //MP mp = new MP(entity.Maquina.Operador.ClientId, entity.Maquina.Operador.SecretToken);
-
-                        //Hashtable result = mp.refundPayment(mercadoPago.Comprobante);
-                        //if (result["status"].ToString() == "200")
-                        //{
-                        //    entity.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.DEVUELTO;
-                        //    entity.MercadoPagoEstadoTransmisionId = (int)MercadoPagoEstadoTransmision.States.ERROR_CONEXION;
-
-                        //    Log.Error("No se pudo realizar la conexión y se devolvio el dinero", e);
-                        //    db.Entry(entity).State = EntityState.Modified;
-                        //    db.SaveChanges();
-                        //}
-                        //else
-                        //{
-                        //    Log.Info("Ya se devolvio el comprobante: " + mercadoPago.Comprobante);
-                        //    //ver como registrar porque no pudo devolver el pago
-                        //}
                     }
                 }
             }

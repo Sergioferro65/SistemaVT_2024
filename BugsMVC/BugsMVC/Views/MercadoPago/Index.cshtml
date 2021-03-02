@@ -77,7 +77,7 @@
                     },
                     { label: 'MercadoPagoId', name: 'MercadoPagoId', hidden: true },
                     { label: 'Operador', name: 'OperadorNombre', hidden : @Json.Encode((!User.IsInRole("SuperAdmin"))) },
-                    { label: 'Comprobante', name: 'Comprobante', hidden: true },
+                    { label: 'Comprobante', name: 'Comprobante'},
                     { label: 'Máquina', name: 'MaquinaDescripcion' },
                     { label: 'Estado Transmisión', name: 'MercadoPagoEstadoTransmisionDescripcion' },
                     { label: 'Estado Financiero', name: 'MercadoPagoEstadoFinancieroDescripcion' },
@@ -86,7 +86,7 @@
                         , searchoptions: getDefaultSearchOptionsForDate()
                     },
                     { label: 'Entidad', name: 'Entidad' },
-                    { label: 'Url Devolucion', name: 'UrlDevolucion' },
+                    
                 ],
                 viewrecords: true, // show the current page, data rang and total records on the toolbar
                 autowidth: true,
