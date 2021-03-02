@@ -138,14 +138,14 @@ namespace StockNotifier
 
                     
 
-                    if (operador.ClientId != null && operador.SecretToken != null && mercadoPago.Comprobante != "" && mercadoPago.Entidad == "MP")
+                    if (mercadoPago.Comprobante != "" && mercadoPago.Entidad == "MP" && mercadoPago.UrlDevolucion != null)
                     {
 
                         writeLog("Devolviendo al Operador:" + operador.ClientId);
                         
                         MercadoPago.SDK.CleanConfiguration();
-                        MercadoPago.SDK.ClientId = operador.ClientId;
-                        MercadoPago.SDK.ClientSecret = operador.SecretToken;
+                        MercadoPago.SDK.ClientId = mercadoPago.UrlDevolucion.Split('_')[0];
+                        MercadoPago.SDK.ClientSecret = mercadoPago.UrlDevolucion.Split('_')[1];
 
                         long id = 0;
                         long.TryParse(mercadoPago.Comprobante, out id);

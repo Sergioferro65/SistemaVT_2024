@@ -143,7 +143,8 @@ namespace BugsMVC.Controllers
                                 Maquina = maquina,
                                 FechaModificacionEstadoTransmision = null,
                                 Comprobante = id.ToString(),
-                                Entidad = "MP"
+                                Entidad = "MP",
+                                UrlDevolucion=clientId+"_"+secretToken 
                             };
 
                             db.MercadoPago.Add(paymentEntity);
