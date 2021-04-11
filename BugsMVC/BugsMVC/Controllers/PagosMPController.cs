@@ -27,7 +27,7 @@ using System.Web.Mvc;
 
 namespace BugsMVC.Controllers
 {
-  
+
     public class PagosMPController : BaseController
     {
         private BugsContext db = new BugsContext();
@@ -55,36 +55,39 @@ namespace BugsMVC.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult Index(long? operador,string topic, long? id)
+        public ActionResult Index(long? operador, string topic, long? id)
         {
             _userManager = Request.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            Task.Run(() => RegistrarPago(topic, id,operador));
-            return Json(new { result = "OK"},JsonRequestBehavior.AllowGet);
+            Task.Run(() => RegistrarPago(topic, id, operador));
+            return Json(new { result = "OK" }, JsonRequestBehavior.AllowGet);
         }
-        
-        private void RegistrarPago(string topic, long? id,long? operador)
+
+        private void RegistrarPago(string topic, long? id, long? operador)
 
 
         {
 
-            if (id == null) {
+            if (id == null)
+            {
                 Log.Info("No existe id");
                 return;
             }
 
-            Operador op = db.Operadores.FirstOrDefault(o=>  o.Numero == operador);
+            Operador op = db.Operadores.FirstOrDefault(o => o.Numero == operador);
 
-            if (op == null) {
+            if (op == null)
+            {
                 Log.Info("No existe el operador número:" + operador);
                 return;
             }
 
-            string clientId = ConfigurationManager.AppSettings["ID_"+ op.Numero.ToString() ];
-            string secretToken = ConfigurationManager.AppSettings["TOKEN_"+ op.Numero.ToString()];
+            string clientId = ConfigurationManager.AppSettings["ID_" + op.Numero.ToString()];
+            string secretToken = ConfigurationManager.AppSettings["TOKEN_" + op.Numero.ToString()];
 
 
-            if (clientId == null || secretToken == null) {
-                Log.Info("Las credenciales del operador número:" + operador+" no estan registradas");
+            if (clientId == null || secretToken == null)
+            {
+                Log.Info("Las credenciales del operador número:" + operador + " no estan registradas");
                 return;
             }
 
@@ -95,7 +98,7 @@ namespace BugsMVC.Controllers
             MercadoPago.SDK.ClientSecret = secretToken;
 
 
-            Log.Info("Llega notificacion de pago al sistema: topic=" + topic + ", id=" + id+"Operador="+operador);
+            Log.Info("Llega notificacion de pago al sistema: topic=" + topic + ", id=" + id + "Operador=" + operador);
 
             if (topic != "payment")
                 return;
@@ -112,11 +115,11 @@ namespace BugsMVC.Controllers
             {
 
 
-                
+
 
                 Payment payment = Payment.FindById(id);
 
-                if ( payment.Errors == null)
+                if (payment.Errors == null)
                 {
                     Log.Info("El pago fue encontrado y se encuentra procesando los datos");
 
@@ -125,15 +128,14 @@ namespace BugsMVC.Controllers
 
                         monto = (decimal)payment.TransactionAmount.Value;
 
-                        Log.Info("External Reference:"+ payment.ExternalReference);
+                        Log.Info("External Reference:" + payment.ExternalReference);
 
-                        //maquinaId = new Guid(payment.ExternalReference);
+                        string maqId = (string)payment.ExternalReference;
 
-                        Guid maqId = new Guid((string)payment.ExternalReference);
+                        Maquina maquina = db.Maquinas.Where((x) => x.NotasService == maqId && x.OperadorID == op.OperadorID).FirstOrDefault();
 
-                        Maquina maquina = db.Maquinas.Where(x => x.MaquinaID == maqId).FirstOrDefault();
-
-                        if (maquina != null) {
+                        if (maquina != null)
+                        {
                             var paymentEntity = new MercadoPagoTable
                             {
                                 Fecha = DateTime.Now,
@@ -144,17 +146,26 @@ namespace BugsMVC.Controllers
                                 FechaModificacionEstadoTransmision = null,
                                 Comprobante = id.ToString(),
                                 Entidad = "MP",
-                                UrlDevolucion=clientId+"_"+secretToken 
+                                UrlDevolucion = clientId + "_" + secretToken
                             };
 
                             db.MercadoPago.Add(paymentEntity);
                             db.SaveChanges();
                             EnviarPagoAMaquina(paymentEntity);
-                        } else {
-                            Log.Error("El pago no esta aprobado: " + id);
+                        }
+                        else
+                        {
+                            Log.Error("No se encontro la maquina: " + maqId + " para el operador :" + op.Nombre + " del pago en curso");
+                            /* payment.Refund();
+                            if (payment.Status == PaymentStatus.approved) {
+                                Log.Error("Se devolvio el dinero");
+                            } else {
+                                Log.Error("No se pudo devolcer el dinero");
+                            } */
                         }
                     }
-                    else {
+                    else
+                    {
                         Log.Error("Mercado Pago status:" + payment.Status);
                     }
 
@@ -175,7 +186,7 @@ namespace BugsMVC.Controllers
         {
             int intentos = 0;
             bool volverAintentar = true;
-            string mensaje = '$' + mercadoPago.MercadoPagoId.ToString()+ ',' + mercadoPago.MaquinaId.ToString()+ ',' + (mercadoPago.Monto * 100).ToString() + '!';
+            string mensaje = '$' + mercadoPago.MercadoPagoId.ToString() + ',' + mercadoPago.MaquinaId.ToString() + ',' + (mercadoPago.Monto * 100).ToString() + '!';
 
             while (intentos < 3 && volverAintentar)
             {
@@ -237,7 +248,7 @@ namespace BugsMVC.Controllers
                             else
                             {
                                 Log.Info("Ya se devolvio el comprobante: " + mercadoPago.Comprobante);
-                                entity.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.AVISO_FALLIDO ;
+                                entity.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.AVISO_FALLIDO;
                                 entity.MercadoPagoEstadoTransmisionId = (int)MercadoPagoEstadoTransmision.States.ERROR_CONEXION;
                                 entity.Descripcion = "Error al conectar socket y al conectar servidor de MP";
                                 entity.FechaModificacionEstadoTransmision = DateTime.Now;
@@ -245,7 +256,8 @@ namespace BugsMVC.Controllers
                                 db.Entry(entity).State = EntityState.Modified;
                                 db.SaveChanges();
                             }
-                        } else
+                        }
+                        else
                         {
                             Log.Info("No se encontro el comprobante: " + mercadoPago.Comprobante);
                         }
