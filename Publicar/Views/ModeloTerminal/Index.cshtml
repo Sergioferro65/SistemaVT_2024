@@ -1,0 +1,84 @@
+﻿@model IEnumerable<BugsMVC.Models.ModeloTerminal>
+@using BugsMVC.Helpers
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    @Styles.Render("~/bundles/datatablesCss")
+    @Styles.Render("~/bundles/jqGridCss")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/datatables")
+    @Scripts.Render("~/bundles/jqGrid")
+}
+
+<script>
+    (function (window, document, $, undefined) {
+
+        $(function () {
+
+            var gridJSON = $("#jqGridJSON");
+
+            gridJSON.jqGrid({
+                url: 'ModeloTerminal/GetAllModelosTerminal',
+                datatype: "json",
+                colModel: [
+                    {
+                        label: '',
+                        name: '',
+                        width: 65,
+                        fixed: true,
+                        search: false,
+                        sortable: false,
+                        resize: false,
+                        formatter: actionButtonsFormatter
+                    },
+                    { label: 'ModeloTerminalID', name: 'ModeloTerminalID',hidden: true },
+                    { label: 'Modelo', name: 'Modelo' },
+                ],
+                viewrecords: true, // show the current page, data rang and total records on the toolbar
+                autowidth: true,
+                shrinkToFit: false,
+                height: 240,
+                rowNum: 20,
+                rowList: [10, 20, 30],
+                loadonce: true, // this is just for the demo
+                caption: "Modelos de Terminal",
+                hidegrid: false,
+                ignoreCase: true,
+                pager: "#jqGridJSONPager"
+            });
+
+            //
+            // Filtering by Columns
+            //
+            gridJSON.jqGrid('filterToolbar', { stringResult: true, searchOnEnter: false, defaultSearch: "cn" });
+        });
+
+    })(window, document, window.jQuery);
+
+    function actionButtonsFormatter(cellvalue, options, rowObject) {
+        var linkButton = '<a href="ModeloTerminal/Edit/' + rowObject.ModeloTerminalID + '" data-toggle="tooltip" data-placement="left" data-original-title="Editar" class="fa fa-edit"> </a>';
+        linkButton += '<a href="ModeloTerminal/Details/' + rowObject.ModeloTerminalID + '" data-toggle="tooltip" data-placement="left" data-original-title="Editar" class="fa fa-eye"> </a>';
+        linkButton += '<a href="ModeloTerminal/Delete/' + rowObject.ModeloTerminalID + '" data-toggle="tooltip" data-placement="left" data-original-title="Editar" class="fa fa-remove"> </a>';
+
+        return linkButton;
+    }
+</script>
+
+<h3>
+    Modelo de Terminal
+    <small>Administración de modelos de terminales.</small>
+</h3>
+
+<p>
+    @Html.ActionLink("Crear Nuevo", "Create", null, new { @class = "btn btn-default" })
+</p>
+<div class="jqgrid-responsive mb-lg">
+    <table id="jqGridJSON"></table>
+    <div id="jqGridJSONPager"></div>
+</div>

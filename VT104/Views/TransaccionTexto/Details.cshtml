@@ -1,0 +1,73 @@
+﻿@model BugsMVC.Models.TransaccionTexto
+@using BugsMVC.Helpers
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>
+    Detalles
+    <small>Detalles de la Transacción Texto seleccionada.</small>
+</h3>
+
+<div class="panel panel-default">
+    <div class="panel-heading">Transacción Texto</div>
+    <div class="panel-body">
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.ModeloTerminal.Modelo)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.ModeloTerminal.Modelo)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.CodigoTransaccion)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.CodigoTransaccion)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.SumaEnEfectivo)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.SumaEnEfectivo)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.SumaEnVentas)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.SumaEnVentas)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.SumaEnRecargas)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.SumaEnRecargas)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.TextoTransaccion)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.TextoTransaccion)
+            </dd>
+
+        </dl>
+    </div>
+</div>
+
+<p>
+    @Html.ActionLink("Editar", "Edit", "TransaccionTexto", new { id = Model.TransaccionTextoID }, new { @class = "btn btn-default" })
+    @Html.ActionLink("Volver", "Index", "TransaccionTexto", null, new { @class = "btn btn-default" })
+</p>

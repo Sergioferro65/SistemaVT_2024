@@ -1,0 +1,522 @@
+﻿@model BugsMVC.Models.ViewModels.JerarquiaViewModel
+@using BugsMVC.Models.ViewModels;
+<div class="panel panel-default">
+    @using (Html.BeginForm(null, null, FormMethod.Post, htmlAttributes: new { id = "FormJerarquia" }))  
+
+    {
+        @Html.AntiForgeryToken()
+        <div class="panel-body">
+            <div class="form-horizontal">
+                @*<h4>Jerarquía</h4>
+                <hr />*@
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(model => model.JerarquiaID)
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Nombre, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Nombre, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Nombre, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.LocacionID, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.DropDownListFor(model => model.LocacionID, null, "Seleccionar una locación", htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.LocacionID, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div id="zonasContainer" class="col-md-offset-2 col-md-10">
+
+                    </div>
+                </div>
+
+                <div class="zonaContainer hidden" zonaid="1">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PeriodoRecargaZona1, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-7">
+                            @Html.DropDownList("PeriodoRecargaZona1", EnumHelper.GetSelectList(typeof(JerarquiaViewModel.PeriodosRecarga)), "Seleccionar un período", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.PeriodoRecargaZona1, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.RecargaZona1, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.RecargaZona1, new { htmlAttributes = new { @class = "form-control", @placeholder = "0,00" } })
+                            @Html.ValidationMessageFor(model => model.RecargaZona1, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.MontoRecorteZona1, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            <div class="checkbox">
+                                @Html.EditorFor(model => model.MontoRecorteZona1, new { htmlAttributes = new { @class = "form-control", @placeholder = "0,00" } })
+                                @Html.ValidationMessageFor(model => model.MontoRecorteZona1, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field-separator"></div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.DescuentoPorcentualZona1, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.DescuentoPorcentualZona1, new { htmlAttributes = new { @class = "form-control", @placeholder = "0,00" } })
+                            @Html.ValidationMessageFor(model => model.DescuentoPorcentualZona1, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    @Html.HiddenFor(model => model.Zona1Activa)
+                </div>
+
+                <div class="zonaContainer hidden" zonaid="2">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PeriodoRecargaZona2, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-7">
+                            @Html.DropDownList("PeriodoRecargaZona2", EnumHelper.GetSelectList(typeof(JerarquiaViewModel.PeriodosRecarga)), "Seleccionar un período", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.PeriodoRecargaZona2, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.RecargaZona2, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.RecargaZona2, new { htmlAttributes = new { @class = "form-control", @placeholder = "0,00" } })
+                            @Html.ValidationMessageFor(model => model.RecargaZona2, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.MontoRecorteZona2, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            <div class="checkbox">
+                                @Html.EditorFor(model => model.MontoRecorteZona2, new { htmlAttributes = new { @class = "form-control", @placeholder = "0,00" } })
+                                @Html.ValidationMessageFor(model => model.MontoRecorteZona2, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field-separator"></div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.DescuentoPorcentualZona2, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.DescuentoPorcentualZona2, new { htmlAttributes = new { @class = "form-control", @placeholder = "0,00" } })
+                            @Html.ValidationMessageFor(model => model.DescuentoPorcentualZona2, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    @Html.HiddenFor(model => model.Zona2Activa)
+                </div>
+
+                <div class="zonaContainer hidden" zonaid="3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PeriodoRecargaZona3, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-7">
+                            @Html.DropDownList("PeriodoRecargaZona3", EnumHelper.GetSelectList(typeof(JerarquiaViewModel.PeriodosRecarga)), "Seleccionar un período", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.PeriodoRecargaZona3, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.RecargaZona3, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.RecargaZona3, new { htmlAttributes = new { @class = "form-control", @placeholder = "0,00" } })
+                            @Html.ValidationMessageFor(model => model.RecargaZona3, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.MontoRecorteZona3, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            <div class="checkbox">
+                                @Html.EditorFor(model => model.MontoRecorteZona3, new { htmlAttributes = new { @class = "form-control", @placeholder = "0,00" } })
+                                @Html.ValidationMessageFor(model => model.MontoRecorteZona3, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field-separator"></div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.DescuentoPorcentualZona3, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.DescuentoPorcentualZona3, new { htmlAttributes = new { @class = "form-control", @placeholder = "0,00" } })
+                            @Html.ValidationMessageFor(model => model.DescuentoPorcentualZona3, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    @Html.HiddenFor(model => model.Zona3Activa)
+                </div>
+
+                <div class="zonaContainer hidden" zonaid="4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PeriodoRecargaZona4, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-7">
+                            @Html.DropDownList("PeriodoRecargaZona4", EnumHelper.GetSelectList(typeof(JerarquiaViewModel.PeriodosRecarga)), "Seleccionar un período", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.PeriodoRecargaZona4, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.RecargaZona4, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.RecargaZona4, new { htmlAttributes = new { @class = "form-control", @placeholder = "0,00" } })
+                            @Html.ValidationMessageFor(model => model.RecargaZona4, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.MontoRecorteZona4, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            <div class="checkbox">
+                                @Html.EditorFor(model => model.MontoRecorteZona4, new { htmlAttributes = new { @class = "form-control", @placeholder = "0,00" } })
+                                @Html.ValidationMessageFor(model => model.MontoRecorteZona4, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field-separator"></div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.DescuentoPorcentualZona4, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.DescuentoPorcentualZona4, new { htmlAttributes = new { @class = "form-control", @placeholder = "0,00" } })
+                            @Html.ValidationMessageFor(model => model.DescuentoPorcentualZona4, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    @Html.HiddenFor(model => model.Zona4Activa)
+                </div>
+
+                <div class="zonaContainer hidden" zonaid="5">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PeriodoRecargaZona5, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-7">
+                            @Html.DropDownList("PeriodoRecargaZona5", EnumHelper.GetSelectList(typeof(JerarquiaViewModel.PeriodosRecarga)), "Seleccionar un período", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.PeriodoRecargaZona5, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.RecargaZona5, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.RecargaZona5, new { htmlAttributes = new { @class = "form-control", @placeholder = "0,00" } })
+                            @Html.ValidationMessageFor(model => model.RecargaZona5, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.MontoRecorteZona5, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            <div class="checkbox">
+                                @Html.EditorFor(model => model.MontoRecorteZona5, new { htmlAttributes = new { @class = "form-control", @placeholder = "0,00" } })
+                                @Html.ValidationMessageFor(model => model.MontoRecorteZona5, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field-separator"></div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.DescuentoPorcentualZona5, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.DescuentoPorcentualZona5, new { htmlAttributes = new { @class = "form-control", @placeholder = "0,00" } })
+                            @Html.ValidationMessageFor(model => model.DescuentoPorcentualZona5, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    @Html.HiddenFor(model => model.Zona5Activa)
+                </div>
+
+                @*<div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="button" value="Agregar Zona" class="btn btn-default" onclick="agregarZona()" />
+                        <span class="field-validation-error text-danger hidden" id="errorZona" style="display:block"></span>
+                    </div>
+                </div>*@
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input id="guardarJerarquia" type="submit" value="Guardar" class="btn btn-default"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default zonaPanel template hidden">
+                <div class="panel-heading">
+                    <a href="#" data-tool="" data-toggle="tooltip" title="Remover zona" class="pull-right removeButton">
+                        <em class="fa fa-times"></em>
+                    </a>
+                    <a href="#" data-tool="panel-collapse" data-toggle="tooltip" title="Cerrar" class="pull-right">
+                        <em class="fa fa-minus"></em>
+                    </a>
+                </div>
+                <div class="panel-wrapper collapse in">
+                    <div class="panel-body container">
+                    </div>
+                </div>
+            </div>
+        </div>
+                                               }
+
+
+</div>
+
+<div>
+    @Html.ActionLink("Volver", "Index", "Jerarquia", null, new { @class = "btn btn-default" })
+</div>
+
+<script type="text/javascript">
+    var nombreZonas = new Map();
+
+    var lista = @Html.Raw(@ViewHelper.ToJsArray(Model.NombreZonas,true));
+
+    for (var i = 0; i < 5; i++) {
+        if (lista[i] != ""){
+            nombreZonas.set(i + 1, lista[i]);
+            $('#Zona' + (i+1) + 'Activa').val(true);
+        }
+    }
+
+    jQuery(document).ready(function ($) {
+        $("#guardarJerarquia").on("click",function( event ) {
+            event.preventDefault();
+            ValidarZonasActivas();
+        });
+
+        $('div.zonaContainer.hidden').each(function (index) {
+            var zonaContainer = $(this);
+            var showItem = false;
+
+            $('input[type="number"]', zonaContainer).each(function () {
+                console.log("zonaContainer ", zonaContainer);
+
+                var strValue = $(this).attr('value').replace(',', '.');
+                $(this).attr('value', strValue);
+                $(this).val(strValue);
+            });
+
+            $('input[type="text"]', zonaContainer).each(function () {
+
+                console.log("this", $(this));
+                console.log("thisss", toNumber($(this).val()));
+                if (toNumber($(this).val()) > 0) {
+                    showItem = true;
+                    return false;
+                }
+            });
+
+            var zonaNumber = (index + 1);
+            var active = ($('#Zona' + zonaNumber + 'Activa').val() == 'true');
+            console.log("Zona " + zonaNumber+" activa:", active);
+            if (active || showItem) {
+                var zonaPanel = $('div.zonaPanel.template').clone();
+                AgregarPanelZona(zonaContainer,zonaPanel);
+
+                var nroZona = zonaContainer.attr('zonaid');
+
+                if (nroZona <= 5) {
+                    $('#zonasContainer').append(zonaPanel);
+                }
+            }
+
+        });
+
+        refreshChangeEvents();
+        handleLocationChange();
+
+        $("#LocacionID").change(function () {
+            handleLocationChange();
+            refreshFields();
+        });
+    });
+
+    function reloadPeriodoRecarga(zona, clearValues) {
+        console.log("i es:", zona, $("#PeriodoRecargaZona"+zona).val());
+        if ($("#PeriodoRecargaZona"+zona).val() == 0) {
+            $("#RecargaZona" + zona).val(0);
+            $("#RecargaZona" + zona)[0].disabled = true;
+
+            $("#MontoRecorteZona" + zona).val(0);
+            $("#MontoRecorteZona" + zona)[0].disabled = true;
+
+            //$("#DescuentoPorcentualZona" + zona).val(0);
+            //$("#DescuentoPorcentualZona" + zona)[0].disabled = true;
+        } else {
+            if (clearValues) {
+                $("#RecargaZona" + zona).val(null);
+                $("#MontoRecorteZona" + zona).val(null);
+                //$("#DescuentoPorcentualZona" + zona).val(null);
+            }
+            $("#RecargaZona" + zona)[0].disabled = false;
+            $("#MontoRecorteZona" + zona)[0].disabled = false;
+            //$("#DescuentoPorcentualZona" + zona)[0].disabled = false;
+        }
+    }
+
+    function handleLocationChange() {
+        if ($("#LocacionID").val() != "") {
+            $('#Zona1Activa').val(false);
+            $('#Zona2Activa').val(false);
+            $('#Zona3Activa').val(false);
+            $('#Zona4Activa').val(false);
+            $('#Zona5Activa').val(false);
+
+            LoadZonasByLocacion();
+            $('#zonasContainer .zonaPanel .zonaContainer').each(function (index) {
+
+                $(this).addClass('hidden');
+                $(this).attr('zonaid', index + 1);
+                $(this).closest(".zonaPanel").remove();
+                $('.form-horizontal').append($(this).clone());
+                refreshChangeEvents();
+            });
+        }
+        else {
+            nombreZonas.clear();
+            $('#zonasContainer .zonaPanel .zonaContainer').each(function (index) {
+
+                $(this).addClass('hidden');
+                $(this).attr('zonaid', index + 1);
+                $(this).closest(".zonaPanel").remove();
+                $('.form-horizontal').append($(this).clone());
+                refreshChangeEvents();
+            });
+        }
+    }
+
+    function refreshChangeEvents() {
+
+        $("#PeriodoRecargaZona1").change(function () {
+            reloadPeriodoRecarga(1,true);
+        });
+        $("#PeriodoRecargaZona2").change(function () {
+            reloadPeriodoRecarga(2, true);
+        });
+        $("#PeriodoRecargaZona3").change(function () {
+            reloadPeriodoRecarga(3, true);
+        });
+        $("#PeriodoRecargaZona4").change(function () {
+            reloadPeriodoRecarga(4, true);
+        });
+        $("#PeriodoRecargaZona5").change(function () {
+            reloadPeriodoRecarga(5, true);
+        });
+    }
+
+    function refreshFields() {
+        for (var i = 1; i < 6; i++) {
+            $("#PeriodoRecargaZona" + i).val(null);
+            $("#RecargaZona"+i).val(null);
+            $("#RecargaZona" + i)[0].disabled = false;
+            $("#MontoRecorteZona" + i).val(null);
+            $("#MontoRecorteZona" + i)[0].disabled = false;
+            $("#DescuentoPorcentualZona" + i).val(null);
+            $("#DescuentoPorcentualZona" + i)[0].disabled = false;
+        }
+        
+    }
+
+    function LoadZonasByLocacion() {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetZonasByLocacion", "Jerarquia")',
+                dataType: 'json',
+                data: {
+                    locacionID: $("#LocacionID").val()
+                },
+                success: function (zonas) {
+                    console.log("zonas por locacion: ", zonas);
+                    nombreZonas.clear();
+                    for (var i = 1; i < 6; i++) {
+                        if (zonas[i-1] != ""){
+                            nombreZonas.set(i, zonas[i - 1]);
+                            agregarZona();
+                            reloadPeriodoRecarga(i,false);
+                        }
+                    };
+                },
+                error: function (ex) {
+                    alert('Hubo un error al obtener Zonas.' + ex);
+                }
+            });
+    }
+
+    function GetCountAddedZones(){
+        return $('#zonasContainer .zonaPanel .zonaContainer').length;
+    }
+
+    function agregarZona() {
+        if ($("#LocacionID").val()!="") {
+            var zonaContainer = getSorted('div.zonaContainer.hidden', 'zonaId').first();
+            if(GetCountAddedZones() < nombreZonas.size)
+            {
+                var zonaPanel = $('div.zonaPanel.template').clone();
+                var nroZona = zonaContainer.attr('zonaid');
+                AgregarPanelZona(zonaContainer,zonaPanel,nroZona);
+
+                $('#zonasContainer').append(zonaPanel);
+                $("#errorZona").addClass('hidden');
+                $('#Zona'+nroZona+'Activa').val(true);
+            }
+            else{
+                $("#errorZona").text('No hay Zonas disponibles para agregar');
+                $("#errorZona").removeClass('hidden');
+            }
+        }
+        else {
+            $("#errorZona").text('Por favor, seleccione una Locación');
+            $("#errorZona").removeClass('hidden');
+        }
+
+        return false;
+    }
+
+    function AgregarPanelZona(zonaContainer,zonaPanel,nroZona){
+        $('div.panel-body.container', zonaPanel).append(zonaContainer);
+        $('div.panel-heading', zonaPanel).prepend("Zona " +parseInt(zonaContainer.attr('zonaid'))+ " - " + nombreZonas.get(parseInt(zonaContainer.attr('zonaid'))));
+        
+        $('div.panel-heading a.removeButton', zonaPanel).click(function () {
+            $('input[type="text"],input[type="number"]', zonaContainer).val('');
+            $('#Zona' + nroZona + 'Activa').val(false);
+            $(zonaContainer).addClass('hidden');
+            $('div.form-horizontal').append(zonaContainer);
+            $(zonaPanel).remove();
+        });
+
+        zonaPanel.removeClass('template');
+        zonaPanel.removeClass('hidden');
+        zonaContainer.removeClass('hidden');
+        setTimeout(console.log("sad", $("#PeriodoRecargaZona1").val()), 2000);
+        
+    }
+
+    function getSorted(selector, attrName) {
+        return $($(selector).toArray().sort(function (a, b) {
+            var aVal = parseInt(a.getAttribute(attrName)),
+                bVal = parseInt(b.getAttribute(attrName));
+            return aVal - bVal;
+        }));
+    }
+
+    function ValidarZonasActivas(){
+        var b = 0;
+
+        if((5-$('div.zonaContainer.hidden').size()) != nombreZonas.size)
+        {
+            b=1;
+            $("#errorZona").text('Es necesario agregar más zonas');
+            $("#errorZona").removeClass('hidden');
+        }
+        $(".zonaContainer").each(function() {
+            if (!$(this).hasClass("hidden")) {
+                var zoneid = $(this).attr('zonaid');
+
+                if ($("#PeriodoRecargaZona" + zoneid).val() == "") {
+                    b=1;
+                    $("span[data-valmsg-for='PeriodoRecargaZona" + zoneid +"']").text("Campo Obligatorio");
+                }else {
+                    $("span[data-valmsg-for='PeriodoRecargaZona" + zoneid +"']").text("");
+                }
+
+                if ($("#RecargaZona" + zoneid).val() == "") {
+                    b = 1;
+                    $("span[data-valmsg-for='RecargaZona" + zoneid + "']").text("Campo Obligatorio");
+                } else {
+                    $("span[data-valmsg-for='RecargaZona" + zoneid + "']").text("");
+                }
+
+                if ($("#MontoRecorteZona" + zoneid).val() == "") {
+                    b = 1;
+                    $("span[data-valmsg-for='MontoRecorteZona" + zoneid + "']").text("Campo Obligatorio");
+                } else {
+                    $("span[data-valmsg-for='MontoRecorteZona" + zoneid + "']").text("");
+                }
+            }
+        });
+
+        if (b==0) {
+            $("#FormJerarquia").submit();
+        }
+    }
+</script>

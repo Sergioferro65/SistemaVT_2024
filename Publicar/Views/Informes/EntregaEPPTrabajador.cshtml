@@ -1,0 +1,273 @@
+﻿@model BugsMVC.Models.ReporteEntregaEPPTrabajador
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using BugsMVC.Models
+@using BugsMVC.DAL
+
+<h3>
+    Informes
+    <small>Entrega de EPP por Trabajador.</small>
+</h3>
+<script type="text/javascript">
+    (function (window, document, $, undefined) {
+        $(function () {
+            $("#Locaciones").change(function () {
+                $("[data-valmsg-for='Trabajadores']").text("");
+                $("#Trabajadores.chosen-select").empty();
+                $('#Trabajadores.chosen-select').attr('disabled', 'disabled');
+                $('#Trabajadores.chosen-select').trigger("chosen:updated");
+                LoadTrabajadores();
+            });
+
+            if ($("#Locaciones").val() == null) {
+                $("#Trabajadores.chosen-select").empty();
+                $('#Trabajadores.chosen-select').attr('disabled', 'disabled');
+            }
+
+            $('#Trabajadores.chosen-select').chosen({
+                placeholder_text_multiple: "Seleccionar trabajadores"
+            });
+
+            $('#Locaciones.chosen-select').chosen({
+                placeholder_text_multiple: "Seleccionar locaciones"
+            });
+
+            $("#Trabajadores").change(function () {
+                if ($("#Trabajadores").val() != undefined && $("#Trabajadores").val().indexOf("Todos") !== -1) {
+                    $("#Trabajadores").val("Todos");
+                    $('#Trabajadores.chosen-select').trigger("chosen:updated");
+                }
+
+                if ($("#Trabajadores").val() != undefined && $("#Trabajadores").val().indexOf("SinAlta") !== -1) {
+                    $("#Trabajadores").val("SinAlta");
+                    $('#Trabajadores.chosen-select').trigger("chosen:updated");
+                }
+            });
+
+            if ($('#divs div.pageElement').length > 1) {
+                $('#black').smartpaginator({
+                    totalrecords: $('#divs div.pageElement').length,
+                    recordsperpage: 1,
+                    datacontainer: 'divs',
+                    dataelement: 'div.pageElement',
+                    initval: 1,
+                    next: 'Next',
+                    prev: 'Prev',
+                    first: 'First',
+                    last: 'Last',
+                    go: 'Ir'
+                });
+            }
+
+            $('.wrapper').css('overflow-x', 'visible');
+
+        });
+
+    })(window, document, window.jQuery);
+    function LoadTrabajadores() {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetUsuariosByLocacionesMultiSelectList", "Informes")',
+                dataType: 'json',
+                data: {
+                    locaciones: $("#Locaciones").val()
+                },
+                success: function (usuarios) {
+                    $("#Trabajadores.chosen-select").empty();
+                    $.each(usuarios, function (i, usuario) {
+                        $("#Trabajadores.chosen-select").append('<option value="' + usuario.Value + '">' + usuario.Text + '</option>');
+                    });
+                    if (usuarios.length > 0)
+                        $('#Trabajadores.chosen-select').removeAttr('disabled');
+                    else
+                        $('#Trabajadores.chosen-select').attr('disabled', 'disabled');
+                    $('#Trabajadores.chosen-select').trigger("chosen:updated");
+                },
+                error: function (ex) {
+                    alert('Hubo un error al obtener Trabajadores.' + ex);
+                }
+            });
+    }
+
+</script>
+
+<div class="panel panel-default report-filters">
+    @using (Html.BeginForm("EntregaEPPTrabajador", "Informes", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal" }))
+    {
+        <div class="panel-heading">Filtros</div>
+        <div class="panel-body">
+
+            <form class="form-inline ng-pristine ng-valid" role="form">
+                <div class="form-group">
+                    @Html.LabelFor(m => Model.FechaDesde, new { @class = "col-md-2 control-label" })
+                    <div class="col-md-10">
+                        <div class="input-group date">
+                            @Html.EditorFor(model => model.FechaDesde, new { htmlAttributes = new { @class = "form-control" } })
+                            <span class="input-group-addon">
+                                <span class="fa fa-calendar"></span>
+                            </span>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.FechaDesde, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => Model.FechaHasta, new { @class = "col-md-2 control-label" })
+                    <div class="col-md-10">
+                        <div class="input-group date">
+                            @Html.EditorFor(model => model.FechaHasta, new { htmlAttributes = new { @class = "form-control" } })
+                            <span class="input-group-addon">
+                                <span class="fa fa-calendar"></span>
+                            </span>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.FechaHasta, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                               
+                <div class="form-group">
+                    @Html.LabelFor(m => Model.Locaciones, new { @class = "col-md-2 control-label" })
+                    <div class="col-md-10">
+                        @Html.ListBox("Locaciones", null, htmlAttributes: new { @class = "chosen-select input-md form-control" })
+                        @Html.ValidationMessageFor(model => model.Locaciones, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                               
+                <div class="form-group">
+                    @Html.LabelFor(m => Model.Trabajadores, new { @class = "col-md-2 control-label" })
+                    <div class="col-md-10">
+                        @Html.ListBox("Trabajadores", null, htmlAttributes: new { @class = "chosen-select input-md form-control" })
+                        @Html.ValidationMessageFor(model => model.Trabajadores, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <button class="btn btn-default" type="submit">Generar</button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    }
+</div>
+
+@if (Model != null)
+{
+    //Paginado
+    <div id="black" style="margin: auto;">
+    </div>
+
+    if (Model.ReportePorTrabajador.Count() != 0)
+    {
+    <input type="button" value="Imprimir" class="btn btn-default btn-print" onclick="window.print()">
+    }
+
+    <div class="contents">
+        <div id="divs">
+            @foreach (ReporteEntregaEPPTrabajadorLocacion itemLocacion in Model.ReportePorTrabajador)
+            {
+                <div class="pageElement">
+                    <div class="report-panel panel panel-default">
+                        <div class="panel-heading"></div>
+                        <div class="panel-body">
+                            <div class="report-title">
+                                <h4>INFORME DE ENTREGA DE EPP  POR TRABAJADOR</h4>
+                            </div>
+                            <div class="report-header">                                
+                                <div>
+                                    <table class="table">
+                                        <tr>
+                                            <td>Razón Social: @itemLocacion.RazonSocial</td>
+                                            <td>CUIT: @itemLocacion.CUIT</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div>
+                                    <table class="table">
+                                        <tr>
+                                            <td>Dirección: @itemLocacion.Direccion</td>
+                                            <td>Localidad: @itemLocacion.Localidad</td>
+                                            <td>C.P.: @itemLocacion.CodigoPostal</td>
+                                            <td>Provincia: @itemLocacion.Provincia</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div>
+                                    <table class="table">
+                                        <tr>
+                                            <td>Periodo: @itemLocacion.Periodo</td>
+                                            <td>Desde: @itemLocacion.FechaDesde.ToShortDateString()</td>
+                                            <td>Hasta: @itemLocacion.FechaHasta.ToShortDateString()</td>
+                                            <td>Generación informe: @itemLocacion.FechaConsulta.ToString("dd/MM/yyyy HH:mm")</td>
+                                        </tr>
+                                    </table>
+                                </div>                               
+                            </div>
+                            @{ List<string> keys = itemLocacion.Detalle.SelectMany(x => x.CantidadesDictionary.Keys).Distinct().ToList(); }
+                            <div class="report-table-container">
+                                <table class="table table-striped table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Nombre</th>
+                                            <th>Legajo</th>
+                                            @foreach (string hKey in keys)
+                                            {
+                                                <th>@hKey</th>
+                                            }
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (ReporteEntregaEPPTrabajadorDetalle itemDetalle in itemLocacion.Detalle)
+                                        {
+                                            <tr>
+                                                <td>@itemDetalle.Nombre</td>
+                                                <td>@itemDetalle.Legajo</td>
+                                                @foreach (string key in keys)
+                                                {
+                                                    if (itemDetalle.CantidadesDictionary.ContainsKey(key))
+                                                    {
+                                                        <td>@itemDetalle.CantidadesDictionary[key]</td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>&nbsp;</td>
+                                                    }
+                                                }
+                                            </tr>
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td>Sub-Total / Total</td>
+                                            <td></td>
+                                            @{ var cantidades = itemLocacion.Detalle.SelectMany(x => x.Cantidades); }
+                                            @foreach (string key in keys)
+                                            {
+                                                int cantidad = cantidades.Where(x => x.Nombre == key).Sum(x => x.Cantidad);
+                                                if (cantidad > 0)
+                                                {
+                                                    <td>@cantidad</td>
+                                                }
+                                                else
+                                                {
+                                                    <td>&nbsp;</td>
+                                                }
+                                            }
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="salto"></div>
+                </div>
+            }
+
+            @if (Model.ReportePorTrabajador.Count() == 0)
+            {
+                <p>No se encontraron datos para los filtros seleccionados.</p>
+            }
+        </div>
+    </div>
+}

@@ -1,0 +1,156 @@
+﻿@model IEnumerable<BugsMVC.Models.ViewModels.MercadoPagoViewModel>
+@using BugsMVC.Helpers
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    @Styles.Render("~/bundles/datatablesCss")
+    @Styles.Render("~/bundles/jqGridCss")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/datatables")
+    @Scripts.Render("~/bundles/jqGrid")
+}
+
+
+<h3>
+    Pagos Externos
+    <small>Operaciones realizadas.</small>
+</h3>
+
+<div>
+    @using (Html.BeginForm("ExportData", "MercadoPago", FormMethod.Post, new { enctype = "multipart/form-data", style = "display: inline;" }))
+    {
+        <input type="submit" name="Export" id="Export" value="Excel" onclick="exportToExcel();" class="btn btn-default" />
+        <input type="hidden" name="jqGridPostData" id="jqGridPostData" />
+    }
+</div>
+<br />
+<div class="jqgrid-responsive mb-lg">
+    <table id="jqGridJSON"></table>
+    <div id="jqGridJSONPager"></div>
+</div>
+
+
+<script>
+    (function (window, document, $, undefined) {
+        $('body').append("<div id='myModal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true' class='modal fade'>" +
+            "<div class='modal-dialog' role='document'> " +
+            "<div class='modal-content'>" +
+            "<div class='modal-header'> " +
+            "<button type='button' class='close' data-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>" +
+            "<h4 class='modal-title'>Remover Zona</h4>" + "</div>" +
+               " <div class='modal-body'>" +
+                   " <p>¿ Desea Ud. remover la Zona seleccionada ?</p>" +
+                   "Se desasignaran las máquinas asociadas a esta zona" +
+               " </div>" +
+               " <div class='modal-footer'>" +
+                   " <button type='button' class='btn btn-primary' id='removeButton'>Confirmar</button>" +
+                   " <button type='button' class='btn btn-default' data-dismiss='modal'>Volver</button>" +
+                "</div>" +
+            "</div>" +
+            " </div>" +
+            "</div>"
+            );
+
+        $(function () {
+
+            var gridJSON = $("#jqGridJSON");
+
+            gridJSON.jqGrid({
+                url: 'MercadoPago/GetAllMercadoPagos',
+                datatype: "json",
+                colModel: [
+                    {
+                        label: '',
+                        name: '',
+                        width: 65,
+                        fixed: true,
+                        search: false,
+                        sortable: false,
+                        resize: false,
+                        formatter: actionButtonsFormatter,
+                    },
+                    { label: 'MercadoPagoId', name: 'MercadoPagoId', hidden: true },
+                    { label: 'Operador', name: 'OperadorNombre', hidden : @Json.Encode((!User.IsInRole("SuperAdmin"))) },
+                    { label: 'Comprobante', name: 'Comprobante'},
+                    { label: 'Máquina', name: 'MaquinaDescripcion' },
+                    { label: 'Estado Transmisión', name: 'MercadoPagoEstadoTransmisionDescripcion' },
+                    { label: 'Estado Financiero', name: 'MercadoPagoEstadoFinancieroDescripcion' },
+                    { label: 'Monto', name: 'Monto', sorttype: 'number', formatter: 'number', formatoptions:{decimalSeparator:",", thousandsSeparator: ".", decimalPlaces: 2, prefix: "$ "}, searchoptions: { sopt: ['eq'] }  },
+                    { label: 'Fecha', name: 'Fecha', search: true, searchOnEnter: true, sorttype: 'date', formatter: 'date', formatoptions: { "srcformat": "d/m/Y H:i:s", "newformat": "d/m/Y H:i:s" }
+                        , searchoptions: getDefaultSearchOptionsForDate()
+                    },
+                    { label: 'Entidad', name: 'Entidad' },
+                    
+                ],
+                viewrecords: true, // show the current page, data rang and total records on the toolbar
+                autowidth: true,
+                shrinkToFit: false,
+                height: 240,
+                rowNum: 20,
+                rowList: [10, 20, 30],
+                loadonce: true, // this is just for the demo
+                caption: "Pagos Externos",
+                hidegrid: false,
+                ignoreCase: true,
+                pager: "#jqGridJSONPager"
+            });
+
+            //
+            // Filtering by Columns
+            //
+            gridJSON.jqGrid('filterToolbar', { stringResult: true, searchOnEnter: false, defaultSearch: "cn" });
+
+
+        });
+
+        $(document).on('click', '#DevolverDinero', function (e) {
+            DevolverDinero($(this).data("comprobante"));
+        });
+
+    })(window, document, window.jQuery);
+
+    function actionButtonsFormatter(cellvalue, options, rowObject) {
+
+        var linkButton = '<a id="DevolverDinero" data-comprobante=' + rowObject.Comprobante + ' data-placement="left" data-original-title="Devolver Dinero" class="fa '
+                         + "fa-plus-circle" + ' cursor-pointer"> </a> ';
+
+
+        return linkButton;
+    }
+
+    function exportToExcel() {
+        var data = JSON.stringify($('#jqGridJSON').jqGrid('getGridParam', 'postData'));
+        $('#jqGridPostData').val(data);
+    }
+
+    function DevolverDinero(comprobante) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("DevolverDinero", "MercadoPago")',
+            data: {
+                Comprobante: comprobante
+            },
+            dataType: 'json',
+            success: function () {
+                $("#jqGridJSON")
+                    .jqGrid('setGridParam',
+                        {
+                            url: 'MercadoPago/GetAllMercadoPagos',
+                            datatype: "json",
+                            postData: { Comprobante: function () { return $("#Comprobante").val(); } },
+                            width: 700
+                        })
+                    .trigger("reloadGrid");
+            },
+            error: function (ex) {
+                alert('Hubo un error al obtener.' + ex);
+            }
+        });
+    }
+</script>

@@ -1,0 +1,327 @@
+﻿@model BugsMVC.Models.Maquina
+@using BugsMVC.Helpers
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>
+    Detalles
+    <small>Detalles de la máquina seleccionada.</small>
+</h3>
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        <h4>Datos generales</h4>
+        <dl class="dl-horizontal">
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Operador.Nombre)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Operador.Nombre)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.MarcaModelo.MarcaModeloNombre)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.MarcaModelo.MarcaModeloNombre)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.NumeroSerie)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.NumeroSerie)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.TipoProducto.Nombre)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.TipoProducto.Nombre)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Estado)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Estado)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.EstadoConexion)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.EstadoConexion)
+            </dd>
+
+            <dt>
+                Locación
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Locacion.Nombre)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Zona)
+            </dt>
+            <dd>
+                @switch (Model.Zona)
+                {
+                    case 1:
+                        @Html.DisplayFor(model => model.Locacion.NombreZona1)
+                        break;
+                    case 2:
+                        @Html.DisplayFor(model => model.Locacion.NombreZona2)
+                        break;
+                    case 3:
+                        @Html.DisplayFor(model => model.Locacion.NombreZona3)
+                        break;
+                    case 4:
+                        @Html.DisplayFor(model => model.Locacion.NombreZona4)
+                        break;
+                    case 5:
+                        @Html.DisplayFor(model => model.Locacion.NombreZona5)
+                        break;
+                }
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Ubicacion)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Ubicacion)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.NombreAlias)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.NombreAlias)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Terminal.NumeroSerie)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Terminal.NumeroSerie)
+            </dd>
+
+            @*<dt>
+            @Html.DisplayNameFor(model => model.Mensaje)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Mensaje)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.NotasService)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.NotasService)
+        </dd>*@
+
+        </dl>
+        @*<dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => model.SoloVentaEfectivo)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.SoloVentaEfectivo)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.ValorVenta)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.ValorVenta)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Decimales)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Decimales)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.FactorEscala)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.FactorEscala)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.TiempoSesion)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.TiempoSesion)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.CreditoMaximoCash)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.CreditoMaximoCash)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.ValorChannelA)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.ValorChannelA)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.ValorChannelB)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.ValorChannelB)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.ValorChannelC)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.ValorChannelC)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.ValorChannelD)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.ValorChannelD)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.ValorChannelE)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.ValorChannelE)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.ValorChannelF)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.ValorChannelF)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.ValorBillete1)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.ValorBillete1)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.ValorBillete2)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.ValorBillete2)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.ValorBillete3)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.ValorBillete3)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.ValorBillete4)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.ValorBillete4)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.ValorBillete5)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.ValorBillete5)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.ValorBillete6)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.ValorBillete6)
+                </dd>
+            </dl>*@
+
+
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.ContadorVentasParcial)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.ContadorVentasParcial)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.MontoVentasParcial)
+            </dt>
+            <dd>
+                $ @Html.DisplayFor(model => model.MontoVentasParcial)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.ContadorVentasHistorico)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.ContadorVentasHistorico)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.MontoVentasHistorico)
+            </dt>
+            <dd>
+                $ @Html.DisplayFor(model => model.MontoVentasHistorico)
+            </dd>
+        </dl>
+
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.TotalRecaudado)
+            </dt>
+            <dd>
+                $ @Html.DisplayFor(model => model.TotalRecaudado)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.DescuentoPorcentual)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.DescuentoPorcentual) %
+            </dd>
+        </dl>
+
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.FechaUltimoService)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.FechaUltimoService)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.FechaUltimaRecaudacion)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.FechaUltimaRecaudacion)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.FechaUltimaReposicion)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.FechaUltimaReposicion)
+            </dd>
+        </dl>
+    </div>
+</div>
+
+<p>
+    @if (SecurityHelper.IsAllowed((int)Permissions.Maquina.Update))
+    {
+        @Html.ActionLink("Editar", "Edit", "Maquina", new { id = Model.MaquinaID }, new { @class = "btn btn-default" })
+    }
+    @Html.ActionLink("Volver", "Index", "Maquina", null, new { @class = "btn btn-default" })
+</p>

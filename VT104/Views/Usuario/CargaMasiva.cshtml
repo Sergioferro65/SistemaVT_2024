@@ -1,0 +1,282 @@
+﻿@model BugsMVC.Models.UsuarioViewModel
+
+@{
+    ViewBag.Title = "Carga Masiva";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>
+    Creación Masiva
+    <small>Creación de consumidores de forma masiva.</small>
+</h3>
+
+<div class="panel panel-default">
+    @using (Html.BeginForm("CargaMasiva", "Usuario", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal" }))
+    {
+        @Html.AntiForgeryToken()
+        
+        <div class="panel-body">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(model => model.UsuarioID)
+            @Html.HiddenFor(model => model.MostrarDatosMonetarios)
+
+            <input type="hidden" id="OperadorID" name="OperadorID" value="@ViewBag.OperadorID" />
+            <fieldset>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.LocacionID, htmlAttributes: new { @class = "col-sm-2 control-label" })
+                    <div class="col-sm-10">
+                        @Html.DropDownList("LocacionID", null, "Seleccionar una locación", htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.LocacionID, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.JerarquiaID, htmlAttributes: new { @class = "control-label col-sm-2" })
+                    <div class="col-sm-10">
+                        @Html.DropDownList("JerarquiaID", null, "Seleccionar una jerarquía", htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.JerarquiaID, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.CantidadConsumidores, htmlAttributes: new { @class = "col-sm-2 control-label" })
+                    <div class="col-sm-10">
+                        @Html.EditorFor(model => model.CantidadConsumidores, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.CantidadConsumidores, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.FechaVencimiento, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        <div class="input-group date">
+                            @Html.EditorFor(model => model.FechaVencimiento, new { htmlAttributes = new { @class = "form-control" } })
+                            <span class="input-group-addon">
+                                <span class="fa fa-calendar"></span>
+                            </span>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.FechaVencimiento, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <div id="panelDatos2" class="panel panel-default">
+                    <div class="panel-heading panel-heading-collapsed">
+                        Datos Monetarios
+                        <a href="#panelDatos2" data-tool="panel-collapse" data-toggle="tooltip" class="pull-right" id="IdPanelDatosMonetarios">
+                            <em class="fa @(Model.MostrarDatosMonetarios == true? "fa-minus" : "fa-plus")"></em>
+                        </a>
+                    </div>
+                    <div id="panelDatosMonetarios" class="panel-wrapper collapse @(Model.MostrarDatosMonetarios == true? "in" : "")" aria-expanded="@(Model.MostrarDatosMonetarios == true? "true" : "false")">
+                        <div class="panel-body">
+                            <fieldset>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Efectivo, htmlAttributes: new { @class = "col-sm-2 control-label" })
+                                    <div class="col-sm-10">
+                                        @Html.EditorFor(model => model.Efectivo, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.Efectivo, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </fieldset>
+                            <fieldset class="hidden" data-zonaid="1">
+                                <div class="form-group">
+                                    @Html.Label("Zona 1 - ", new { @class = "col-sm-2 control-label" })
+                                    <div class="col-sm-10">
+                                        @Html.EditorFor(model => model.CreditoZona1, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.CreditoZona1, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </fieldset>
+                            <fieldset class="hidden" data-zonaid="2">
+                                <div class="form-group">
+                                    @Html.Label("Zona 2 - ", new { @class = "col-sm-2 control-label" })
+                                    <div class="col-sm-10">
+                                        @Html.EditorFor(model => model.CreditoZona2, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.CreditoZona2, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </fieldset>
+                            <fieldset class="hidden" data-zonaid="3">
+                                <div class="form-group">
+                                    @Html.Label("Zona 3 - ", new { @class = "col-sm-2 control-label" })
+                                    <div class="col-sm-10">
+                                        @Html.EditorFor(model => model.CreditoZona3, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.CreditoZona3, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </fieldset>
+                            <fieldset class="hidden" data-zonaid="4">
+                                <div class="form-group">
+                                    @Html.Label("Zona 4 - ", new { @class = "col-sm-2 control-label" })
+                                    <div class="col-sm-10">
+                                        @Html.EditorFor(model => model.CreditoZona4, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.CreditoZona4, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </fieldset>
+                            <fieldset class="hidden" data-zonaid="5">
+                                <div class="form-group">
+                                    @Html.Label("Zona 5 - ", new { @class = "col-sm-2 control-label" })
+                                    <div class="col-sm-10">
+                                        @Html.EditorFor(model => model.CreditoZona5, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.CreditoZona5, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Generar Credenciales Web</label>
+                    <div class="col-sm-1">
+                        <div class="checkbox c-checkbox">
+                            <label>
+                                <input type="checkbox" name="GenerarCredencialesWeb" id="GenerarCredencialesWeb"
+                                       @{if (Model != null && Model.GenerarCredencialesWeb) { <text> checked='checked' </text>             } } />
+                                <span class="fa fa-check"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+            </fieldset>
+            
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Crear" class="btn btn-default" />
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+
+<div>
+    @Html.ActionLink("Volver", "Index", "Usuario", null, new { @class = "btn btn-default" })
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        LoadDatosMonetarios();
+        $("#IdPanelDatosMonetarios").on("click", function () {
+            if ($("#MostrarDatosMonetarios").val() == "True") {
+                $("#MostrarDatosMonetarios").val("False");
+            } else {
+                $("#MostrarDatosMonetarios").val("True");
+            }
+        });
+        //LoadLocaciones();
+
+        $("#OperadorID").change(function () {
+            if ($("#OperadorID").val() != "") LoadLocaciones();
+            else {
+                $("#LocacionID").empty();
+                $("#JerarquiaID").empty();
+            }
+            return false;
+        });
+
+        $('#GenerarCredencialesWeb').change(function () {
+            if ($('#GenerarCredencialesWeb').is(":checked")) {
+                $('#GenerarCredencialesWeb').val(true);
+            } else {
+                $('#GenerarCredencialesWeb').val(false);
+            }
+        });
+
+        $("#LocacionID").change(function () {
+            LoadJerarquias();
+            LoadDatosMonetarios();
+            return false;
+        });
+    });
+
+    function LoadLocaciones() {
+        $("#LocacionID").empty();
+        $("#LocacionID").append('<option value="">Seleccionar una locación</option>');
+        $("#LocacionID").attr('disabled', 'disabled');
+        if ($("#OperadorID").val() != "") {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetLocaciones", "Usuario")',
+                dataType: 'json',
+                data: { operadorID: $("#OperadorID").val() },
+                success: function (locaciones) {
+                    if (locaciones.length > 0) $("#LocacionID").removeAttr('disabled');
+                    $.each(locaciones, function (i, locacion) {
+                        $("#LocacionID").append('<option value="' + locacion.Value + '">' + locacion.Text + '</option>');
+                    });
+                    LoadJerarquias();
+                },
+                error: function (ex) {
+                    alert('Hubo un error al obtener Locaciones.' + ex);
+                }
+            });
+        }
+    }
+
+    function LoadJerarquias() {
+        $("#JerarquiaID").empty();
+        $("#JerarquiaID").append('<option value="">Seleccione una jerarquía</option>');
+        $("#JerarquiaID").attr('disabled', 'disabled');
+        if ($("#LocacionID").val() != "") {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetJerarquias", "Usuario")',
+                dataType: 'json',
+                data: { locacionID: $("#LocacionID").val() },
+                success: function (jerarquias) {
+                    if (jerarquias.length > 0) $("#JerarquiaID").removeAttr('disabled');
+                    $.each(jerarquias, function (i, jerarquia) {
+                        $("#JerarquiaID").append('<option value="' + jerarquia.Value + '">' + jerarquia.Text + '</option>');
+                    });
+                },
+                error: function (ex) {
+                    alert('Hubo un error al obtener Jerarquias.' + ex);
+                }
+            });
+        }
+    }
+
+    function LoadDatosMonetarios() {
+        if ($("#LocacionID").val() != "") {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetDatosMonetariosByLocacion", "Usuario")',
+                dataType: 'json',
+                data: { locacionID: $("#LocacionID").val() },
+                success: function (nombreZonas) {
+                    $.each(nombreZonas, function (i, nombreZona) {
+                        if (nombreZona != null) {
+                            $('fieldset[data-zonaid=' + (i + 1) + ']').removeClass('hidden');
+                            $('fieldset[data-zonaid=' + (i + 1) + '] label').text('');
+                            $('fieldset[data-zonaid=' + (i + 1) + '] label').append('Zona ' + (i + 1) + ' - ' + nombreZona + '');
+                        } else {
+                            if (!$('fieldset[data-zonaid=' + (i + 1) + ']').hasClass("hidden")) {
+                                $('fieldset[data-zonaid=' + (i + 1) + ']').addClass("hidden");
+                            }
+                        }
+                    });
+                },
+                error: function (ex) {
+                    alert('Hubo un error al obtener los Datos monetarios.' + ex);
+                }
+            });
+        } else {
+            for (var i = 0; i < 10; i++) {
+                if (!$('fieldset[data-zonaid=' + (i + 1) + ']').hasClass("hidden")) {
+                    $('fieldset[data-zonaid=' + (i + 1) + ']').addClass("hidden");
+                }
+            }
+        }   
+    }
+</script>

@@ -1,0 +1,13 @@
+﻿@model BugsMVC.Models.ViewModels.ArticuloViewModel
+
+@{
+    ViewBag.Title = "Editar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>
+    Editar
+    <small>Editar los datos del artículo.</small>
+</h3>
+
+@Html.Partial("ViewUser", @Model)

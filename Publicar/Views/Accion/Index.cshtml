@@ -1,0 +1,40 @@
+﻿@model IEnumerable<BugsMVC.Models.Accion>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Controlador.Nombre)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Nombre)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Controlador.Nombre)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Nombre)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.AccionID }) |
+            @Html.ActionLink("Details", "Details", new { id=item.AccionID }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.AccionID })
+        </td>
+    </tr>
+}
+
+</table>

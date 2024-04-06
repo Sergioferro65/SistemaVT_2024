@@ -1,0 +1,13 @@
+﻿@model BugsMVC.Models.OperadorViewModel
+
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>
+    Editar
+    <small>Editar un operador.</small>
+</h3>
+
+@Html.Partial("ViewUser", @Model)

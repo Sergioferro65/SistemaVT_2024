@@ -1,0 +1,164 @@
+﻿@model IEnumerable<BugsMVC.Models.Maquina>
+@using BugsMVC.Helpers
+@using Microsoft.AspNet.Identity
+@using Microsoft.AspNet.Identity.EntityFramework
+@using BugsMVC.Models
+@using BugsMVC.DAL
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    @Styles.Render("~/bundles/datatablesCss")
+    @Styles.Render("~/bundles/jqGridCss")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/datatables")
+    @Scripts.Render("~/bundles/jqGrid")
+}
+
+<script>
+    (function (window, document, $, undefined) {
+
+        $(function () {
+
+            var gridJSON = $("#jqGridJSON");
+
+            gridJSON.jqGrid({
+                url: 'Maquina/GetAllMaquinas',
+                datatype: "json",
+                colModel: [
+                    {
+                        label: '',
+                        name: '',
+                        width: 90,
+                        fixed: true,
+                        search: false,
+                        sortable: false,
+                        resize: false,
+                        formatter: actionButtonsFormatter
+                    },
+                    { label: 'MaquinaID', name: 'MaquinaID', width: 250, hidden: @Json.Encode(!( User.IsInRole("Operador") || User.IsInRole("Administrador"))) },
+                    { label: 'NombreZona1', name: 'NombreZona1', hidden: true },
+                    { label: 'NombreZona2', name: 'NombreZona2', hidden: true },
+                    { label: 'NombreZona3', name: 'NombreZona3', hidden: true },
+                    { label: 'NombreZona4', name: 'NombreZona4', hidden: true },
+                    { label: 'NombreZona5', name: 'NombreZona5', hidden: true },
+                    { label: 'Operador', name: 'OperadorNombre', hidden : @Json.Encode((!User.IsInRole("SuperAdmin"))) },
+                    { label: 'Marca Modelo', name: 'MarcaModelo'},                    
+                    { label: 'N° Serie', name: 'NumeroSerie', sorttype: 'number' },
+                    { label: 'Tipo Producto', name: 'TipoProducto' },  
+                    { label: 'Estado', name: 'Estado', searchoptions : {sopt:['cn']}},                    
+                    { label: 'Estado Conexión', name: 'EstadoConexion', searchoptions : {sopt:['cn']}},
+                    { label: 'Alarma Activa', name: 'AlarmaActiva', formatter: booleanFormatter, searchoptions: getDefaultSearchOptionsForBoolean(), stype: 'select' },
+                    { label: 'Fecha Estado', name: 'FechaEstado', search: true, searchOnEnter:true,  sorttype: 'date', formatter: 'date', formatoptions: { "srcformat": "d/m/Y H:i:s", "newformat": "d/m/Y H:i:s" } ,searchoptions: getDefaultSearchOptionsForDate() },
+                    { label: 'Fecha de Aviso', name: 'FechaAviso', search: true, searchOnEnter:true,  sorttype: 'date', formatter: 'date', formatoptions: { "srcformat": "d/m/Y H:i:s", "newformat": "d/m/Y H:i:s" } ,searchoptions: getDefaultSearchOptionsForDate() },
+                    //{ label: 'Interfaz', name: 'Interfaz' },
+                    { label: 'Locación', name: 'Locacion' },
+                    { label: 'Zona', name: 'ZonaText', formatter: zonaFormatter},
+                    { label: 'Zona', name: 'Zona', formatter: zonaFormatter, hidden: true},
+                    { label: 'Ubicación', name: 'Ubicacion' },
+                    { label: 'Nombre Alias', name: 'NombreAlias' },
+                    { label: 'N° Serie Terminal', name: 'Terminal', sorttype: 'number' },
+                    { label: 'Terminal ID', name: 'TerminalID', hidden: true },
+
+                    { label: 'Contador Ventas Parcial', name: 'ContadorVentasParcial', sorttype: 'number', searchoptions: { sopt: ['eq'] } },
+                    { label: 'Monto Ventas Parcial', name: 'MontoVentasParcial', sorttype: 'number', formatter: 'number', formatoptions:{decimalSeparator:",", thousandsSeparator: ".", decimalPlaces: 2, prefix: "$ "}, searchoptions: { sopt: ['eq'] }  },
+                    { label: 'Contador Ventas Hist.', name: 'ContadorVentasHistorico', sorttype: 'number', searchoptions: { sopt: ['eq'] } },
+                    { label: 'Monto Ventas Hist.', name: 'MontoVentasHistorico', sorttype: 'number', formatter: 'number', formatoptions:{decimalSeparator:",", thousandsSeparator: ".", decimalPlaces: 2, prefix: "$ "}, searchoptions: { sopt: ['eq'] }  },
+                    
+                    { label: 'Efectivo Recaudado', name: 'EfectivoRecaudado', sorttype: 'number', formatter: 'number', formatoptions:{decimalSeparator:",", thousandsSeparator: ".", decimalPlaces: 2, prefix: "$ "}, searchoptions: { sopt: ['eq'] }  },
+                    //{ label: 'Valor Venta', name: 'ValorVenta', sorttype: 'number', formatter: 'number', formatoptions:{decimalSeparator:",", thousandsSeparator: ".", decimalPlaces: 2, prefix: "$ "} },
+                    { label: 'Descuento Porcentual', search: false, name: 'DescuentoPorcentual', sortable: false, formatter: 'number', formatoptions: { decimalSeparator: ",", thousandsSeparator: ".", decimalPlaces: 2, suffix: " %" } },
+                    { label: 'Precio Venta/Valor Descuento', search: false, name: 'PrecioVentaValorDescuento', width: 300, sortable: false },
+                  
+                ],
+                viewrecords: true, // show the current page, data rang and total records on the toolbar
+                autowidth: true,
+                shrinkToFit: false,
+                height: 240,
+                rowNum: 20,
+                rowList: [10, 20, 30],
+                loadonce: true, // this is just for the demo
+                caption: "Máquinas",
+                hidegrid: false,
+                ignoreCase: true,
+                pager: "#jqGridJSONPager",
+                loadComplete: function (data) {
+                    console.log(data);
+                    var ids = $(this).jqGrid("getDataIDs");
+                    for (i = 0; i < ids.length; i++) {
+                        var rowid = ids[i];
+                        var estadoConexion = $(this).jqGrid("getCell", rowid, "EstadoConexion");
+                        if (estadoConexion == "Sin Conexión") {                            
+                            $('#' + $.jgrid.jqID(rowid)).addClass('maquinaSinConexion');
+                        }
+                        if (estadoConexion == "Inactiva") {
+                            $('#' + $.jgrid.jqID(rowid)).addClass('maquinaInactiva');
+                        }
+                    }
+                }
+            });
+
+            //
+            // Filtering by Columns
+            //
+            gridJSON.jqGrid('filterToolbar', { stringResult: true, searchOnEnter: false, defaultSearch: "cn" });
+        });
+
+    })(window, document, window.jQuery);
+
+    function zonaFormatter(cellvalue, options, rowObject) {
+        var nombreZona = '';
+
+        if (rowObject.Zona == 1) nombreZona += '<div>' + rowObject.NombreZona1 + '</div>';
+        if (rowObject.Zona == 2) nombreZona += '<div>' + rowObject.NombreZona2 + '</div>';
+        if (rowObject.Zona == 3) nombreZona += '<div>' + rowObject.NombreZona3 + '</div>';
+        if (rowObject.Zona == 4) nombreZona += '<div>' + rowObject.NombreZona4 + '</div>';
+        if (rowObject.Zona == 5) nombreZona += '<div>' + rowObject.NombreZona5 + '</div>';
+
+        return nombreZona;
+    }
+
+    function actionButtonsFormatter(cellvalue, options, rowObject) {
+        var linkButton = @Json.Encode(SecurityHelper.IsAllowed((int)Permissions.Maquina.Update))? '<a href="Maquina/Edit/' + rowObject.MaquinaID + '" data-toggle="tooltip" data-placement="left" data-original-title="Editar" class="fa fa-edit"> </a>' : '';
+        linkButton += '<a href="Maquina/Details/' + rowObject.MaquinaID + '" data-toggle="tooltip" data-placement="left" data-original-title="Detalles" class="fa fa-eye"> </a>';
+        if (rowObject.TerminalID != null && rowObject.TerminalID != "null") {
+            linkButton += '<a href="Terminal/Details/' + rowObject.TerminalID + '?backToMaquina=true" data-toggle="tooltip" data-placement="left" data-original-title="Detalles de terminal" class="fa fa-list-alt"> </a>';
+        }
+        linkButton = @Json.Encode(SecurityHelper.IsAllowed((int)Permissions.Maquina.Delete))? linkButton + '<a href="Maquina/Delete/' + rowObject.MaquinaID + '" data-toggle="tooltip" data-placement="left" data-original-title="Editar" class="fa fa-remove"> </a>' : linkButton;
+
+        return linkButton;
+    }
+
+    function exportToExcel() {
+        var data = JSON.stringify($('#jqGridJSON').jqGrid('getGridParam', 'postData'));
+        $('#jqGridPostData').val(data);
+    }
+
+</script>
+
+<h3>
+    Máquinas
+    <small>Administración de máquinas.</small>
+</h3>
+
+<div>
+@if (SecurityHelper.IsAllowed((int)Permissions.Maquina.Create))
+{
+    @Html.ActionLink("Crear Nuevo", "Create", null, new { @class = "btn btn-default" })
+}
+    @using (Html.BeginForm("ExportData", "Maquina", FormMethod.Post, new { enctype = "multipart/form-data", style = "display: inline;" }))
+    {
+        <input type="submit" name="Export" id="Export" value="Excel" onclick="exportToExcel();" class="btn btn-default" />
+        <input type="hidden" name="jqGridPostData" id="jqGridPostData" />
+    }
+</div>
+<br />
+<div class="jqgrid-responsive mb-lg">
+    <table id="jqGridJSON"></table>
+    <div id="jqGridJSONPager"></div>
+</div>

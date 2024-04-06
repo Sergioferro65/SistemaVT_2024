@@ -1,0 +1,116 @@
+﻿@model BugsMVC.Models.TransaccionTexto
+
+@{
+    ViewBag.Title = "Crear";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>
+    Crear
+    <small>Crear una Transacción Texto.</small>
+</h3>
+
+<div class="panel panel-default">
+    @using (Html.BeginForm("Create", "TransaccionTexto", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="panel-body">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <fieldset>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.CodigoTransaccion, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.CodigoTransaccion, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.CodigoTransaccion, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Suma En Efectivo</label>
+                    <div class="col-sm-1">
+                        <div class="checkbox c-checkbox">
+                            <label>
+                                <input type="checkbox" name="SumaEnEfectivo" id="SumaEnEfectivo" value="true"
+                                       @{if (Model != null && Model.SumaEnEfectivo) { <text> checked='checked' </text>  }} />
+                                <span class="fa fa-check"></span>
+                            </label>
+                        </div>
+                    </div>
+                   @Html.ValidationMessageFor(model => model.SumaEnEfectivo, "", new { @class = "text-danger" })
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Suma En Ventas</label>
+                    <div class="col-sm-1">
+                        <div class="checkbox c-checkbox">
+                            <label>
+                                <input type="checkbox" name="SumaEnVentas" id="SumaEnVentas" value="true"
+                                       @{if (Model != null && Model.SumaEnVentas) { <text> checked='checked' </text>     }} />
+                                <span class="fa fa-check"></span>
+                            </label>
+                        </div>
+                    </div>
+                    @Html.ValidationMessageFor(model => model.SumaEnVentas, "", new { @class = "text-danger" })
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SumaEnRecargas, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-sm-1">
+                        <div class="checkbox c-checkbox">
+                            <label>
+                                <input type="checkbox" name="SumaEnRecargas" id="SumaEnRecargas" value="true"
+                                       @{if (Model != null && Model.SumaEnRecargas) { <text> checked='checked' </text>      }} />
+                                <span class="fa fa-check"></span>
+                            </label>
+                        </div>
+                    </div>
+                    @Html.ValidationMessageFor(model => model.SumaEnRecargas, "", new { @class = "text-danger" })
+                    @*<div class="col-md-10">
+                        <div class="checkbox">
+                            @Html.EditorFor(model => model.SumaEnRecargas)
+                            @Html.ValidationMessageFor(model => model.SumaEnRecargas, "", new { @class = "text-danger" })
+                        </div>
+                    </div>*@
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TextoTransaccion, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.TextoTransaccion, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.TextoTransaccion, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ModeloTerminalID, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.DropDownList("ModeloTerminalID", null, htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.ModeloTerminalID, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </fieldset>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Guardar" class="btn btn-default" />
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div>
+    @Html.ActionLink("Volver", "Index", "TransaccionTexto", null, new { @class = "btn btn-default" })
+</div>

@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="Bootstrap Admin App + jQuery">
+    <meta name="keywords" content="app, responsive, jquery, bootstrap, dashboard, admin">
+    <title>Bugs - Vending Admin</title>
+    <!-- =============== VENDOR STYLES ===============-->
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/bundles/animatecss")
+    @Styles.Render("~/bundles/whirl")
+    @Styles.Render("~/bundles/datetimePickerCss")
+    @Styles.Render("~/bundles/chosenCss")
+    <!-- =============== PAGE VENDOR STYLES =============== -->
+    @if (IsSectionDefined("Styles"))
+    {@RenderSection("Styles", required: false)}
+    <!-- =============== BOOTSTRAP STYLES ===============-->
+    <link href="@Styles.Url("~/Content/app/css/bootstrap.css")" rel="stylesheet" type="text/css" id="bscss" />
+
+    <!-- =============== APP STYLES ===============-->
+    <link href="@Styles.Url("~/Content/app/css/app.css")" rel="stylesheet" type="text/css" id="maincss" />
+    <link href="@Styles.Url("~/Content/site.css")" rel="stylesheet" type="text/css" id="sitecss" />
+    <link href="@Styles.Url("~/Content/Responsive.css")" rel="stylesheet" type="text/css" id="sitecss" />
+    <link href="@Styles.Url("~/Content/print.css")" rel="stylesheet" type="text/css" id="printcss" />
+    <!-- =============== VENDOR SCRIPTS ===============-->
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/storage")
+    @Scripts.Render("~/bundles/jqueryEasing")
+    @Scripts.Render("~/bundles/animo")
+    @Scripts.Render("~/bundles/slimscroll")
+    @Scripts.Render("~/bundles/screenfull")
+    @Scripts.Render("~/bundles/localize")
+    @Scripts.Render("~/bundles/moment")
+    @Scripts.Render("~/bundles/datetimePicker")
+    @Scripts.Render("~/bundles/chosen")
+    @Scripts.Render("~/bundles/paginator")
+    <!-- =============== PAGE VENDOR SCRIPTS ===============-->
+    @RenderSection("scripts", required: false)
+    <!-- =============== APP SCRIPTS ===============-->
+    @Scripts.Render("~/bundles/Angle")
+    <script type="text/javascript" src="~/Scripts/Site.js"></script>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- top navbar-->
+        <header class="topnavbar-wrapper">
+            @Html.Partial("_TopNavbar")
+        </header>
+        <!-- sidebar-->
+        <aside class="aside">
+            @Html.Partial("_Sidebar")
+        </aside>
+        <!-- Main section-->
+        <section>
+            <!-- Page content-->
+            <div class="content-wrapper">
+                @RenderBody()
+            </div>
+        </section>
+        <!-- Page footer-->
+        <footer>
+            @Html.Partial("_Footer")
+        </footer>
+    </div>
+    @if (IsSectionDefined("BodyArea"))
+    {@RenderSection("BodyArea", required: false)}
+
+</body>
+</html>

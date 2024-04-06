@@ -1,0 +1,223 @@
+﻿@model BugsMVC.Models.Usuario
+
+@{
+    ViewBag.Title = "Delete";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>
+    Eliminar
+    <small>Eliminar el consumidor seleccionado.</small>
+</h3>
+
+<div class="panel panel-default">
+    <div class="panel-heading">¿Estás seguro de querer eliminar este consumidor?</div>
+    <div class="panel-body">
+        <p class="text-danger">@ViewBag.Mensaje</p>
+        <dl class="dl-horizontal">
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Jerarquia.Nombre)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Jerarquia.Nombre)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Locacion.Nombre)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Locacion.Nombre)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Operador.Nombre)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Operador.Nombre)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Nombre)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Nombre)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Apellido)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Apellido)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Legajo)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Legajo)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Dni)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Dni)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Numero)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Numero)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.ClaveTerminal)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.ClaveTerminal)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.FechaVencimiento)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.FechaVencimiento)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Inhibido)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Inhibido)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.FechaInhibido)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.FechaInhibido)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.UltimoUsoVT)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.UltimoUsoVT)
+            </dd>
+           
+            <dt>
+                @Html.DisplayNameFor(model => model.Efectivo)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Efectivo)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.CreditoZona1)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.CreditoZona1)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.CreditoZona2)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.CreditoZona2)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.CreditoZona3)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.CreditoZona3)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.CreditoZona4)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.CreditoZona4)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.CreditoZona5)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.CreditoZona5)
+            </dd>
+        </dl>
+    </div>
+</div>
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "confirmationForm" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-actions no-color">
+        <button type="button" data-toggle="modal" data-target="#myModal" class="btn btn-default">Eliminar</button>
+        @Html.ActionLink("Volver", "Index", "Usuario", null, new { @class = "btn btn-default" })
+    </div>
+}
+
+@section BodyArea {
+    <div id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content confirm1">
+                <div class="modal-header">
+                    <button type="button" data-dismiss="modal" aria-label="Close" class="close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 id="myModalLabel" class="modal-title">Eliminar</h4>
+                </div>
+                <div class="modal-body">¿ Desea Ud. eliminar el consumidor seleccionado ?</div>
+                <div class="modal-footer">
+                    <button type="button" onclick="$('#myModal .modal-content.confirm1').hide(); $('#myModal .modal-content.confirm2').show(); return false;" class="btn btn-primary">Confirmar</button>
+                    @Html.ActionLink("Volver", "Index", "Usuario", null, new { @class = "btn btn-default" })
+                </div>
+            </div>
+            <div class="modal-content confirm2" style="display:none;">
+                <div class="modal-header">
+                    <button type="button" data-dismiss="modal" aria-label="Close" class="close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 id="myModalLabel" class="modal-title">Alerta</h4>
+                </div>
+                <div class="modal-body">
+                    Al eliminar el consumidor seleccionado se borrarán las siguentes dependencias.
+                    <ul>
+                        <li>Transacciones</li>
+                        <li>Reposiciones</li>
+                    </ul>
+                    Los datos serán borrados permantentemente y no podrán ser recuperados.
+                    <br />Si usted está seguro presione el botón 'Eliminar'.
+                </div>
+                <div class="modal-footer">
+                    <button onclick="$('#confirmationForm').submit();" type="button" class="btn btn-primary">Eliminar</button>
+                    @Html.ActionLink("Volver", "Index", "Usuario", null, new { @class = "btn btn-default" })
+                </div>
+            </div>
+        </div>
+    </div>
+}

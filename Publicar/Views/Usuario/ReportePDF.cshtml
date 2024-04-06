@@ -1,0 +1,52 @@
+﻿@model  IEnumerable<ConsumidoresPdfViewModel>
+@using BugsMVC.Models.ViewModels.Pdf;
+@{
+    ViewBag.Title = "Reporte de Consumidores";
+}
+
+<h3>Reporte de Consumidores</h3>
+<br />
+
+<table border="1" style="font-size:8px;font-style:normal">
+    @foreach (ConsumidoresPdfViewModel item in Model)
+    {
+        <tr>
+            <td align="center" valign="top">
+                <span style="font-size:10px;font-style:normal">Nombre</span> <br />
+                @item.Nombre
+            </td>
+            <td align="center" valign="top">
+                <span style="font-size:10px;font-style:normal">Apellido</span> <br />
+                @item.Apellido
+            </td>
+            <td align="center" valign="top">
+                <span style="font-size:10px;font-style:normal">Legajo</span> <br />
+                @item.Legajo
+            </td>
+            <td align="center" valign="top" >
+                <span style="font-size:10px;font-style:normal">Jerarqía</span> <br />
+                @item.Jerarquia
+            </td>
+            <td align="center" valign="top"> 
+                <span style="font-size:10px;font-style:normal">Número</span> <br />
+                @item.Numero
+            </td>
+            <td align="center" valign="top">
+                <span style="font-size:10px;font-style:normal">Clave Terminal</span> <br />
+                @item.ClaveTerminal
+            </td>
+            @*<td align="center" valign="top">
+                <span style="font-size:10px;font-style:normal">Email</span> <br />
+                @item.Email
+            </td>
+            <td align="center" valign="top">
+                <span style="font-size:10px;font-style:normal">Password</span> <br />
+                @item.Clave
+            </td>*@
+        </tr>
+    }
+</table>
+
+<div>
+    @Html.ActionLink("Volver", "Index", "Usuario", null, new { @class = "btn btn-default" })
+</div>

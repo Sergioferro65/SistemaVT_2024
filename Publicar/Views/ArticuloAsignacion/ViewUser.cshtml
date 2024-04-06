@@ -1,0 +1,320 @@
+﻿@model BugsMVC.Models.ArticuloAsignacion
+
+<div class="panel panel-default">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        <div class="panel-body">
+            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+            <input id="OperadorID" name="OperadorID" type="hidden" value="@ViewBag.OperadorID" />
+            @Html.HiddenFor(model => model.Id)
+            @Html.HiddenFor(model => model.ControlStockInicio)
+
+            <fieldset>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ArticuloID, htmlAttributes: new { @class = "col-sm-2 control-label" })
+                    <div class="col-sm-10">
+                        @Html.DropDownListFor(model => model.ArticuloID, null, "Seleccionar Artículo", htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.ArticuloID, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.LocacionID, htmlAttributes: new { @class = "col-sm-2 control-label" })
+                    <div class="col-sm-10">
+                        @Html.DropDownListFor(model => model.LocacionID, null, "Seleccionar Locación", htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.LocacionID, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.NroZona, htmlAttributes: new { @class = "col-sm-2 control-label" })
+                    <div class="col-sm-10">
+                        @Html.DropDownListFor(model => model.NroZona, null, "Seleccionar Zona", htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.NroZona, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.MaquinaID, htmlAttributes: new { @class = "col-sm-2 control-label" })
+                    <div class="col-sm-10">
+                        @Html.DropDownListFor(model => model.MaquinaID, null, "Seleccionar Máquina", htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.MaquinaID, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </fieldset>
+                        
+            <fieldset>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Precio, htmlAttributes: new { @class = "col-sm-2 control-label" })
+                    <div class="col-sm-10">
+                        @Html.EditorFor(model => model.Precio, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Precio, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </fieldset>
+            
+            <fieldset>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ControlStock, htmlAttributes: new { @class = "col-sm-2 control-label" })
+                    <div class="col-sm-10">
+                        <div class="checkbox c-checkbox needsclick">
+                            <label class="needsclick">
+
+                                <input id="ControlStock" name="ControlStock" type="checkbox" class="needsclick" value="true"
+                                       @{if (Model == null || (Model.MaquinaID != null && Model.MaquinaID == Guid.Empty)) { <text> disabled </text>       } }
+                                       @{if (Model != null && (Model.ControlStock != null && Model.ControlStock)) { <text> checked='checked' </text>     } } />
+
+                                <span class="fa fa-check"></span>
+                            </label>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.ControlStock, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </fieldset>
+
+            
+
+            <div id="CargarAlarma" style="display:@((ViewBag.ShowStockDetails)?"block":"none")">
+                <fieldset>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.AlarmaActiva, htmlAttributes: new { @class = "col-sm-2 control-label" })
+                        <div class="col-sm-10">
+                            <div class="checkbox c-checkbox needsclick">
+                                <label class="needsclick">
+
+                                    <input id="AlarmaActiva" name="AlarmaActiva" type="checkbox" class="needsclick" value="true"
+                                           @{if (Model == null || (Model.MaquinaID != null && Model.MaquinaID == Guid.Empty)) { <text> disabled </text>     } }
+                                           @{if (Model != null && Model.AlarmaActiva.HasValue && Model.AlarmaActiva.Value) { <text> checked='checked' </text>   } } />
+                                    <span class="fa fa-check"></span>
+                                </label>
+                            </div>
+                            @Html.ValidationMessageFor(model => model.AlarmaActiva, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.AlarmaBajo, htmlAttributes: new { @class = "col-sm-2 control-label" })
+                        <div class="col-sm-10">
+                            @Html.EditorFor(model => model.AlarmaBajo, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.AlarmaBajo, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.AlarmaMuyBajo, htmlAttributes: new { @class = "col-sm-2 control-label" })
+                        <div class="col-sm-10">
+                            @Html.EditorFor(model => model.AlarmaMuyBajo, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.AlarmaMuyBajo, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Capacidad, htmlAttributes: new { @class = "col-sm-2 control-label" })
+                        <div class="col-sm-10">
+                            @Html.EditorFor(model => model.Capacidad, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Capacidad, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </fieldset>
+
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Guardar" class="btn btn-default" />
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-default zonaPanel template hidden">
+            <div class="panel-heading">
+                <a href="#" data-toggle="modal" data-target="#myModal" class="pull-right removeButton icono-plus">
+                    <em class="fa fa-times"></em>
+                </a>
+                <a href="#" data-tool="panel-collapse" data-toggle="tooltip" title="Cerrar" class="pull-right">
+                    <em class="fa fa-minus"></em>
+                </a>
+            </div>
+            <div class="panel-wrapper collapse in">
+                <div class="panel-body container">
+                </div>
+            </div>
+        </div>
+                                               }
+</div>
+
+<div>
+    @Html.ActionLink("Volver", "Index", "ArticuloAsignacion", null, new { @class = "btn btn-default" })
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('body').append("<div id='myModal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true' class='modal fade'>" +
+                "<div class='modal-dialog' role='document'> " +
+                "<div class='modal-content'>" +
+                "<div class='modal-header'> " +
+                "<button type='button' class='close' data-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>" +
+                "<h4 class='modal-title'>Eliminar Stock y Reposiciones</h4>" + "</div>" +
+                   " <div class='modal-body'>" +
+                       " <p>¿ Desea eliminar el Stock y las Reposiciones Asociadas ?</p>" +
+                   " </div>" +
+                   " <div class='modal-footer'>" +
+                       " <button type='button'  class='btn btn-primary' id='ConfirmarButton'>Confirmar</button>" +
+                       " <button type='button' class='btn btn-default' data-dismiss='modal'>Volver</button>" +
+                    "</div>" +
+                "</div>" +
+                " </div>" +
+                "</div>"
+                );
+
+
+        $("#ControlStock").click(function (e) {
+            if ($("#Id").val() != "" && !$('#ControlStock').is(":checked")) {
+                e.preventDefault();
+                $('#myModal').modal('toggle');
+                }
+        });
+
+        $("#ConfirmarButton").click(function (e) {
+            $('#myModal').modal('toggle');
+            $('#ControlStock').prop('checked', false);
+            $('#CargarAlarma').css('display', 'none');
+            $('#AlarmaActiva').prop('checked', false);
+            $('#AlarmaBajo').val('');
+            $('#AlarmaMuyBajo').val('');
+            $('#Capacidad').val('');
+            //EliminarStockYReposicionAsociada();
+        });
+
+        $("#LocacionID").change(function () {
+            $("#NroZona").empty();
+            $("#NroZona").append('<option value="">Seleccionar Zona</option>');
+            $("#NroZona").attr('disabled', 'disabled');
+
+            $('#ControlStock').prop('checked', false);
+            $("#ControlStock").attr('disabled', true);
+            $('#ControlStock').trigger("change");
+
+            $("#MaquinaID").empty();
+            $("#MaquinaID").append('<option value="">Seleccionar Máquina</option>');
+            $("#MaquinaID").attr('disabled', 'disabled');
+            if ($("#LocacionID").val() != "") {
+                LoadZonas();
+            }
+            return false;
+        });
+
+        $("#NroZona").change(function () {
+            $("#MaquinaID").empty();
+            $("#MaquinaID").append('<option value="">Seleccionar Máquina</option>');
+            $("#MaquinaID").attr('disabled', 'disabled');
+            $('#ControlStock').prop('checked', false);
+            $("#ControlStock").attr('disabled', true);
+            $('#ControlStock').trigger("change");
+            if ($("#NroZona").val() != "") {
+                LoadMaquinas();
+            }
+            return false;
+        });
+
+        $("#MaquinaID").change(function () {
+            if($("#MaquinaID").val() != "")
+                $("#ControlStock").removeAttr('disabled');
+            else
+            {
+                $('#ControlStock').prop('checked', false);
+                $("#ControlStock").attr('disabled', true);
+                $('#ControlStock').trigger("change");
+            }
+            return false;
+        });
+
+        $('#ControlStock').change(function () {
+            if ($('#ControlStock').is(":checked")) {
+                $("#AlarmaActiva").removeAttr('disabled');
+                $('#CargarAlarma').css('display','block');
+            } else {
+                $('#CargarAlarma').css('display', 'none');
+                $('#AlarmaActiva').prop('checked', false);
+                $('#AlarmaBajo').val('');
+                $('#AlarmaMuyBajo').val('');
+                $('#Capacidad').val('');
+            }
+        });
+
+        $('#MaquinaID').trigger("change");
+    });
+
+    function EliminarStockYReposicionAsociada() {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("EliminarStockYReposicionAsociada", "ArticuloAsignacion")',
+                dataType: 'json',
+                data: {
+                    id: $("#Id").val()
+                },
+                success: function (e) {
+                    $('#myModal').modal('toggle');
+                    $('#ControlStock').prop('checked', false);
+                    $('#CargarAlarma').css('display', 'none');
+                    $('#AlarmaActiva').prop('checked', false);
+                    $('#AlarmaBajo').val('');
+                    $('#AlarmaMuyBajo').val('');
+                    $('#Capacidad').val('');
+                },
+                error: function (ex) {
+                    alert('Hubo un error al obtener Consumidores.' + ex);
+                }
+            });
+    }
+
+    function LoadMaquinas() {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("GetMaquinas", "ArticuloAsignacion")',
+            dataType: 'json',
+            data: { nroZona: $("#NroZona").val(), locacionID: $("#LocacionID").val() },
+            success: function (maquinas) {
+                if (maquinas.length > 0) $("#MaquinaID").removeAttr('disabled');
+                $.each(maquinas, function (i, maquina) {
+                    $("#MaquinaID").append('<option value="' + maquina.Value + '">' + maquina.Text + '</option>');
+                });
+            },
+            error: function (ex) {
+                alert('Hubo un error al obtener las Maquinas.' + ex);
+            }
+        });
+    }
+
+    function LoadZonas() {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("GetZonas", "ArticuloAsignacion")',
+            dataType: 'json',
+            data: { locacionID: $("#LocacionID").val() },
+            success: function (zonas) {
+                if (zonas.length > 0) $("#NroZona").removeAttr('disabled');
+                $.each(zonas, function (i, zona) {
+                    $("#NroZona").append('<option value="' + zona.Value + '">' + zona.Text + '</option>');
+                });
+            },
+            error: function (ex) {
+                alert('Hubo un error al obtener Zonas.' + ex);
+            }
+        });
+    }
+
+</script>

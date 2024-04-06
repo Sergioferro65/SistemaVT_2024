@@ -1,0 +1,85 @@
+﻿@model BugsMVC.Models.ViewModels.TerminalViewModel
+
+<div class="panel panel-default">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        <div class="panel-body">
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <input id="OperadorID" name="OperadorID" type="hidden" value="@ViewBag.OperadorID" />
+                @Html.HiddenFor(model => model.TerminalID)
+                @Html.HiddenFor(model => model.OperadorID)
+                @Html.HiddenFor(model => model.MaquinaIDJonathan)
+                @Html.HiddenFor(model => model.FechaFabricacion)
+                @Html.HiddenFor(model => model.FechaEstadoSeteosEscritura)
+                @Html.HiddenFor(model => model.TipoLector_out)
+                <fieldset>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.NumeroSerie, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.NumeroSerie, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.NumeroSerie, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Interfaz, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.Interfaz, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Interfaz, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Version, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.Version, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Version, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FechaAlta, htmlAttributes: new { @class = "col-sm-2 control-label" })
+                        <div class="col-sm-10">
+                            <div id="datetimeFechaFabricacion" class="input-group date">
+                                @Html.EditorFor(model => model.FechaAlta, new { htmlAttributes = new { @class = "form-control" } })
+                                <span class="input-group-addon">
+                                    <span class="fa fa-calendar"></span>
+                                </span>
+                            </div>
+                            @Html.ValidationMessageFor(model => model.FechaAlta, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ModeloTerminalID, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.DropDownListFor(model => model.ModeloTerminalID, null, "Seleccionar un modelo", htmlAttributes: new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ModeloTerminalID, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </fieldset>
+
+            </div>
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Guardar" class="btn btn-default" />
+                    </div>
+                </div>
+            </div>
+       
+    }
+</div>
+
+<div>
+    @Html.ActionLink("Volver", "Index", "Terminal", null, new { @class = "btn btn-default" })
+</div>

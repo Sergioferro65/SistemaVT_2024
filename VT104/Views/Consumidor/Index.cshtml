@@ -1,0 +1,94 @@
+﻿@model IEnumerable<BugsMVC.Models.Transaccion>
+
+@using Microsoft.AspNet.Identity
+@using Microsoft.AspNet.Identity.EntityFramework
+@using BugsMVC.Models
+@using BugsMVC.DAL
+@using BugsMVC.Helpers
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    @Styles.Render("~/bundles/datatablesCss")
+    @Styles.Render("~/bundles/jqGridCss")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/datatables")
+    @Scripts.Render("~/bundles/jqGrid")
+}
+
+<script>
+    (function (window, document, $, undefined) {
+
+        $(function () {
+            var gridJSON = $("#jqGridJSON");
+
+            gridJSON.jqGrid({
+                url: 'Consumidor/GetAllConsumos',
+                datatype: "json",
+                colModel: [
+                    {
+                        label: '',
+                        name: '',
+                        width: 65,
+                        fixed: true,
+                        search: false,
+                        sortable: false,
+                        resize: false,
+                    },
+                    { label: 'TransaccionID', name: 'TransaccionID', hidden: true },
+                    { label: 'Fecha Transacción', name: 'FechaTransaccion', search: true, searchOnEnter: true, sorttype: 'date', formatter: 'date', formatoptions: { "srcformat": "d/m/Y H:i:s", "newformat": "d/m/Y H:i:s" }, fixed: true, width: 130, searchoptions: getDefaultSearchOptionsForDate() },
+                    { label: 'Transacción Texto', name: 'TransaccionTexto', fixed: true, width: 300 },
+                    { label: 'Valor Venta', name: 'ValorVenta', fixed: true, width: 180, sorttype: 'number', formatter: 'number', formatoptions: { decimalSeparator: ",", thousandsSeparator: ".", decimalPlaces: 2, prefix: "$ " } },
+                    { label: 'Valor Recarga', name: 'ValorRecarga', fixed: true, width: 180, sorttype: 'number', formatter: 'number', formatoptions: { decimalSeparator: ",", thousandsSeparator: ".", decimalPlaces: 2, prefix: "$ " } },
+                    { label: 'Nro Serie Máquina', name: 'nroSerie', fixed: true, width: 180 },
+                    //{ label: 'Locación', name: 'Locacion', fixed: true, width: 130 },
+                    //{ label: 'Artículo', name: 'Articulo', fixed: true, width: 300 },
+                ],
+                viewrecords: true, // show the current page, data rang and total records on the toolbar
+                autowidth: true,
+                shrinkToFit: false,
+                height: 240,
+                rowNum: 20,
+                rowList: [10, 20, 30],
+                loadonce: true, // this is just for the demo
+                caption: "Movimientos",
+                hidegrid: false,
+                ignoreCase: true,
+                pager: "#jqGridJSONPager"
+            });
+
+            //
+            // Filtering by Columns
+            //
+            gridJSON.jqGrid('filterToolbar', { stringResult: true, searchOnEnter: false, defaultSearch: "cn" });
+        });
+
+    })(window, document, window.jQuery);
+    function exportToExcel() {
+        var data = JSON.stringify($('#jqGridJSON').jqGrid('getGridParam', 'postData'));
+        $('#jqGridPostData').val(data);
+    }
+</script>
+
+<h3>
+    Movimientos
+    <small>Listado de Movimientos del mes.</small>
+</h3>
+
+<div>
+    @using (Html.BeginForm("ExportData", "Consumidor", FormMethod.Post, new { enctype = "multipart/form-data", style = "display: inline;" }))
+    {
+        <input type="submit" name="Export" id="Export" value="Excel" onclick="exportToExcel();" class="btn btn-default" />
+        <input type="hidden" name="jqGridPostData" id="jqGridPostData" />
+    }
+</div>
+<br />
+<div class="jqgrid-responsive mb-lg">
+    <table id="jqGridJSON"></table>
+    <div id="jqGridJSONPager"></div>
+</div>

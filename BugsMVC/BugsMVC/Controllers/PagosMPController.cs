@@ -98,7 +98,7 @@ namespace BugsMVC.Controllers
             MercadoPago.SDK.ClientSecret = secretToken;
 
 
-            Log.Info("Llega notificacion de pago al sistema: topic=" + topic + ", id=" + id + "Operador=" + operador);
+            Log.Info("Llega notificacion de pago al sistema: topic=" + topic + ", id=" + id + " ,Operador=" + operador);
 
             if (topic != "payment")
                 return;
@@ -128,13 +128,28 @@ namespace BugsMVC.Controllers
 
                         monto = (decimal)payment.TransactionAmount.Value;
 
-                        Log.Info("External Reference:" + payment.ExternalReference);
+
+                        /*Log.Info("External Reference:" + payment.ExternalReference + "
+                         Sergio Abril 2024 */
+                        Log.Info("External Reference:" + payment.ExternalReference +" ,Monto:"+monto);
+                        Log.Info("CurrencyId: " + payment.CurrencyId);
+                        Log.Info("Date Aproved: " + payment.DateApproved);
+                        Log.Info("Payment Method: " + payment.PaymentMethodId);
+                        Log.Info("Colector ID: " + payment.CollectorId);
+                        Log.Info("Issuer ID: " + payment.IssuerId);
+
+                        if (payment.ExternalReference == null)
+                        {
+                            payment.ExternalReference = "MAQ_99999";
+                        }
+
+                        Log.Info("External Reference Actualizado:" + payment.ExternalReference + " para el operador: " + op.Nombre);
 
                         string maqId = (string)payment.ExternalReference;
 
                         Maquina maquina = db.Maquinas.Where((x) => x.NotasService == maqId && x.OperadorID == op.OperadorID).FirstOrDefault();
 
-                        if (maquina != null)
+                        if (maquina !=null)
                         {
                             var paymentEntity = new MercadoPagoTable
                             {
@@ -155,7 +170,7 @@ namespace BugsMVC.Controllers
                         }
                         else
                         {
-                            Log.Error("No se encontro la maquina: " + maqId + " para el operador :" + op.Nombre + " del pago en curso");
+                            Log.Error("No se encontro la maquina: " + maqId + " para el operador: " + op.Nombre + " del pago en curso");
                             /* payment.Refund();
                             if (payment.Status == PaymentStatus.approved) {
                                 Log.Error("Se devolvio el dinero");

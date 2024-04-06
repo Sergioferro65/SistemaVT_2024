@@ -1,0 +1,130 @@
+﻿@model IEnumerable<BugsMVC.Models.ViewModels.ArticuloViewModel>
+@using BugsMVC.Helpers
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    @Styles.Render("~/bundles/datatablesCss")
+    @Styles.Render("~/bundles/jqGridCss")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/datatables")
+    @Scripts.Render("~/bundles/jqGrid")
+}
+
+<script>
+    (function (window, document, $, undefined) {
+
+        $(function () {
+
+            var gridJSON = $("#jqGridJSON");
+
+            gridJSON.jqGrid({
+                url: 'Articulo/GetAllArticulos',
+                datatype: "json",
+                colModel: [
+                    {
+                        label: '',
+                        name: '',
+                        width: 65,
+                        fixed: true,
+                        search: false,
+                        sortable: false,
+                        resize: false,
+                        formatter: actionButtonsFormatter,
+                    },
+                    { label: 'ArticuloID', name: 'ArticuloID', hidden: true },
+                    //&& ViewHelper.GetCurrentOperadorId()!=Guid.Empty
+                    { label: 'Operador', name: 'OperadorNombre', hidden : @Json.Encode(!User.IsInRole("SuperAdmin"))},
+                    { label: 'Nombre', name: 'Nombre', width: '260px'},
+                    { label: 'Costo Real', name: 'CostoReal', sorttype: 'number', formatter: 'number', formatoptions:{decimalSeparator:",", thousandsSeparator: ".", decimalPlaces: 2, prefix: "$ "}, searchoptions: { sopt: ['eq'] } },
+                    { label: 'Unidad Medida', name: 'UnidadMedida', formatter: UnidadMedidaFormatter, searchoptions: getDefaultSearchOptionsForUnidadMedida(), stype: 'select' },
+                    { label: 'Marca', name: 'Marca' },
+                    { label: 'Modelo', name: 'Modelo' },
+                    { label: 'Certificación', name: 'Certificacion', sorttype: 'number'},
+                ],
+                viewrecords: true, // show the current page, data rang and total records on the toolbar
+                autowidth: true,
+                shrinkToFit: false,
+                height: 240,
+                rowNum: 20,
+                rowList: [10, 20, 30],
+                loadonce: true, // this is just for the demo
+                caption: "Artículos",
+                hidegrid: false,
+                ignoreCase: true,
+                pager: "#jqGridJSONPager"
+            });
+
+            //
+            // Filtering by Columns
+            //
+            gridJSON.jqGrid('filterToolbar', { stringResult: true, searchOnEnter: false, defaultSearch: "cn" });
+
+
+        });
+
+    })(window, document, window.jQuery);
+
+    function actionButtonsFormatter(cellvalue, options, rowObject) {
+        var linkButton = @Json.Encode(SecurityHelper.IsAllowed((int)Permissions.Articulo.Update))? '<a href="Articulo/Edit/' + rowObject.ArticuloID + '" data-toggle="tooltip" data-placement="left" data-original-title="Editar" class="fa fa-edit"> </a>' : '';
+        linkButton += '<a href="Articulo/Details/' + rowObject.ArticuloID + '" data-toggle="tooltip" data-placement="left" data-original-title="Editar" class="fa fa-eye"> </a>';
+        linkButton = @Json.Encode(SecurityHelper.IsAllowed((int)Permissions.Articulo.Delete))? linkButton + '<a href="Articulo/Delete/' + rowObject.ArticuloID + '" data-toggle="tooltip" data-placement="left" data-original-title="Editar" class="fa fa-remove"> </a>' : linkButton;
+
+        return linkButton;
+    }
+
+    function exportToExcel() {
+        var data = JSON.stringify($('#jqGridJSON').jqGrid('getGridParam', 'postData'));
+        $('#jqGridPostData').val(data);
+    }
+
+    function UnidadMedidaFormatter(cellvalue, options, rowObject) {
+        var unidadMedida;
+        switch(cellvalue) {
+            case 0:
+                unidadMedida = "Unidades";
+                break;
+            case 1:
+                unidadMedida = "Gramos";
+                break;
+            case 2:
+                unidadMedida = "cm3";
+                break;
+        }
+        return unidadMedida;
+    }
+
+    function getDefaultSearchOptionsForUnidadMedida(){
+        return {
+            sort: ['eq'],
+            value: ':Todos;0:Unidades;1:Gramos;2:cm3'        
+        }
+    }
+</script>
+
+<h3>
+    Artículos
+    <small>Administración de artículos.</small>
+</h3>
+
+<div>
+@if (SecurityHelper.IsAllowed((int)Permissions.Articulo.Create))
+{
+    @Html.ActionLink("Crear Nuevo", "Create", null, new { @class = "btn btn-default" })
+}
+    @using (Html.BeginForm("ExportData", "Articulo", FormMethod.Post, new { enctype = "multipart/form-data", style = "display: inline;" }))
+    {
+        <input type="submit" name="Export" id="Export" value="Excel" onclick="exportToExcel();" class="btn btn-default" />
+        <input type="hidden" name="jqGridPostData" id="jqGridPostData" />
+    }
+</div>
+<br />
+<div class="jqgrid-responsive mb-lg">
+    <table id="jqGridJSON"></table>
+    <div id="jqGridJSONPager"></div>
+</div>

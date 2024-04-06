@@ -1,0 +1,13 @@
+﻿@model BugsMVC.Models.UsuarioViewModel
+
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>
+    Crear
+    <small>Crear un consumidor.</small>
+</h3>
+
+@Html.Partial("ViewUser", @Model)

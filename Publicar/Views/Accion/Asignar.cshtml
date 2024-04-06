@@ -1,0 +1,48 @@
+﻿@model BugsMVC.Models.AsignarViewModel
+
+@using Microsoft.AspNet.Identity;
+
+@{
+    ViewBag.Title = "Asignar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Asignar</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    
+    foreach (var item in Model.Controladores)
+    {
+        <p><span class="text-bold">@item.Nombre</span></p>
+
+        foreach (var accion in item.Acciones)
+        {
+            @accion.Nombre
+            @Html.HiddenFor(m => accion.AccionID);
+
+            var permiso = Model.Permisos.Where(x => x.Accion == accion && x.UserID.ToString() == ViewBag.userID);
+                
+            if (permiso.Count() > 0)
+            {
+                <input name="AccionID" type="checkbox" checked="checked" value="@accion.AccionID" />
+            }
+            else
+            {
+                <input name="AccionID" type="checkbox" value="@accion.AccionID" />
+            }
+            <br />
+        }
+    }
+
+    <input type="submit" value="Guardar" class="btn btn-default" />
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

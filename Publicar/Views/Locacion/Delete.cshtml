@@ -1,0 +1,177 @@
+﻿@model BugsMVC.Models.Locacion
+
+@{
+    ViewBag.Title = "Delete";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>
+    Eliminar
+    <small>Eliminar la locación seleccionada.</small>
+</h3>
+
+<div class="panel panel-default">
+    <div class="panel-heading">¿Estás seguro de querer eliminar esta locación?</div>
+    <div class="panel-body">
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Nombre)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Nombre)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Numero)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Numero)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.SaludarUsuario)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.SaludarUsuario)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Provincia)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Provincia)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Localidad)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Localidad)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Direccion)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Direccion)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.CodigoPostal)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.CodigoPostal)
+            </dd>
+        </dl>
+
+        <dl class="dl-horizontal @(!String.IsNullOrEmpty(Model.NombreZona1)?String.Empty:"hidden")">
+            <dt>
+                Zona
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.NombreZona1)
+            </dd>
+
+        </dl>
+
+        <dl class="dl-horizontal @(!String.IsNullOrEmpty(Model.NombreZona2)?String.Empty:"hidden")">
+            <dt>
+                Zona
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.NombreZona2)
+            </dd>
+
+        </dl>
+
+        <dl class="dl-horizontal @(!String.IsNullOrEmpty(Model.NombreZona3) ? String.Empty : "hidden")">
+            <dt>
+                Zona
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.NombreZona3)
+            </dd>
+
+        </dl>
+
+        <dl class="dl-horizontal @(!String.IsNullOrEmpty(Model.NombreZona4) ? String.Empty : "hidden")">
+            <dt>
+                Zona
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.NombreZona4)
+            </dd>
+
+        </dl>
+
+        <dl class="dl-horizontal @(!String.IsNullOrEmpty(Model.NombreZona5) ? String.Empty : "hidden")">
+            <dt>
+                Zona
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.NombreZona5)
+            </dd>
+
+        </dl>
+    </div>
+</div>
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "confirmationForm" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-actions no-color">
+        <button type="button" data-toggle="modal" data-target="#myModal" class="btn btn-default">Eliminar</button>
+        @Html.ActionLink("Volver", "Index", "Locacion", null, new { @class = "btn btn-default" })
+    </div>
+}
+
+@section BodyArea {
+    <div id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content confirm1">
+                <div class="modal-header">
+                    <button type="button" data-dismiss="modal" aria-label="Close" class="close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 id="myModalLabel" class="modal-title">Eliminar</h4>
+                </div>
+                <div class="modal-body">¿ Desea Ud. eliminar la Locación seleccionada ?</div>
+                <div class="modal-footer">
+                    <button type="button" onclick="$('#myModal .modal-content.confirm1').hide(); $('#myModal .modal-content.confirm2').show(); return false;" class="btn btn-primary">Confirmar</button>
+                    @Html.ActionLink("Volver", "Index", "Locacion", null, new { @class = "btn btn-default" })
+                </div>
+            </div>
+            <div class="modal-content confirm2" style="display:none;">
+                <div class="modal-header">
+                    <button type="button" data-dismiss="modal" aria-label="Close" class="close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 id="myModalLabel" class="modal-title">Alerta</h4>
+                </div>
+                <div class="modal-body">
+                    Al eliminar la Locación seleccionada se desasignaran las dependencias.
+                    <ul>
+                        <li>Máquinas</li>
+                        @*<li>Artículos</li>
+                        <li>Terminales</li>*@
+                    </ul>
+                    Y se borrarán las siguentes.
+                    <ul>
+                        <li>Asignación de Articulo</li>
+                        <li>Consumidores</li>
+                        <li>Jerarquías</li>
+                        <li>Transacciones</li>
+                        @*<li>Stock</li>*@ 
+                    </ul>
+                    Los datos serán borrados permantentemente y no podrán ser recuperados.
+                    <br />Si usted está seguro presione el botón 'Eliminar'.
+                </div>
+                <div class="modal-footer">
+                    <button onclick="$('#confirmationForm').submit();" type="button" class="btn btn-primary">Eliminar</button>
+                    @Html.ActionLink("Volver", "Index", "Locacion", null, new { @class = "btn btn-default" })
+                </div>
+            </div>
+        </div>
+    </div>
+}
