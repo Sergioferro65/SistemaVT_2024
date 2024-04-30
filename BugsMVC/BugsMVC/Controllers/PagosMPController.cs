@@ -24,6 +24,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using Json;
 
 namespace BugsMVC.Controllers
 {
@@ -62,7 +65,7 @@ namespace BugsMVC.Controllers
             return Json(new { result = "OK" }, JsonRequestBehavior.AllowGet);
         }
 
-        private void RegistrarPago(string topic, long? id, long? operador)
+        public void RegistrarPago(string topic, long? id, long? operador)
 
 
         {
@@ -114,10 +117,8 @@ namespace BugsMVC.Controllers
             try
             {
 
-
-
-
                 Payment payment = Payment.FindById(id);
+
 
                 if (payment.Errors == null)
                 {
@@ -127,6 +128,8 @@ namespace BugsMVC.Controllers
                     {
 
                         monto = (decimal)payment.TransactionAmount.Value;
+
+                        
 
 
                         /*Log.Info("External Reference:" + payment.ExternalReference + "
@@ -138,16 +141,48 @@ namespace BugsMVC.Controllers
                         Log.Info("Colector ID: " + payment.CollectorId);
                         Log.Info("Issuer ID: " + payment.IssuerId);
 
-                        if (payment.ExternalReference == null)
+                        Maquina maquina=null;
+                        string maqId = string.Empty;
+                        string pos_id = "";
+                        
+                        if (payment.ExternalReference == null )
                         {
-                            payment.ExternalReference = "MAQ_99999";
+                            //Datos del Response Payment
+                            var responsepayment = ObtenerResponsePayment(payment);
+                            Log.Info("Pos_ID: " + responsepayment.pos_id);
+
+
+                            if (responsepayment != null && responsepayment.pos_id != string.Empty)
+                            {
+                                //POS ID
+                                pos_id = responsepayment.pos_id;
+                                Log.Info("Pos ID obtenido:" + pos_id + " para el operador: " + op.Nombre);
+                                maqId = (string)payment.ExternalReference;
+                                maquina = db.Maquinas.Where((x) => x.Mensaje == pos_id && x.OperadorID == op.OperadorID).FirstOrDefault();
+
+                            }
+                            else
+                            { 
+                                //ExternalReference definido
+                                payment.ExternalReference = "MAQ_99999";
+                                Log.Info("External Reference Actualizado:" + payment.ExternalReference + " para el operador: " + op.Nombre);
+                                maqId = (string)payment.ExternalReference;
+                                maquina = db.Maquinas.Where((x) => x.NotasService == maqId && x.OperadorID == op.OperadorID).FirstOrDefault();
+
+                            }
+
+
+                        }
+                        else
+                        {
+                           //External Reference de Payment
+                            Log.Info("External Reference Actualizado:" + payment.ExternalReference + " para el operador: " + op.Nombre);
+                            maqId = (string)payment.ExternalReference;
+                            maquina = db.Maquinas.Where((x) => x.NotasService == maqId && x.OperadorID == op.OperadorID).FirstOrDefault();
+
+
                         }
 
-                        Log.Info("External Reference Actualizado:" + payment.ExternalReference + " para el operador: " + op.Nombre);
-
-                        string maqId = (string)payment.ExternalReference;
-
-                        Maquina maquina = db.Maquinas.Where((x) => x.NotasService == maqId && x.OperadorID == op.OperadorID).FirstOrDefault();
 
                         if (maquina !=null)
                         {
@@ -281,6 +316,22 @@ namespace BugsMVC.Controllers
             }
         }
 
+        private PaymentoResponse ObtenerResponsePayment(Payment payment)
+        {
+            try
+            {
+                JObject jsonobject = payment.GetJsonSource();
+                JsonReader ob = jsonobject.CreateReader();
+                JsonSerializer serializer = new JsonSerializer();
+                PaymentoResponse responsepayment = serializer.Deserialize<PaymentoResponse>(ob);
+                return responsepayment;
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Hubo un error en PagosMPController->ObtenerResponsePayment", ex);
+                return null;
+            }
+        }
 
     }
 }
