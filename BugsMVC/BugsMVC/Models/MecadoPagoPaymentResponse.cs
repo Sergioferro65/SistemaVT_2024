@@ -98,6 +98,7 @@ public class Point_of_interaction
     public string type { get; set; }
 
 }
+
 public class Transaction_details
 {
     public object acquirer_reference { get; set; }
