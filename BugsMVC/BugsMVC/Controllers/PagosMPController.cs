@@ -232,6 +232,7 @@ namespace BugsMVC.Controllers
             }
         }
 
+
         private void EnviarPagoAMaquina(MercadoPagoTable mercadoPago)
         {
             int intentos = 0;
