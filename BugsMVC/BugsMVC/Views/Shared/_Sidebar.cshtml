@@ -288,23 +288,23 @@
                 </li>
             }
 
-            @if (SecurityHelper.IsAllowed((int)Permissions.MercadoPago.Index))
-            {
-                if (!SecurityHelper.IsInRole("SuperAdmin"))
+                @if (SecurityHelper.IsAllowed((int)Permissions.MercadoPago.Index))
                 {
-                    <li class="@Html.isActive(controller: "MercadoPago", action: "Configure")">
-                        <a href="@Url.Action("Configure", "MercadoPago")" title="Configuración">
-                            <span>Configuración Pagos Externos</span>
+                    if (SecurityHelper.IsInRole("SuperAdmin"))
+                    {
+                        <li class="@Html.isActive(controller: "MercadoPago", action: "Configure")">
+                            <a href="@Url.Action("Configure", "MercadoPago")" title="Configuración">
+                                <span>Configuración Pagos Externos</span>
+                            </a>
+                        </li>
+                    }
+
+                   <li class="@Html.isActive(controller: "MercadoPago", action: "Index")">
+                        <a href="@Url.Action("Index", "MercadoPago")" title="Pagos Externos">
+                            <span>Pagos Externos</span>
                         </a>
                     </li>
                 }
-
-               <li class="@Html.isActive(controller: "MercadoPago", action: "Index")">
-                    <a href="@Url.Action("Index", "MercadoPago")" title="Pagos Externos">
-                        <span>Pagos Externos</span>
-                    </a>
-                </li>
-            }
 
             @if (SecurityHelper.IsAllowed((int)Permissions.Informes.CertificadoEntregaEpp))
             {
