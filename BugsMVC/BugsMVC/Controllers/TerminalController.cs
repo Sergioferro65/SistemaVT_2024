@@ -65,6 +65,7 @@ namespace BugsMVC.Controllers
                     FechaAlta = x.FechaAlta.HasValue ? x.FechaAlta.Value.ToString("dd/MM/yyyy HH:mm") : string.Empty,
                     Interfaz = x.Interfaz,
                     Maquina = x.Maquinas.FirstOrDefault() != null ? x.Maquinas.FirstOrDefault().NumeroSerie : "",
+                    Locacion = x.Maquinas.FirstOrDefault() != null ? x.Maquinas.FirstOrDefault().Locacion.Nombre : "",
                     MaquinaAsignada = x.Maquinas.FirstOrDefault() != null ? true : false,
                     ModeloTerminal = x.ModeloTerminal.Modelo,
                     NumeroSerie = x.NumeroSerie,
@@ -118,6 +119,7 @@ namespace BugsMVC.Controllers
                                     FechaAlta = x.FechaAlta,
                                     MaquinaAsignada = x.Maquinas.FirstOrDefault() != null ? true : false,
                                     Maquina = x.Maquinas.FirstOrDefault() != null ? x.Maquinas.FirstOrDefault().NumeroSerie : "",
+                                    Locacion = x.Maquinas.FirstOrDefault() != null ? x.Maquinas.FirstOrDefault().Locacion.Nombre : "",
                                     Habilitados = TerminalViewModel.GetPerifericoDescripcion(x.Perifericos ?? 0),
                                     ModuloComunicacion = x.ModuloComunicacion,
                                     SimCard = x.SimCard,
@@ -144,6 +146,7 @@ namespace BugsMVC.Controllers
             headerRow.CreateCell(amountOfColumns++).SetCellValue("Número de Serie");
             headerRow.CreateCell(amountOfColumns++).SetCellValue("Máquina Asignada");
             headerRow.CreateCell(amountOfColumns++).SetCellValue("Nro. Serie Máquina");
+            headerRow.CreateCell(amountOfColumns++).SetCellValue("Locación");
             headerRow.CreateCell(amountOfColumns++).SetCellValue("Modelo Terminal");
             headerRow.CreateCell(amountOfColumns++).SetCellValue("Versión");
             headerRow.CreateCell(amountOfColumns++).SetCellValue("Interfaz");
@@ -189,6 +192,7 @@ namespace BugsMVC.Controllers
                 row.CreateCell(colIdx++).SetCellValue(terminal.NumeroSerie.ToString());
                 row.CreateCell(colIdx++).SetCellValue(terminal.MaquinaAsignada ? "SI" : "NO");
                 row.CreateCell(colIdx++).SetCellValue(terminal.Maquina);
+                row.CreateCell(colIdx++).SetCellValue(terminal.Locacion);
                 row.CreateCell(colIdx++).SetCellValue(terminal.ModeloTerminal);
                 row.CreateCell(colIdx++).SetCellValue(terminal.Version.ToString());
                 row.CreateCell(colIdx++).SetCellValue(terminal.Interfaz);   

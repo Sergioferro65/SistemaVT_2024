@@ -1129,6 +1129,7 @@ namespace BugsMVC.Controllers
 							l.NombreZona5,                          
                             u.Nombre Nombre,        
                             u.Apellido Apellido,
+                            u.Dni,
                             u.Legajo Legajo,
                             u.Numero,
                             u.ClaveTerminal,

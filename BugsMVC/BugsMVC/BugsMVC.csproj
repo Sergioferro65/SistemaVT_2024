@@ -845,6 +845,7 @@
     <Content Include="Views\Transaccion\DetailsTMal.cshtml" />
     <Content Include="Views\Transaccion\DeleteTMal.cshtml" />
     <Content Include="Views\Transaccion\IndexGrupoMal.cshtml" />
+    <Content Include="Views\Transaccion\DeleteTMRange.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
