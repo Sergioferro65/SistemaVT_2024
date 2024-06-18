@@ -125,7 +125,7 @@ namespace StockNotifier
                     
                 bool devolver = true;
 
-                if (mercadoPago.MercadoPagoEstadoTransmisionId  == (int)MercadoPagoEstadoTransmision.States.EN_PROCESO  && (DateTime.Now - mercadoPago.Fecha).TotalMinutes < tiempoMP)
+                if (mercadoPago.MercadoPagoEstadoTransmisionId  == (int)MercadoPagoEstadoTransmision.States.EN_PROCESO  && (DateTime.Now - mercadoPago.Fecha).TotalMinutes < tiempoMP || (mercadoPago.Reintentos == 3))
                 {
                     devolver = false;
                 }
@@ -165,8 +165,14 @@ namespace StockNotifier
                                     mercadoPago.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.DEVUELTO;
                                 }
                                 else {
-                                    mercadoPago.MercadoPagoEstadoTransmisionId = (int)MercadoPagoEstadoTransmision.States.ERROR_CONEXION;
-                                    mercadoPago.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.AVISO_FALLIDO;
+                                    mercadoPago.Reintentos = mercadoPago.Reintentos + 1;
+                                    writeLog("Devolución MercadoPagoTable Reintento: " + mercadoPago.Reintentos.ToString());
+
+                                    if (mercadoPago.Reintentos == 3)
+                                    {
+                                        mercadoPago.MercadoPagoEstadoTransmisionId = (int)MercadoPagoEstadoTransmision.States.ERROR_CONEXION;
+                                        mercadoPago.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.AVISO_FALLIDO;
+                                    }
                                 }
                                 db.Entry(mercadoPago).State = EntityState.Modified;
                                 db.SaveChanges();
@@ -332,8 +338,7 @@ namespace StockNotifier
                 {
                     log = File.AppendText("StockNotifier.log");
                 }
-                log.WriteLine(DateTime.Now);
-                log.WriteLine(massage);
+                log.WriteLine(DateTime.Now + " - INFO - " + massage);
                 log.WriteLine();
 
                 log.Close();

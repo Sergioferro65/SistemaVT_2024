@@ -337,6 +337,8 @@ namespace BugsMVC.Controllers
                 OperadorID = x.OperadorID,
                 Nombre = x.Nombre,
                 Numero = x.Numero,
+                ClientId = x.ClientId,
+                SecretToken = x.SecretToken,
                 Selected = (x.OperadorID == selectedID)
             });
 
