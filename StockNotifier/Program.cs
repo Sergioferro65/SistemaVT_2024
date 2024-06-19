@@ -161,17 +161,20 @@ namespace StockNotifier
                                 if (payment.Status == PaymentStatus.refunded)
                                 {
                                     writeLog("Actualizando registro en MercadoPagoTable");
+                                    mercadoPago.Descripcion = "Envio ok.";
                                     mercadoPago.MercadoPagoEstadoTransmisionId = (int)MercadoPagoEstadoTransmision.States.ERROR_CONEXION;
                                     mercadoPago.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.DEVUELTO;
                                 }
                                 else {
                                     mercadoPago.Reintentos = mercadoPago.Reintentos + 1;
+                                    mercadoPago.Descripcion = "Se realizo el intento de devolución: " + mercadoPago.Reintentos.ToString();
                                     writeLog("Devolución MercadoPagoTable Reintento: " + mercadoPago.Reintentos.ToString());
 
                                     if (mercadoPago.Reintentos == 3)
                                     {
                                         mercadoPago.MercadoPagoEstadoTransmisionId = (int)MercadoPagoEstadoTransmision.States.ERROR_CONEXION;
                                         mercadoPago.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.AVISO_FALLIDO;
+                                        mercadoPago.Descripcion = "No se logró realizar la devolución, tras 3 intentos.";
                                     }
                                 }
                                 db.Entry(mercadoPago).State = EntityState.Modified;

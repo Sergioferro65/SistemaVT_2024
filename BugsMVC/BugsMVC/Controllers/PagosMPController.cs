@@ -84,7 +84,7 @@ namespace BugsMVC.Controllers
                 //guardar en la db ESTAO F3 y T4
                 Operador op_inexistente = db.Operadores.FirstOrDefault(o => o.Numero == OP_9);
               
-                GuardarNoEncontrados(op_inexistente, "Operador Inexistente");
+                GuardarNoEncontrados(op_inexistente, "Operador Inexistente Número: " + operador.ToString());
                 return;
             }
 
@@ -198,7 +198,7 @@ namespace BugsMVC.Controllers
                         {
 
                             Log.Error("No se encontro la maquina: " + maqId + " para el operador: " + op.Nombre + " del pago en curso");
-
+                            var maquinabusq = maqId;
                             //Se realiza la devolución en un maquina definida para el operador
                             maqId = MAQ_9;
                             Maquina maquina_operador = db.Maquinas.Where((x) => x.NotasService == maqId && x.OperadorID == op.OperadorID).FirstOrDefault();
@@ -221,7 +221,7 @@ namespace BugsMVC.Controllers
                                 db.MercadoPago.Add(paymentEntity);
                                 db.SaveChanges();
 
-                                GuardarenDevolucion(paymentEntity);
+                                GuardarenDevolucion(paymentEntity,"No se encontro la maquina: " + maquinabusq + " para el operador: " + op.Nombre + ". ");
                             }
                             else
                             {
@@ -295,7 +295,7 @@ namespace BugsMVC.Controllers
                     {
                         Log.Error("No se pudo realizar la conexión ",e);
 
-                        GuardarenDevolucion(mercadoPago);
+                        GuardarenDevolucion(mercadoPago, "Error al conectar socket. ");
                     }
 
 
@@ -336,7 +336,7 @@ namespace BugsMVC.Controllers
 
         }
 
-        private Boolean GuardarenDevolucion(MercadoPagoTable mercadoPago)
+        private Boolean GuardarenDevolucion(MercadoPagoTable mercadoPago, string Descripcion)
         {
 
             Boolean result = true;
@@ -359,7 +359,7 @@ namespace BugsMVC.Controllers
 
                     entity.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.DEVUELTO;
                     entity.MercadoPagoEstadoTransmisionId = (int)MercadoPagoEstadoTransmision.States.ERROR_CONEXION;
-                    entity.Descripcion = "Error al conectar socket";
+                    entity.Descripcion = Descripcion + "Se realizó la devolución.";// "Error al conectar socket";
                     entity.FechaModificacionEstadoTransmision = DateTime.Now;
                     Log.Error("No se pudo realizar la conexión y se devolvio el dinero");//, e);
                     db.Entry(entity).State = EntityState.Modified;
@@ -370,7 +370,7 @@ namespace BugsMVC.Controllers
                     Log.Info("Ya se devolvio el comprobante: " + mercadoPago.Comprobante);
                     entity.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.AVISO_FALLIDO;
                     entity.MercadoPagoEstadoTransmisionId = (int)MercadoPagoEstadoTransmision.States.ERROR_CONEXION;
-                    entity.Descripcion = "Error al conectar socket y al conectar servidor de MP";
+                    entity.Descripcion = Descripcion + " y al conectar servidor de MP";// "Error al conectar socket y al conectar servidor de MP";
                     entity.FechaModificacionEstadoTransmision = DateTime.Now;
                     Log.Error("No se pudo realizar la conexión y no se pudo devolver el dinero");//, e)
                     db.Entry(entity).State = EntityState.Modified;
