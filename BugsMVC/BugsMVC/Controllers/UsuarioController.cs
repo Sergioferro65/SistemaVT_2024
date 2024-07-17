@@ -348,7 +348,7 @@ namespace BugsMVC.Controllers
                     }
 
                     HttpContext.Session["UsuariosCargaMasiva"] = UsuariosCargaMasiva;
-                    return RedirectToAction("Reporte");
+                    return RedirectToAction("Index", "Usuario");
                 }
             }
             catch (DbEntityValidationException e)
