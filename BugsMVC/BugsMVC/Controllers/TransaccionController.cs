@@ -1272,9 +1272,38 @@ namespace BugsMVC.Controllers
             return View("DetailsTMal", transaccion);
         }
 
+        public ActionResult DeleteTMRange()
+        {
+            TransaccionDeleteRangeViewModel viewModel = new TransaccionDeleteRangeViewModel();
+            return View(viewModel);
+        }
+
+
         public ActionResult DeleteRange()
         {
             TransaccionDeleteRangeViewModel viewModel = new TransaccionDeleteRangeViewModel();
+            return View(viewModel);
+        }
+
+        [Audit]
+        [HttpPost]
+        public ActionResult DeleteTMRange(TransaccionDeleteRangeViewModel viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                viewModel.FechaHasta = viewModel.FechaHasta.AddHours(23).AddMinutes(59).AddSeconds(59);
+                Guid operadorID = GetUserOperadorID();
+
+                List<TransaccionesMal> transaccionesMal = db.TransaccionesMal.Where(x => x.FechaDescarga.HasValue &&
+                x.FechaDescarga.Value >= viewModel.FechaDesde &&
+                x.FechaDescarga.Value <= viewModel.FechaHasta &&
+                (operadorID == Guid.Empty || x.OperadorID == operadorID)).ToList();
+
+                db.TransaccionesMal.RemoveRange(transaccionesMal);
+                db.SaveChanges();
+                return RedirectToAction("IndexMal");
+            }
+
             return View(viewModel);
         }
 

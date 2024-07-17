@@ -74,7 +74,9 @@ namespace BugsMVC.Models
         [Editable(false)]
         [DisplayName("Efectivo")]
         [DisplayFormat(DataFormatString = "{0}", ApplyFormatInEditMode = true)]
-        [Range(0, 9999999999999999.99, ErrorMessage = "Se superó el tamaño máximo de 9999999999999999,99")]
+        //[Range(0, 9999999999999999.99, ErrorMessage = "Se superó el tamaño máximo de 9999999999999999,99")]
+        [Range(-9999999999999999.99, 9999999999999999.99, ErrorMessage = "El valor está fuera del rango permitido.")]
+
         public decimal Efectivo { get; set; }
 
         [DisplayFormat(DataFormatString = "{0}", ApplyFormatInEditMode = true)]
