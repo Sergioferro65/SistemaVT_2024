@@ -42,6 +42,8 @@ namespace BugsMVC.Controllers
         private string[] tiempoEspera = new string[]{ "0",
                                               ConfigurationManager.AppSettings["TiempoIntento1"],
                                               ConfigurationManager.AppSettings["TiempoIntento2"]};
+        private string MAQ_9 = "MAQ_99999";
+        private int OP_9 = 9999;
 
         private ApplicationUserManager _userManager;
         public ApplicationUserManager UserManager
@@ -66,8 +68,6 @@ namespace BugsMVC.Controllers
         }
 
         public void RegistrarPago(string topic, long? id, long? operador)
-
-
         {
 
             if (id == null)
@@ -81,12 +81,16 @@ namespace BugsMVC.Controllers
             if (op == null)
             {
                 Log.Info("No existe el operador número:" + operador);
+                //guardar en la db ESTAO F3 y T4
+                Operador op_inexistente = db.Operadores.FirstOrDefault(o => o.Numero == OP_9);
+              
+                GuardarNoEncontrados(op_inexistente, "Operador Inexistente Número: " + operador.ToString());
                 return;
             }
 
-            string clientId = ConfigurationManager.AppSettings["ID_" + op.Numero.ToString()];
-            string secretToken = ConfigurationManager.AppSettings["TOKEN_" + op.Numero.ToString()];
-
+            
+            string clientId =  op.ClientId;
+            string secretToken = op.SecretToken;
 
             if (clientId == null || secretToken == null)
             {
@@ -95,8 +99,6 @@ namespace BugsMVC.Controllers
             }
 
             MercadoPago.SDK.CleanConfiguration();
-            //MercadoPago.SDK.ClientId = op.ClientId;
-            //MercadoPago.SDK.ClientSecret = op.SecretToken;
             MercadoPago.SDK.ClientId = clientId;
             MercadoPago.SDK.ClientSecret = secretToken;
 
@@ -129,9 +131,6 @@ namespace BugsMVC.Controllers
 
                         monto = (decimal)payment.TransactionAmount.Value;
 
-                        
-
-
                         /*Log.Info("External Reference:" + payment.ExternalReference + "
                          Sergio Abril 2024 */
                         Log.Info("External Reference:" + payment.ExternalReference +" ,Monto:"+monto);
@@ -161,15 +160,7 @@ namespace BugsMVC.Controllers
                                 maquina = db.Maquinas.Where((x) => x.Mensaje == pos_id && x.OperadorID == op.OperadorID).FirstOrDefault();
 
                             }
-                            else
-                            { 
-                                //ExternalReference definido
-                                payment.ExternalReference = "MAQ_99999";
-                                Log.Info("External Reference Actualizado:" + payment.ExternalReference + " para el operador: " + op.Nombre);
-                                maqId = (string)payment.ExternalReference;
-                                maquina = db.Maquinas.Where((x) => x.NotasService == maqId && x.OperadorID == op.OperadorID).FirstOrDefault();
-
-                            }
+                            //else No contiene ExternalReference ni POS_ID entonces maquina es igual a null y realiza la devolución
 
 
                         }
@@ -184,7 +175,7 @@ namespace BugsMVC.Controllers
                         }
 
 
-                        if (maquina !=null)
+                        if (maquina != null)
                         {
                             var paymentEntity = new MercadoPagoTable
                             {
@@ -205,13 +196,39 @@ namespace BugsMVC.Controllers
                         }
                         else
                         {
+
                             Log.Error("No se encontro la maquina: " + maqId + " para el operador: " + op.Nombre + " del pago en curso");
-                            /* payment.Refund();
-                            if (payment.Status == PaymentStatus.approved) {
-                                Log.Error("Se devolvio el dinero");
-                            } else {
-                                Log.Error("No se pudo devolcer el dinero");
-                            } */
+                            var maquinabusq = maqId;
+                            //Se realiza la devolución en un maquina definida para el operador
+                            maqId = MAQ_9;
+                            Maquina maquina_operador = db.Maquinas.Where((x) => x.NotasService == maqId && x.OperadorID == op.OperadorID).FirstOrDefault();
+
+                            if(maquina_operador!=null)
+                            {
+                                var paymentEntity = new MercadoPagoTable
+                                {
+                                    Fecha = DateTime.Now,
+                                    Monto = monto,
+                                    MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.ACREDITADO,
+                                    MercadoPagoEstadoTransmisionId = (int)MercadoPagoEstadoTransmision.States.EN_PROCESO,
+                                    Maquina = maquina_operador,
+                                    FechaModificacionEstadoTransmision = null,
+                                    Comprobante = id.ToString(),
+                                    Entidad = "MP",
+                                    UrlDevolucion = clientId + "_" + secretToken
+                                };
+
+                                db.MercadoPago.Add(paymentEntity);
+                                db.SaveChanges();
+
+                                GuardarenDevolucion(paymentEntity,"No se encontro la maquina: " + maquinabusq + " para el operador: " + op.Nombre + ". ");
+                            }
+                            else
+                            {
+                                Log.Error("No se encontro la maquina: " + maqId + " para el operador: " + op.Nombre + " proceso de devolución");
+
+                            }
+
                         }
                     }
                     else
@@ -224,10 +241,14 @@ namespace BugsMVC.Controllers
                 else
                 {
                     Log.Error("No se encontró el pago: " + id);
+                    //Registro en db como EstadoFinanciero 3 y estado Transmision 4
+                    GuardarNoEncontrados(op, "ID operación Payment sin datos");
+                    
                 }
             }
             catch (Exception ex)
             {
+                //si en EnviarPagoAMaquina hay un error, entonce viene por esta seccion
                 Log.Error("Hubo un error procesando el pago, la referencia recibida no cumple el formato dado", ex);
             }
         }
@@ -267,53 +288,102 @@ namespace BugsMVC.Controllers
                 }
                 catch (Exception e)
                 {
+
                     volverAintentar = true;
 
                     if (intentos >= 3)
                     {
+                        Log.Error("No se pudo realizar la conexión ",e);
 
-                        MercadoPagoTable entity = db.MercadoPago.Where(x => x.Comprobante == mercadoPago.Comprobante).First();
-
-                        MercadoPago.SDK.CleanConfiguration();
-                        MercadoPago.SDK.ClientId = entity.Maquina.Operador.ClientId;
-                        MercadoPago.SDK.ClientSecret = entity.Maquina.Operador.SecretToken;
-
-                        long id = 0;
-                        long.TryParse(entity.Comprobante, out id);
-                        Payment payment = Payment.FindById(id);
-                        if (payment.Errors == null)
-                        {
-                            payment.Refund();
-                            if (payment.Status == PaymentStatus.approved)
-                            {
-
-                                entity.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.DEVUELTO;
-                                entity.MercadoPagoEstadoTransmisionId = (int)MercadoPagoEstadoTransmision.States.ERROR_CONEXION;
-                                entity.Descripcion = "Error al conectar socket";
-                                entity.FechaModificacionEstadoTransmision = DateTime.Now;
-                                Log.Error("No se pudo realizar la conexión y se devolvio el dinero", e);
-                                db.Entry(entity).State = EntityState.Modified;
-                                db.SaveChanges();
-                            }
-                            else
-                            {
-                                Log.Info("Ya se devolvio el comprobante: " + mercadoPago.Comprobante);
-                                entity.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.AVISO_FALLIDO;
-                                entity.MercadoPagoEstadoTransmisionId = (int)MercadoPagoEstadoTransmision.States.ERROR_CONEXION;
-                                entity.Descripcion = "Error al conectar socket y al conectar servidor de MP";
-                                entity.FechaModificacionEstadoTransmision = DateTime.Now;
-                                Log.Error("No se pudo realizar la conexión y no se pudo devolver el dinero", e);
-                                db.Entry(entity).State = EntityState.Modified;
-                                db.SaveChanges();
-                            }
-                        }
-                        else
-                        {
-                            Log.Info("No se encontro el comprobante: " + mercadoPago.Comprobante);
-                        }
+                        GuardarenDevolucion(mercadoPago, "Error al conectar socket. ");
                     }
+
+
                 }
             }
+        }
+
+
+        private Boolean GuardarNoEncontrados(Operador op, String descripcion)
+        {
+            Boolean result = true;
+
+            var maqId = MAQ_9;
+            Maquina maquina_operador = db.Maquinas.Where((x) => x.NotasService == maqId && x.OperadorID == op.OperadorID).FirstOrDefault();
+
+            //No se realiza la devolución porque no existe el idPayment
+            if(maquina_operador != null)
+            {
+                MercadoPagoTable entity = new MercadoPagoTable
+                {
+                    Fecha = DateTime.Now,
+                    Monto = 0,
+                    Maquina = maquina_operador,
+                    MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.AVISO_FALLIDO,
+                    MercadoPagoEstadoTransmisionId = (int)MercadoPagoEstadoTransmision.States.ERROR_CONEXION,
+                    Descripcion = descripcion,
+                    Comprobante = "99999999",
+                    FechaModificacionEstadoTransmision = DateTime.Now,
+                    Entidad = "MP"
+                };
+
+                db.MercadoPago.Add(entity);
+                db.SaveChanges();
+            }
+
+
+            return result;
+
+        }
+
+        private Boolean GuardarenDevolucion(MercadoPagoTable mercadoPago, string Descripcion)
+        {
+
+            Boolean result = true;
+
+            MercadoPagoTable entity = db.MercadoPago.Where(x => x.Comprobante == mercadoPago.Comprobante).First();
+
+            MercadoPago.SDK.CleanConfiguration();
+            MercadoPago.SDK.ClientId = entity.Maquina.Operador.ClientId;
+            MercadoPago.SDK.ClientSecret = entity.Maquina.Operador.SecretToken;
+
+            long id = 0;
+            long.TryParse(entity.Comprobante, out id);
+            Payment payment = Payment.FindById(id);
+            if (payment.Errors == null)
+            {
+                //*IMPORTANTE COMENTAR payment.Refund(); PARA QUE NO REALICE DEVOLUCIONES EN UN DEBUG DE PRUEBA
+                payment.Refund();
+                if (payment.Status == PaymentStatus.approved)
+                {
+
+                    entity.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.DEVUELTO;
+                    entity.MercadoPagoEstadoTransmisionId = (int)MercadoPagoEstadoTransmision.States.ERROR_CONEXION;
+                    entity.Descripcion = Descripcion + "Se realizó la devolución.";// "Error al conectar socket";
+                    entity.FechaModificacionEstadoTransmision = DateTime.Now;
+                    Log.Error("No se pudo realizar la conexión y se devolvio el dinero");//, e);
+                    db.Entry(entity).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+                else
+                {
+                    Log.Info("Ya se devolvio el comprobante: " + mercadoPago.Comprobante);
+                    entity.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.AVISO_FALLIDO;
+                    entity.MercadoPagoEstadoTransmisionId = (int)MercadoPagoEstadoTransmision.States.ERROR_CONEXION;
+                    entity.Descripcion = Descripcion + " y al conectar servidor de MP";// "Error al conectar socket y al conectar servidor de MP";
+                    entity.FechaModificacionEstadoTransmision = DateTime.Now;
+                    Log.Error("No se pudo realizar la conexión y no se pudo devolver el dinero");//, e)
+                    db.Entry(entity).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+            }
+            else
+            {
+                Log.Info("No se encontro el comprobante: " + mercadoPago.Comprobante);
+            }
+
+
+            return result;
         }
 
         private PaymentoResponse ObtenerResponsePayment(Payment payment)

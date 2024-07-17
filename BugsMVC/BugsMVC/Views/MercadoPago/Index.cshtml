@@ -28,7 +28,11 @@
         <input type="submit" name="Export" id="Export" value="Excel" onclick="exportToExcel();" class="btn btn-default" />
         <input type="hidden" name="jqGridPostData" id="jqGridPostData" />
     }
+
+    @Html.ActionLink("Eliminar Rango", "DeleteRange", null, new { @class = "btn btn-default" })
+
 </div>
+
 <br />
 <div class="jqgrid-responsive mb-lg">
     <table id="jqGridJSON"></table>
@@ -78,15 +82,19 @@
                     { label: 'MercadoPagoId', name: 'MercadoPagoId', hidden: true },
                     { label: 'Operador', name: 'OperadorNombre', hidden : @Json.Encode((!User.IsInRole("SuperAdmin"))) },
                     { label: 'Comprobante', name: 'Comprobante'},
-                    { label: 'Máquina', name: 'MaquinaDescripcion' },
+                    { label: 'No Serie Maquina', name: 'MaquinaDescripcion' },
                     { label: 'Estado Transmisión', name: 'MercadoPagoEstadoTransmisionDescripcion' },
                     { label: 'Estado Financiero', name: 'MercadoPagoEstadoFinancieroDescripcion' },
+                    { label: 'ID Caja MP', name: 'NotaService' },
+                    { label: 'Locacion', name: 'Locacion' },
+                    { label: 'Nro Serie Terminal', name: 'NroSerieTerminal' },
                     { label: 'Monto', name: 'Monto', sorttype: 'number', formatter: 'number', formatoptions:{decimalSeparator:",", thousandsSeparator: ".", decimalPlaces: 2, prefix: "$ "}, searchoptions: { sopt: ['eq'] }  },
                     { label: 'Fecha', name: 'Fecha', search: true, searchOnEnter: true, sorttype: 'date', formatter: 'date', formatoptions: { "srcformat": "d/m/Y H:i:s", "newformat": "d/m/Y H:i:s" }
                         , searchoptions: getDefaultSearchOptionsForDate()
                     },
                     { label: 'Entidad', name: 'Entidad' },
-                    
+                    { label: 'Descripción', name: 'Descripcion' },
+
                 ],
                 viewrecords: true, // show the current page, data rang and total records on the toolbar
                 autowidth: true,
@@ -94,11 +102,12 @@
                 height: 240,
                 rowNum: 20,
                 rowList: [10, 20, 30],
-                loadonce: true, // this is just for the demo
+                loadonce: false, // this is just for the demo
                 caption: "Pagos Externos",
                 hidegrid: false,
                 ignoreCase: true,
-                pager: "#jqGridJSONPager"
+                pager: "#jqGridJSONPager",
+
             });
 
             //
