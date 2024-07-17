@@ -330,6 +330,7 @@
     <Compile Include="Models\ViewModels\Excel\ConsumidoresExcelViewModel.cs" />
     <Compile Include="Models\ViewModels\Grids\ConsumidoresGridViewModel.cs" />
     <Compile Include="Models\ViewModels\JerarquiaViewModel.cs" />
+    <Compile Include="Models\ViewModels\MercadoPagoDeleteRangeViewModel.cs" />
     <Compile Include="Models\ViewModels\Pdf\ConsumidoresPdfViewModel.cs" />
     <Compile Include="Models\ViewModels\TerminalViewModel.cs" />
     <Compile Include="Models\ViewModels\LocacionViewModel.cs" />
@@ -845,6 +846,7 @@
     <Content Include="Views\Transaccion\DetailsTMal.cshtml" />
     <Content Include="Views\Transaccion\DeleteTMal.cshtml" />
     <Content Include="Views\Transaccion\IndexGrupoMal.cshtml" />
+    <Content Include="Views\MercadoPago\DeleteRange.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
