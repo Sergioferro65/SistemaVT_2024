@@ -26,6 +26,15 @@ namespace BugsMVC.Models
         [Range(1, 65535, ErrorMessage = "El Tiempo de Aviso Conexión debe estar entre 1 y 65535")]
         public int TiempoAvisoConexion { get; set; }
 
+        [DisplayName("Client ID")]
+        [StringLength(200)]
+        public string ClientId { get; set; }
+
+        [DisplayName("Secret Token")]
+        [StringLength(200)]
+        public string SecretToken { get; set; }
+        
+
         //public Guid? OperadorAdminID { get; set; }
 
         public bool IsCreate { get; set; }
@@ -45,6 +54,9 @@ namespace BugsMVC.Models
             viewModel.Numero = entity.Numero;
             viewModel.TiempoAvisoConexion = entity.TiempoAvisoConexion;
             viewModel.TiempoAvisoInhibicion = entity.TiempoAvisoInhibicion;
+            viewModel.ClientId = entity.ClientId;
+            viewModel.SecretToken = entity.SecretToken;
+
             //viewModel.OperadorAdminID = entity.OperadorAdminID;
 
             return viewModel;
@@ -57,6 +69,8 @@ namespace BugsMVC.Models
             entity.Numero = this.Numero;
             entity.TiempoAvisoConexion = this.TiempoAvisoConexion;
             entity.TiempoAvisoInhibicion = this.TiempoAvisoInhibicion;
+            entity.ClientId = this.ClientId;
+            entity.SecretToken = this.SecretToken;
             //entity.OperadorAdminID = this.OperadorAdminID;
 
             return entity;

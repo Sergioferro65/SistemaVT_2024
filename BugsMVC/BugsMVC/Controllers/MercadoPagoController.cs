@@ -4,27 +4,21 @@ using BugsMVC.Helpers;
 using BugsMVC.Models;
 using BugsMVC.Models.ViewModels;
 using BugsMVC.Security;
-
-using MercadoPago;
 using MercadoPago.Resources;
-using MercadoPago.DataStructures.Payment;
 using MercadoPago.Common;
-
 using Microsoft.AspNet.Identity;
 using Newtonsoft.Json;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Linq.Dynamic;
-using System.Web;
 using System.Web.Mvc;
+using BugsMVC.Models;
 
 namespace BugsMVC.Controllers
 {
@@ -72,14 +66,45 @@ namespace BugsMVC.Controllers
             return View();
         }
 
+
+        public ActionResult DeleteRange()
+        {
+            MercadoPagoDeleteRangeViewModel viewModel = new MercadoPagoDeleteRangeViewModel();
+            return View(viewModel);
+        }
+
+        [Audit]
+        [HttpPost]
+        public ActionResult DeleteRange(MercadoPagoDeleteRangeViewModel viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                viewModel.FechaHasta = viewModel.FechaHasta.AddHours(23).AddMinutes(59).AddSeconds(59);
+                Guid operadorID = GetUserOperadorID();
+
+                List<MercadoPagoTable> mercadoPagoTables = db.MercadoPago.Where(x => x.Fecha != null &&
+                x.Fecha >= viewModel.FechaDesde &&
+                x.Fecha <= viewModel.FechaHasta &&
+                (operadorID == Guid.Empty || x.Maquina.OperadorID == operadorID)).ToList();
+
+                db.MercadoPago.RemoveRange(mercadoPagoTables);
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+
+            return View(viewModel);
+        }
+
+
         public JsonResult DevolverDinero(string Comprobante)
         {
-            
-            MercadoPago.SDK.CleanConfiguration();
-            MercadoPago.SDK.ClientId = ConfigurationManager.AppSettings["ClientIDMercadoPago"];
-            MercadoPago.SDK.ClientSecret = ConfigurationManager.AppSettings["ClientSecretMercadoPago"];
 
             MercadoPagoTable entity = db.MercadoPago.Where(x => x.Comprobante == Comprobante).First();
+
+            MercadoPago.SDK.CleanConfiguration();
+            MercadoPago.SDK.ClientId = entity.Maquina.Operador.ClientId;
+            MercadoPago.SDK.ClientSecret = entity.Maquina.Operador.SecretToken;
+
             Maquina maquina = db.Maquinas.Where(x => x.MaquinaID == entity.MaquinaId).FirstOrDefault();
             Operador operador = db.Operadores.Where(x => x.OperadorID == maquina.OperadorID).FirstOrDefault();
 
@@ -112,16 +137,6 @@ namespace BugsMVC.Controllers
                     return Json("not found", JsonRequestBehavior.DenyGet);
                 }
 
-
-                    //var mp = new MP(operador.ClientId,
-                    //                operador.SecretToken);
-
-                    //var mp = new MP(ConfigurationManager.AppSettings["ClientIDMercadoPago"],
-                    //                ConfigurationManager.AppSettings["ClientSecretMercadoPago"]);
-
-                    //Hashtable result = mp.refundPayment(Comprobante);
-
-
             }
             else {
                 return Json("Not Found", JsonRequestBehavior.DenyGet);
@@ -130,13 +145,64 @@ namespace BugsMVC.Controllers
             
         }
 
-        public JsonResult GetAllMercadoPagos()
+        //public JsonResult GetAllMercadoPagos()
+        //{
+        //    var operadorID = GetUserOperadorID();
+        //    var mercadoPagoViewModel = db.MercadoPago
+        //        .Where(x => operadorID == Guid.Empty || x.Maquina.OperadorID == operadorID)
+        //        .ToList()
+        //        .OrderByDescending(x => x.Fecha)
+        //        .Select(x => MercadoPagoViewModel.From(
+        //            x,
+        //            (x.Maquina != null) ? x.Maquina.Terminal.NumeroSerie.ToString() : " Terminal NO Registrada",
+        //            (x.Maquina != null && x.Maquina.Locacion != null) ? x.Maquina.Locacion.Nombre.ToString() : "Locación NO Registrada."
+        //        ));
+
+        //    return Json(mercadoPagoViewModel, JsonRequestBehavior.AllowGet);
+        //}
+
+        public JsonResult GetAllMercadoPagos(int rows, int page = 1, int pageSize = 20)
         {
             var operadorID = GetUserOperadorID();
 
-            var mercadoPagoViewModel = db.MercadoPago.Where(x => operadorID == Guid.Empty || x.Maquina.OperadorID == operadorID).ToList().Select(x => MercadoPagoViewModel.From(x));
-            return Json(mercadoPagoViewModel, JsonRequestBehavior.AllowGet);
+            var query = db.MercadoPago
+                .Where(x => operadorID == Guid.Empty || x.Maquina.OperadorID == operadorID)
+                .OrderByDescending(x => x.Fecha);
+
+            var totalRecords = query.Count();
+            var totalPages = (int)Math.Ceiling((float)totalRecords / (float)rows);
+
+
+            var mercadoPagoList = query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList()
+                .Select(x => MercadoPagoViewModel.From(
+                    x,
+                    (x.Maquina != null) ? x.Maquina.Terminal.NumeroSerie.ToString() : " Terminal NO Registrada",
+                    (x.Maquina != null && x.Maquina.Locacion != null) ? x.Maquina.Locacion.Nombre.ToString() : "Locación NO Registrada."
+                ));
+
+            TempData.Keep();
+
+            int pageIndex = Convert.ToInt32(page) - 1;
+            pageSize = rows;
+
+            //mercadoPagoList = mercadoPagoList.Skip(pageIndex * pageSize).Take(pageSize);
+
+            var result = new
+            {
+                total = totalPages,
+                page,
+                records = pageSize,
+                rows = mercadoPagoList
+            };
+
+
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
+
+
 
         [Audit]
         public ActionResult ExportData(string jqGridPostData)
@@ -167,13 +233,16 @@ namespace BugsMVC.Controllers
                             {
                                 Operador = x.Maquina.Operador.Nombre,
                                 Comprobante = x.Comprobante ,
-                                //Maquina = x.Maquina.getDescripcionMaquina(),
                                 Maquina = x.Maquina.NombreAlias != null ? x.Maquina.MarcaModelo.MarcaModeloNombre + " - " + x.Maquina.NumeroSerie + "(" + x.Maquina.NombreAlias + ")" : x.Maquina.MarcaModelo.MarcaModeloNombre + "-" + x.Maquina.NumeroSerie,
-            EstadoTransmision = x.MercadoPagoEstadoTransmision.Descripcion,
+                                EstadoTransmision = x.MercadoPagoEstadoTransmision.Descripcion,
                                 EstadoFinanciero = x.MercadoPagoEstadoFinanciero.Descripcion,
+                                IdCajaMP = x.Maquina.NotasService,
+                                Locacion = (x.Maquina != null && x.Maquina.Locacion != null) ? x.Maquina.Locacion.Nombre.ToString() : "Locación NO Registrada.",
+                                NroSerieTerminal = (x.Maquina != null) ? x.Maquina.Terminal.NumeroSerie.ToString() : " Terminal NO Registrada",
                                 Monto = x.Monto,
                                 Fecha = x.Fecha,
-                                Entidad = x.Entidad 
+                                Entidad = x.Entidad,
+                                x.Descripcion,
                             })
                             .Where(filters);
 
@@ -196,9 +265,13 @@ namespace BugsMVC.Controllers
             headerRow.CreateCell(amountOfColumns++).SetCellValue("Máquina");
             headerRow.CreateCell(amountOfColumns++).SetCellValue("Estado Transmisión");
             headerRow.CreateCell(amountOfColumns++).SetCellValue("Estado Financiero");
+            headerRow.CreateCell(amountOfColumns++).SetCellValue("Id Caja MP");
+            headerRow.CreateCell(amountOfColumns++).SetCellValue("Locacion");
+            headerRow.CreateCell(amountOfColumns++).SetCellValue("Nro Serie Terminal");
             headerRow.CreateCell(amountOfColumns++).SetCellValue("Monto");
             headerRow.CreateCell(amountOfColumns++).SetCellValue("Fecha");
             headerRow.CreateCell(amountOfColumns++).SetCellValue("Entidad");
+            headerRow.CreateCell(amountOfColumns++).SetCellValue("Descripción");
 
             // Define a cell style for the header row values
             XSSFCellStyle headerCellStyle = ExcelHelper.GetHeaderCellStyle(workbook);
@@ -234,9 +307,13 @@ namespace BugsMVC.Controllers
                 row.CreateCell(colIdx++).SetCellValue(mercadoPago.Maquina);
                 row.CreateCell(colIdx++).SetCellValue(mercadoPago.EstadoTransmision);
                 row.CreateCell(colIdx++).SetCellValue(mercadoPago.EstadoFinanciero);
+                row.CreateCell(colIdx++).SetCellValue(mercadoPago.IdCajaMP);
+                row.CreateCell(colIdx++).SetCellValue(mercadoPago.Locacion);
+                row.CreateCell(colIdx++).SetCellValue(mercadoPago.NroSerieTerminal);
                 row.CreateCell(colIdx++).SetCellValue(Convert.ToDouble(mercadoPago.Monto));
                 row.CreateCell(colIdx++).SetCellValue(mercadoPago.Fecha.ToString("dd/MM/yyyy HH:mm"));
                 row.CreateCell(colIdx++).SetCellValue(mercadoPago.Entidad );
+                row.CreateCell(colIdx++).SetCellValue(mercadoPago.Descripcion);
 
                 for (int j = 0; j < colIdx; j++)
                 {

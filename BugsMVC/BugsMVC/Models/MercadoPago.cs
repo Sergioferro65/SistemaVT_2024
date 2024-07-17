@@ -22,6 +22,8 @@ namespace BugsMVC.Models
 
         public string UrlDevolucion { get; set; }
 
+        public int Reintentos { get; set; }
+
         public virtual Maquina Maquina { get; set; }
         public virtual MercadoPagoEstadoTransmision MercadoPagoEstadoTransmision { get; set; }
         public virtual MercadoPagoEstadoFinanciero MercadoPagoEstadoFinanciero { get; set; }
