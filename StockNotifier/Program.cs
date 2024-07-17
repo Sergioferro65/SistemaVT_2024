@@ -17,6 +17,9 @@ using BugsMVC.Controllers;
 using System.Net.Http;
 using System.Threading.Tasks;
 
+using System.Data.SqlClient;
+using System.Data;
+
 namespace StockNotifier
 {
     class Program
@@ -29,135 +32,149 @@ namespace StockNotifier
 
             writeLog("Main");
 
-            db= new BugsContext();
-            
-            var stocks = db.Stocks.ToList();
-            var maquinas = db.Maquinas.ToList();
-            var mercadoPagos = db.MercadoPago;
-            int tiempoMP = 5;
+                db = new BugsContext();
 
-            var mailsStockMuyBajo = new List<Stock>();
-            var mailsStockBajo = new List<Stock>();
-            var mailsMaquinaSinConexion = new List<Maquina>();
-            var mailsMaquinaInhibidas = new List<Maquina>();
+                var stocks = db.Stocks.ToList();
+                var maquinas = db.Maquinas.ToList();
+                var mercadoPagos = db.MercadoPago;
+                int tiempoMP = 5;
 
-            writeLog("Control de stock");
+                var mailsStockMuyBajo = new List<Stock>();
+                var mailsStockBajo = new List<Stock>();
+                var mailsMaquinaSinConexion = new List<Maquina>();
+                var mailsMaquinaInhibidas = new List<Maquina>();
 
-            foreach (var stock in stocks)
-            {
-                if (stock.ArticuloAsignacion.ControlStock && stock.ArticuloAsignacion.AlarmaActiva.HasValue && stock.ArticuloAsignacion.AlarmaActiva.Value && (stock.FechaAviso == null || stock.FechaAviso.Value.Date < DateTime.Now.Date))
+                writeLog("Control de stock");
+
+                foreach (var stock in stocks)
                 {
-                    if (stock.Cantidad < stock.ArticuloAsignacion.AlarmaBajo && stock.Cantidad < stock.ArticuloAsignacion.AlarmaMuyBajo)
+                    if (stock.ArticuloAsignacion.ControlStock && stock.ArticuloAsignacion.AlarmaActiva.HasValue && stock.ArticuloAsignacion.AlarmaActiva.Value && (stock.FechaAviso == null || stock.FechaAviso.Value.Date < DateTime.Now.Date))
                     {
-                        mailsStockMuyBajo.Add(stock);
-                    }
-                    else if (stock.Cantidad < stock.ArticuloAsignacion.AlarmaBajo)
-                    {
-                        mailsStockBajo.Add(stock);
+                        if (stock.Cantidad < stock.ArticuloAsignacion.AlarmaBajo && stock.Cantidad < stock.ArticuloAsignacion.AlarmaMuyBajo)
+                        {
+                            mailsStockMuyBajo.Add(stock);
+                        }
+                        else if (stock.Cantidad < stock.ArticuloAsignacion.AlarmaBajo)
+                        {
+                            mailsStockBajo.Add(stock);
+                        }
                     }
                 }
-            }
 
-            writeLog("Control Maquinas Conectadas");
+                writeLog("Control Maquinas Conectadas");
+                var test = maquinas.Where(x => x.Estado == "Asignada");
 
-            foreach (var maquina in maquinas.Where(x => x.Estado == "Asignada"))
-            {
-                if (maquina.FechaUltimaConexion.HasValue && (DateTime.Now - maquina.FechaUltimaConexion.Value).TotalMinutes >= maquina.Operador.TiempoAvisoConexion)
+                foreach (var maquina in maquinas.Where(x => x.Estado == "Asignada"))
                 {
-                    if (maquina.AlarmaActiva.HasValue && maquina.AlarmaActiva == true
-                        && (maquina.FechaAviso == null || maquina.FechaAviso.Value.Date < DateTime.Now.Date
-                        || (maquina.FechaAviso.Value.Date >= DateTime.Now.Date && maquina.EstadoConexion != "Sin Conexión")))
-                    {
-                        mailsMaquinaSinConexion.Add(maquina);
-                    }
-
-                    if (maquina.EstadoConexion != "Sin Conexión")
-                    {
-                        maquina.FechaEstado = DateTime.Now;
-                        maquina.EstadoConexion = "Sin Conexión";
-                    }
-
-                }
-                else
-                {
-                    if (maquina.FechaUltimoOk.HasValue && (DateTime.Now - maquina.FechaUltimoOk.Value).TotalMinutes >= maquina.Operador.TiempoAvisoInhibicion)
+                    if (maquina.FechaUltimaConexion.HasValue && (DateTime.Now - maquina.FechaUltimaConexion.Value).TotalMinutes >= maquina.Operador.TiempoAvisoConexion)
                     {
                         if (maquina.AlarmaActiva.HasValue && maquina.AlarmaActiva == true
-                            && (maquina.FechaAviso == null || (((DateTime.Now - maquina.FechaUltimaConexion.Value).TotalMinutes < maquina.Operador.TiempoAvisoConexion
-                            && maquina.EstadoConexion != "Inactiva") || maquina.FechaAviso.Value.Date < DateTime.Now.Date && maquina.EstadoConexion != "Inactiva")))
+                        && (maquina.FechaAviso == null || maquina.FechaAviso.Value.Date < DateTime.Now.Date
+                        || (maquina.FechaAviso.Value.Date >= DateTime.Now.Date && maquina.EstadoConexion != "Sin Conexión")))
                         {
-                            mailsMaquinaInhibidas.Add(maquina);
+                            mailsMaquinaSinConexion.Add(maquina);
                         }
 
-                        if (maquina.EstadoConexion != "Inactiva")
+                        if (maquina.EstadoConexion != "Sin Conexión")
                         {
                             maquina.FechaEstado = DateTime.Now;
-                            maquina.EstadoConexion = "Inactiva";
+                            maquina.EstadoConexion = "Sin Conexión";
                         }
+
                     }
                     else
                     {
-                        if (maquina.FechaUltimaConexion.HasValue && maquina.FechaUltimoOk.HasValue
+                        if (maquina.FechaUltimoOk.HasValue && (DateTime.Now - maquina.FechaUltimoOk.Value).TotalMinutes >= maquina.Operador.TiempoAvisoInhibicion)
+                        {
+                            if (maquina.AlarmaActiva.HasValue && maquina.AlarmaActiva == true
+                            && (maquina.FechaAviso == null || (((DateTime.Now - maquina.FechaUltimaConexion.Value).TotalMinutes < maquina.Operador.TiempoAvisoConexion
+                            && maquina.EstadoConexion != "Inactiva") || maquina.FechaAviso.Value.Date < DateTime.Now.Date && maquina.EstadoConexion != "Inactiva")))
+                            {
+                                mailsMaquinaInhibidas.Add(maquina);
+                            }
+
+                            if (maquina.EstadoConexion != "Inactiva")
+                            {
+                                maquina.FechaEstado = DateTime.Now;
+                                maquina.EstadoConexion = "Inactiva";
+                            }
+                        }
+                        else
+                        {
+                            if (maquina.FechaUltimaConexion.HasValue && maquina.FechaUltimoOk.HasValue
                             && (DateTime.Now - maquina.FechaUltimoOk.Value).TotalMinutes < maquina.Operador.TiempoAvisoInhibicion
                             && (DateTime.Now - maquina.FechaUltimaConexion.Value).TotalMinutes < maquina.Operador.TiempoAvisoConexion
                             )
-                        {
-                            if (maquina.EstadoConexion != "Activa")
                             {
-                                maquina.FechaEstado = DateTime.Now;
-                                maquina.EstadoConexion = "Activa";
-                            }
+                                if (maquina.EstadoConexion != "Activa")
+                                {
+                                    maquina.FechaEstado = DateTime.Now;
+                                    maquina.EstadoConexion = "Activa";
+                                }
 
-                            maquina.FechaAviso = null;
+                                maquina.FechaAviso = null;
+                            }
                         }
                     }
-                }
-                db.SaveChanges();
-            }
 
-            writeLog("Control Devoluciones");
+                    // db.SaveChanges();
 
-            foreach (var mercadoPago in mercadoPagos.Where(x=>x.MercadoPagoEstadoFinancieroId == (int)MercadoPagoEstadoFinanciero.States.ACREDITADO
-                                                        && (x.MercadoPagoEstadoTransmisionId != (int)MercadoPagoEstadoTransmision.States.TERMINADO_OK)
-                                                        ).ToList())
-            {
-                writeLog("Maquina:"+mercadoPago.MaquinaId );
-                    
-                bool devolver = true;
+                    var sql = "UPDATE [dbo].[Maquina] SET [FechaEstado] = @FechaEstado, [EstadoConexion] = @EstadoConexion, [FechaAviso] = @FechaAviso WHERE [MaquinaID] = @MaquinaID";
 
-                if (mercadoPago.MercadoPagoEstadoTransmisionId  == (int)MercadoPagoEstadoTransmision.States.EN_PROCESO  && (DateTime.Now - mercadoPago.Fecha).TotalMinutes < tiempoMP || (mercadoPago.Reintentos == 3))
-                {
-                    devolver = false;
+                    db.Database.ExecuteSqlCommand(
+                        sql,
+                        new SqlParameter("@FechaEstado", maquina.FechaEstado),
+                        new SqlParameter("@EstadoConexion", maquina.EstadoConexion),
+                        new SqlParameter("@FechaAviso", maquina.FechaAviso != null ? maquina.FechaAviso : (object)DBNull.Value),
+                        new SqlParameter("@MaquinaID", maquina.MaquinaID)
+                    );
+
                 }
 
-                if (devolver)
+                writeLog("Control Devoluciones");
+
+                foreach (var mercadoPago in mercadoPagos.Where(x => x.MercadoPagoEstadoFinancieroId == (int)MercadoPagoEstadoFinanciero.States.ACREDITADO
+                                                            && (x.MercadoPagoEstadoTransmisionId != (int)MercadoPagoEstadoTransmision.States.TERMINADO_OK)
+                                                            ).ToList())
                 {
-                    //Devolver dinero
-                    Maquina maquina = db.Maquinas.Where(x => x.MaquinaID == mercadoPago.MaquinaId).FirstOrDefault();
-                    Operador operador = db.Operadores.Where(x => x.OperadorID == maquina.OperadorID).FirstOrDefault();
+                    writeLog("Maquina:" + mercadoPago.MaquinaId);
 
-                    
+                    bool devolver = true;
 
-                    if (mercadoPago.Comprobante != "" && mercadoPago.Entidad == "MP" && mercadoPago.UrlDevolucion != null)
+                    if (mercadoPago.MercadoPagoEstadoTransmisionId == (int)MercadoPagoEstadoTransmision.States.EN_PROCESO && (DateTime.Now - mercadoPago.Fecha).TotalMinutes < tiempoMP || (mercadoPago.Reintentos == 3))
                     {
+                        devolver = false;
+                    }
 
-                        writeLog("Devolviendo al Operador:" + operador.ClientId);
-                        
-                        MercadoPago.SDK.CleanConfiguration();
-                        MercadoPago.SDK.ClientId = mercadoPago.UrlDevolucion.Split('_')[0];
-                        MercadoPago.SDK.ClientSecret = mercadoPago.UrlDevolucion.Split('_')[1];
+                    if (devolver)
+                    {
+                        //Devolver dinero
+                        Maquina maquina = db.Maquinas.Where(x => x.MaquinaID == mercadoPago.MaquinaId).FirstOrDefault();
+                        Operador operador = db.Operadores.Where(x => x.OperadorID == maquina.OperadorID).FirstOrDefault();
 
-                        long id = 0;
-                        long.TryParse(mercadoPago.Comprobante, out id);
-                        writeLog("Buscando comprobante "+ mercadoPago.Comprobante + " en MP");
-                        Payment payment = Payment.FindById(id);
-                        
-                        if (payment.Errors == null) {
 
-                            writeLog("Comprobante encontrado");
 
-                            payment.Refund();
-                            writeLog("Respuesta Mercado Pago "+ payment.Status);
+                        if (mercadoPago.Comprobante != "" && mercadoPago.Entidad == "MP" && mercadoPago.UrlDevolucion != null)
+                        {
+
+                            writeLog("Devolviendo al Operador:" + operador.ClientId);
+
+                            MercadoPago.SDK.CleanConfiguration();
+                            MercadoPago.SDK.ClientId = mercadoPago.UrlDevolucion.Split('_')[0];
+                            MercadoPago.SDK.ClientSecret = mercadoPago.UrlDevolucion.Split('_')[1];
+
+                            long id = 0;
+                            long.TryParse(mercadoPago.Comprobante, out id);
+                            writeLog("Buscando comprobante " + mercadoPago.Comprobante + " en MP");
+                            Payment payment = Payment.FindById(id);
+
+                            if (payment.Errors == null)
+                            {
+
+                                writeLog("Comprobante encontrado");
+
+                                payment.Refund();
+                                writeLog("Respuesta Mercado Pago " + payment.Status);
                                 if (payment.Status == PaymentStatus.refunded)
                                 {
                                     writeLog("Actualizando registro en MercadoPagoTable");
@@ -165,7 +182,8 @@ namespace StockNotifier
                                     mercadoPago.MercadoPagoEstadoTransmisionId = (int)MercadoPagoEstadoTransmision.States.ERROR_CONEXION;
                                     mercadoPago.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.DEVUELTO;
                                 }
-                                else {
+                                else
+                                {
                                     mercadoPago.Reintentos = mercadoPago.Reintentos + 1;
                                     mercadoPago.Descripcion = "Se realizo el intento de devolución: " + mercadoPago.Reintentos.ToString();
                                     writeLog("Devolución MercadoPagoTable Reintento: " + mercadoPago.Reintentos.ToString());
@@ -177,24 +195,45 @@ namespace StockNotifier
                                         mercadoPago.Descripcion = "No se logró realizar la devolución, tras 3 intentos.";
                                     }
                                 }
-                                db.Entry(mercadoPago).State = EntityState.Modified;
-                                db.SaveChanges();
+                                //db.Entry(mercadoPago).State = EntityState.Modified;
+                                //db.SaveChanges();
+
+                                var sql = @"
+                                UPDATE [dbo].[MercadoPagoTable]
+                                SET 
+                                    [MercadoPagoEstadoFinancieroId] = @EstadoFinancieroId,
+                                    [MercadoPagoEstadoTransmisionId] = @EstadoTransmisionId,
+                                    [Descripcion] = @Descripcion,
+                                    [Reintentos] = @Reintentos
+                                WHERE 
+                                    [MercadoPagoId] = @MercadoPagoId";
+
+                               var parameters = new[]
+                               {
+                                new SqlParameter("@EstadoFinancieroId", SqlDbType.Int) { Value = mercadoPago.MercadoPagoEstadoFinancieroId },
+                                new SqlParameter("@EstadoTransmisionId", SqlDbType.Int) { Value = mercadoPago.MercadoPagoEstadoTransmisionId },
+                                new SqlParameter("@Descripcion", SqlDbType.NVarChar, -1) { Value = mercadoPago.Descripcion },
+                                new SqlParameter("@Reintentos", SqlDbType.Int) { Value = mercadoPago.Reintentos },
+                                new SqlParameter("@MercadoPagoId", SqlDbType.Int) { Value = mercadoPago.MercadoPagoId}
+                            };
+
+                             db.Database.ExecuteSqlCommand(sql, parameters);
 
                             }
+                            else
+                            {
+
+                                writeLog("No se encontro el pago");
+                                //No se encontró el pago,  no deberia suceder.
+                                //El clientID o secret son incorrectos
+                            }
+                            //MercadoPago entity = db.MercadoPago.Where(x => x.Comprobante == Comprobante).First();
+                        }
                         else
                         {
-
-                            writeLog("No se encontro el pago");
-                            //No se encontró el pago,  no deberia suceder.
-                            //El clientID o secret son incorrectos
-                        }
-                        //MercadoPago entity = db.MercadoPago.Where(x => x.Comprobante == Comprobante).First();
-                    }
-                    else
-                    {
                             //Aca deberia registrar un estado correspondiente cuando el operador no tiene cargado clientID o secretToken.
                             writeLog("Se envia mensaje de rechazo la entidad pagadora");
-                            HttpResponseMessage response = await PagosClienteController.EnviarRechazoAsync(mercadoPago );
+                            HttpResponseMessage response = await PagosClienteController.EnviarRechazoAsync(mercadoPago);
                             if (response.StatusCode == System.Net.HttpStatusCode.OK)
                             {
                                 mercadoPago.MercadoPagoEstadoTransmisionId = (int)MercadoPagoEstadoTransmision.States.ERROR_CONEXION;
@@ -207,25 +246,41 @@ namespace StockNotifier
                                 mercadoPago.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.AVISO_FALLIDO;
                             }
 
-                            db.Entry(mercadoPago).State = EntityState.Modified;
-                            db.SaveChanges();
+                            //db.Entry(mercadoPago).State = EntityState.Modified;
+                            //db.SaveChanges();
+                            var sql = @"
+                                UPDATE [dbo].[MercadoPagoTable]
+                                SET 
+                                    [MercadoPagoEstadoFinancieroId] = @EstadoFinancieroId,
+                                    [MercadoPagoEstadoTransmisionId] = @EstadoTransmisionId
+                                WHERE 
+                                    [MercadoPagoId] = @MercadoPagoId";
+
+                            var parameters = new[]
+                            {
+                                new SqlParameter("@EstadoFinancieroId", SqlDbType.Int) { Value = mercadoPago.MercadoPagoEstadoFinancieroId },
+                                new SqlParameter("@EstadoTransmisionId", SqlDbType.Int) { Value = mercadoPago.MercadoPagoEstadoTransmisionId },
+                                new SqlParameter("@MercadoPagoId", SqlDbType.Int) { Value = mercadoPago.MercadoPagoId}
+                            };
+
+                            db.Database.ExecuteSqlCommand(sql, parameters);
 
                         }
                     }
-            }
+                }
 
-            ProcesarListaStock("SistemaVT - Alarma Stock Muy Bajo", mailsStockMuyBajo);
-            ProcesarListaStock("SistemaVT - Alarma Stock Bajo", mailsStockBajo);
+                ProcesarListaStock("SistemaVT - Alarma Stock Muy Bajo", mailsStockMuyBajo);
+                ProcesarListaStock("SistemaVT - Alarma Stock Bajo", mailsStockBajo);
 
-            ProcesarListaMaquina("SistemaVT - Alarma Máquina Sin Conexión", mailsMaquinaSinConexion);
-            ProcesarListaMaquina("SistemaVT - Alarma Máquina Inactiva", mailsMaquinaInhibidas);
+                ProcesarListaMaquina("SistemaVT - Alarma Máquina Sin Conexión", mailsMaquinaSinConexion);
+                ProcesarListaMaquina("SistemaVT - Alarma Máquina Inactiva", mailsMaquinaInhibidas);
 
             }
 
             catch (Exception ex)
             {
 
-                writeLog(ex.InnerException.Message);
+                writeLog(ex.Message);
 
 
             }
@@ -333,14 +388,21 @@ namespace StockNotifier
             {
                 StreamWriter log;
 
-                if (!File.Exists("StockNotifier.log"))
+                //Uso de rutas absolutas para los archivos de log en lugar de rutas relativas
+                string logDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                string logFilePath = Path.Combine(logDirectory, "StockNotifier.log");
+
+
+                if (!File.Exists(logFilePath))
                 {
-                    log = new StreamWriter("StockNotifier.log");
+                    log = new StreamWriter(logFilePath);
                 }
                 else
                 {
-                    log = File.AppendText("StockNotifier.log");
+                    log = File.AppendText(logFilePath);
                 }
+
+
                 log.WriteLine(DateTime.Now + " - INFO - " + massage);
                 log.WriteLine();
 

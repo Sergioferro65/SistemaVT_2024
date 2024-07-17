@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
 using System.Linq;
 using System.Web;
+using System.Web.UI.WebControls.WebParts;
 
 namespace BugsMVC.Models.ViewModels
 {
@@ -25,6 +28,12 @@ namespace BugsMVC.Models.ViewModels
 
         public string UrlDevolucion { get; set; }
 
+        public string NroSerieTerminal { get; set; }
+
+        public string Locacion { get; set; }
+
+        public string NotaService { get; set; }
+
         public static MercadoPagoViewModel From(MercadoPagoTable entity)
         {
             MercadoPagoViewModel viewModel = new MercadoPagoViewModel();
@@ -45,6 +54,34 @@ namespace BugsMVC.Models.ViewModels
             viewModel.OperadorNombre = entity.Maquina.Operador.Nombre;
             viewModel.Entidad = entity.Entidad;
             viewModel.UrlDevolucion = entity.UrlDevolucion;
+
+            return viewModel;
+        }
+
+        public static MercadoPagoViewModel From(MercadoPagoTable entity, string nroserieterminal, string locacion)
+        {
+            MercadoPagoViewModel viewModel = new MercadoPagoViewModel();
+            viewModel.MercadoPagoId = entity.MercadoPagoId;
+            viewModel.Fecha = entity.Fecha;
+            viewModel.Monto = entity.Monto;
+            viewModel.MaquinaId = entity.MaquinaId;
+            viewModel.MercadoPagoEstadoFinancieroId = entity.MercadoPagoEstadoFinancieroId;
+            viewModel.MercadoPagoEstadoTransmisionId = entity.MercadoPagoEstadoTransmisionId;
+            viewModel.Comprobante = entity.Comprobante;
+            viewModel.MercadoPagoEstadoFinancieroDescripcion = entity.MercadoPagoEstadoFinanciero.Descripcion;
+            viewModel.MercadoPagoEstadoTransmisionDescripcion = entity.MercadoPagoEstadoTransmision.Descripcion;
+            viewModel.Descripcion = entity.Descripcion;
+            viewModel.FechaModificacionEstadoTransmision = entity.FechaModificacionEstadoTransmision;
+            viewModel.MaquinaDescripcion = entity.Maquina.getDescripcionMaquina();
+            viewModel.MostrarDevolverDinero = entity.MercadoPagoEstadoFinancieroId == (int)MercadoPagoEstadoFinanciero.States.ACREDITADO ||
+                                              entity.MercadoPagoEstadoTransmisionId == (int)MercadoPagoEstadoTransmision.States.TERMINADO_MAL;
+            viewModel.OperadorNombre = entity.Maquina.Operador.Nombre;
+            viewModel.Entidad = entity.Entidad;
+            viewModel.UrlDevolucion = entity.UrlDevolucion;
+            viewModel.NroSerieTerminal = nroserieterminal;
+            viewModel.Locacion = locacion;
+            viewModel.NotaService = entity.Maquina.NotasService;
+
             return viewModel;
         }
 
