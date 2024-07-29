@@ -251,6 +251,38 @@ namespace BugsMVC.Models
         [Range(0, 9999999999999999.99, ErrorMessage = "Se superó el tamaño máximo de 9999999999999999,99")]
         public decimal? DescuentoPrecio5 { get; set; }
 
+
+        [DisplayName("Precio Venta 6")]
+        [DisplayFormat(DataFormatString = "{0}", ApplyFormatInEditMode = true)]
+        [Range(0, 9999999999999999.99, ErrorMessage = "Se superó el tamaño máximo de 9999999999999999,99")]
+        public decimal? DescuentoPrecio6 { get; set; }
+
+
+        [DisplayName("Precio Venta 7")]
+        [DisplayFormat(DataFormatString = "{0}", ApplyFormatInEditMode = true)]
+        [Range(0, 9999999999999999.99, ErrorMessage = "Se superó el tamaño máximo de 9999999999999999,99")]
+        public decimal? DescuentoPrecio7 { get; set; }
+
+
+        [DisplayName("Precio Venta 8")]
+        [DisplayFormat(DataFormatString = "{0}", ApplyFormatInEditMode = true)]
+        [Range(0, 9999999999999999.99, ErrorMessage = "Se superó el tamaño máximo de 9999999999999999,99")]
+        public decimal? DescuentoPrecio8 { get; set; }
+
+
+        [DisplayName("Precio Venta 9")]
+        [DisplayFormat(DataFormatString = "{0}", ApplyFormatInEditMode = true)]
+        [Range(0, 9999999999999999.99, ErrorMessage = "Se superó el tamaño máximo de 9999999999999999,99")]
+        public decimal? DescuentoPrecio9 { get; set; }
+
+
+        [DisplayName("Precio Venta 10")]
+        [DisplayFormat(DataFormatString = "{0}", ApplyFormatInEditMode = true)]
+        [Range(0, 9999999999999999.99, ErrorMessage = "Se superó el tamaño máximo de 9999999999999999,99")]
+        public decimal? DescuentoPrecio10 { get; set; }
+
+
+
         [DisplayName("Valor Descuento 1")]
         [DisplayFormat(DataFormatString = "{0}", ApplyFormatInEditMode = true)]
         [Range(0, 9999999999999999.99, ErrorMessage = "Se superó el tamaño máximo de 9999999999999999,99")]
@@ -275,6 +307,33 @@ namespace BugsMVC.Models
         [DisplayFormat(DataFormatString = "{0}", ApplyFormatInEditMode = true)]
         [Range(0, 9999999999999999.99, ErrorMessage = "Se superó el tamaño máximo de 9999999999999999,99")]
         public decimal? DescuentoValor5 { get; set; }
+
+
+        [DisplayName("Valor Descuento 6")]
+        [DisplayFormat(DataFormatString = "{0}", ApplyFormatInEditMode = true)]
+        [Range(0, 9999999999999999.99, ErrorMessage = "Se superó el tamaño máximo de 9999999999999999,99")]
+        public decimal? DescuentoValor6 { get; set; }
+
+        [DisplayName("Valor Descuento 7")]
+        [DisplayFormat(DataFormatString = "{0}", ApplyFormatInEditMode = true)]
+        [Range(0, 9999999999999999.99, ErrorMessage = "Se superó el tamaño máximo de 9999999999999999,99")]
+        public decimal? DescuentoValor7 { get; set; }
+
+        [DisplayName("Valor Descuento 8")]
+        [DisplayFormat(DataFormatString = "{0}", ApplyFormatInEditMode = true)]
+        [Range(0, 9999999999999999.99, ErrorMessage = "Se superó el tamaño máximo de 9999999999999999,99")]
+        public decimal? DescuentoValor8 { get; set; }
+
+        [DisplayName("Valor Descuento 9")]
+        [DisplayFormat(DataFormatString = "{0}", ApplyFormatInEditMode = true)]
+        [Range(0, 9999999999999999.99, ErrorMessage = "Se superó el tamaño máximo de 9999999999999999,99")]
+        public decimal? DescuentoValor9 { get; set; }
+
+        [DisplayName("Valor Descuento 10")]
+        [DisplayFormat(DataFormatString = "{0}", ApplyFormatInEditMode = true)]
+        [Range(0, 9999999999999999.99, ErrorMessage = "Se superó el tamaño máximo de 9999999999999999,99")]
+        public decimal? DescuentoValor10 { get; set; }
+
 
         [DisplayName("Descuento Porcentual")]
         [DisplayFormat(DataFormatString = "{0}", ApplyFormatInEditMode = true)]
@@ -323,7 +382,13 @@ namespace BugsMVC.Models
                 "Precio venta 2: $" + (DescuentoPrecio2.HasValue ? DescuentoPrecio2.ToString() : "0") + ", Valor descuento 2: $" + (DescuentoValor2.HasValue ? DescuentoValor2.ToString() : "0") + Environment.NewLine +
                 "Precio venta 3: $" + (DescuentoPrecio3.HasValue ? DescuentoPrecio3.ToString() : "0") + ", Valor descuento 3: $" + (DescuentoValor3.HasValue ? DescuentoValor3.ToString() : "0") + Environment.NewLine +
                 "Precio venta 4: $" + (DescuentoPrecio4.HasValue ? DescuentoPrecio4.ToString() : "0") + ", Valor descuento 4: $" + (DescuentoValor4.HasValue ? DescuentoValor4.ToString() : "0") + Environment.NewLine +
-                "Precio venta 5: $" + (DescuentoPrecio5.HasValue ? DescuentoPrecio5.ToString() : "0") + ", Valor descuento 5: $" + (DescuentoValor5.HasValue ? DescuentoValor5.ToString() : "0"));
+                "Precio venta 5: $" + (DescuentoPrecio5.HasValue ? DescuentoPrecio5.ToString() : "0") + ", Valor descuento 5: $" + (DescuentoValor5.HasValue ? DescuentoValor5.ToString() : "0") + Environment.NewLine +
+                "Precio venta 6: $" + (DescuentoPrecio6.HasValue ? DescuentoPrecio6.ToString() : "0") + ", Valor descuento 6: $" + (DescuentoValor6.HasValue ? DescuentoValor6.ToString() : "0") + Environment.NewLine +
+                "Precio venta 7: $" + (DescuentoPrecio7.HasValue ? DescuentoPrecio7.ToString() : "0") + ", Valor descuento 7: $" + (DescuentoValor7.HasValue ? DescuentoValor7.ToString() : "0") + Environment.NewLine +
+                "Precio venta 8: $" + (DescuentoPrecio8.HasValue ? DescuentoPrecio8.ToString() : "0") + ", Valor descuento 8: $" + (DescuentoValor8.HasValue ? DescuentoValor8.ToString() : "0") + Environment.NewLine +
+                "Precio venta 9: $" + (DescuentoPrecio9.HasValue ? DescuentoPrecio9.ToString() : "0") + ", Valor descuento 9: $" + (DescuentoValor9.HasValue ? DescuentoValor9.ToString() : "0") + Environment.NewLine +
+                "Precio venta 10: $" + (DescuentoPrecio10.HasValue ? DescuentoPrecio10.ToString() : "0") + ", Valor descuento 10: $" + (DescuentoValor10.HasValue ? DescuentoValor10.ToString() : "0"));
+
             }
         }
         public void DesasignarMaquina()
@@ -349,11 +414,21 @@ namespace BugsMVC.Models
             DescuentoPrecio3 = null;
             DescuentoPrecio4 = null;
             DescuentoPrecio5 = null;
+            DescuentoPrecio6 = null;
+            DescuentoPrecio7 = null;
+            DescuentoPrecio8 = null;
+            DescuentoPrecio9 = null;
+            DescuentoPrecio10 = null;
             DescuentoValor1 = null;
             DescuentoValor2 = null;
             DescuentoValor3 = null;
             DescuentoValor4 = null;
             DescuentoValor5 = null;
+            DescuentoValor6 = null;
+            DescuentoValor7 = null;
+            DescuentoValor8 = null;
+            DescuentoValor9 = null;
+            DescuentoValor10 = null;
 
             ContadorVentasParcial = 0;
             MontoVentasParcial = 0;

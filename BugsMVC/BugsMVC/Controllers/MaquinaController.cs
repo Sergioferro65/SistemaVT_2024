@@ -375,7 +375,7 @@ namespace BugsMVC.Controllers
         [Audit]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "FechaEstado,MaquinaID,Zona,NumeroSerie,NombreAlias,Ubicacion,Estado,Mensaje,NotasService,ContadorVentasParcial,MontoVentasParcial,ContadorVentasHistorico,MontoVentasHistorico,FechaUltimoService,FechaUltimaRecaudacion,FechaUltimaReposicion,EfectivoRecaudado,SoloVentaEfectivo,ValorVenta,Decimales,FactorEscala,TiempoSesion,CreditoMaximoCash,ValorChannelA,ValorChannelB,ValorChannelC,ValorChannelD,ValorChannelE,ValorChannelF,ValorBillete1,ValorBillete2,ValorBillete3,ValorBillete4,ValorBillete5,ValorBillete6,LocacionID,MarcaModeloID,TerminalID,OperadorID,CheckAsignarMaquina,ShowDetails,AlarmaActiva,FechaAviso,MostrarPanelDescuentos,MostrarDatosOpcionales,FechaUltimoOk,FechaUltimaConexion,EstadoConexion,DescuentoPrecio1,DescuentoPrecio2,DescuentoPrecio3,DescuentoPrecio4,DescuentoPrecio5,DescuentoValor1,DescuentoValor2,DescuentoValor3,DescuentoValor4,DescuentoValor5,DescuentoPorcentual,TipoProductoID")] Maquina maquina)
+        public ActionResult Create([Bind(Include = "FechaEstado,MaquinaID,Zona,NumeroSerie,NombreAlias,Ubicacion,Estado,Mensaje,NotasService,ContadorVentasParcial,MontoVentasParcial,ContadorVentasHistorico,MontoVentasHistorico,FechaUltimoService,FechaUltimaRecaudacion,FechaUltimaReposicion,EfectivoRecaudado,SoloVentaEfectivo,ValorVenta,Decimales,FactorEscala,TiempoSesion,CreditoMaximoCash,ValorChannelA,ValorChannelB,ValorChannelC,ValorChannelD,ValorChannelE,ValorChannelF,ValorBillete1,ValorBillete2,ValorBillete3,ValorBillete4,ValorBillete5,ValorBillete6,LocacionID,MarcaModeloID,TerminalID,OperadorID,CheckAsignarMaquina,ShowDetails,AlarmaActiva,FechaAviso,MostrarPanelDescuentos,MostrarDatosOpcionales,FechaUltimoOk,FechaUltimaConexion,EstadoConexion,DescuentoPrecio1,DescuentoPrecio2,DescuentoPrecio3,DescuentoPrecio4,DescuentoPrecio5,,DescuentoPrecio6,DescuentoPrecio7,DescuentoPrecio8,DescuentoPrecio9,DescuentoPrecio10,DescuentoValor1,DescuentoValor2,DescuentoValor3,DescuentoValor4,DescuentoValor5,DescuentoValor6,DescuentoValor7,DescuentoValor8,DescuentoValor9,DescuentoValor10,DescuentoPorcentual,TipoProductoID")] Maquina maquina)
         {
             var operadorID = GetUserOperadorID();
 
@@ -552,7 +552,7 @@ namespace BugsMVC.Controllers
         [Audit]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "FechaAviso,FechaEstado,MaquinaID,Zona,NumeroSerie,NombreAlias,Ubicacion,Estado,Mensaje,NotasService,ContadorVentasParcial,MontoVentasParcial,ContadorVentasHistorico,MontoVentasHistorico,FechaUltimoService,FechaUltimaRecaudacion,FechaUltimaReposicion,TotalRecaudado,SoloVentaEfectivo,ValorVenta,Decimales,FactorEscala,TiempoSesion,CreditoMaximoCash,ValorChannelA,ValorChannelB,ValorChannelC,ValorChannelD,ValorChannelE,ValorChannelF,ValorBillete1,ValorBillete2,ValorBillete3,ValorBillete4,ValorBillete5,ValorBillete6,LocacionID,MarcaModeloID,TerminalID,OperadorID,CheckAsignarMaquina,ShowDetails,AlarmaActiva,MostrarDatosOpcionales,FechaUltimoOk,EstadoConexion,FechaUltimaConexion,DescuentoPrecio1,DescuentoPrecio2,DescuentoPrecio3,DescuentoPrecio4,DescuentoPrecio5,DescuentoValor1,DescuentoValor2,DescuentoValor3,DescuentoValor4,DescuentoValor5,DescuentoPorcentual,TipoProductoID")] Maquina maquina)
+        public ActionResult Edit([Bind(Include = "FechaAviso,FechaEstado,MaquinaID,Zona,NumeroSerie,NombreAlias,Ubicacion,Estado,Mensaje,NotasService,ContadorVentasParcial,MontoVentasParcial,ContadorVentasHistorico,MontoVentasHistorico,FechaUltimoService,FechaUltimaRecaudacion,FechaUltimaReposicion,TotalRecaudado,SoloVentaEfectivo,ValorVenta,Decimales,FactorEscala,TiempoSesion,CreditoMaximoCash,ValorChannelA,ValorChannelB,ValorChannelC,ValorChannelD,ValorChannelE,ValorChannelF,ValorBillete1,ValorBillete2,ValorBillete3,ValorBillete4,ValorBillete5,ValorBillete6,LocacionID,MarcaModeloID,TerminalID,OperadorID,CheckAsignarMaquina,ShowDetails,AlarmaActiva,MostrarDatosOpcionales,FechaUltimoOk,EstadoConexion,FechaUltimaConexion,DescuentoPrecio1,DescuentoPrecio2,DescuentoPrecio3,DescuentoPrecio4,DescuentoPrecio5,DescuentoPrecio6,DescuentoPrecio7,DescuentoPrecio8,DescuentoPrecio9,DescuentoPrecio10,DescuentoValor1,DescuentoValor2,DescuentoValor3,DescuentoValor4,DescuentoValor5,DescuentoValor6,DescuentoValor7,DescuentoValor8,DescuentoValor9,DescuentoValor10,DescuentoPorcentual,TipoProductoID")] Maquina maquina)
         {
             var operadorID = GetUserOperadorID() == Guid.Empty ? maquina.OperadorID : GetUserOperadorID();
             ViewBag.OperadorID = operadorID;
@@ -572,6 +572,7 @@ namespace BugsMVC.Controllers
                     ModelState.AddModelError("Zona", "Por favor seleccione una Zona.");
             }
 
+
             if (ModelState.IsValid)
             {
                 ActualizarMaquinaJonathan(maquina);
@@ -586,6 +587,15 @@ namespace BugsMVC.Controllers
                 }
                 db.Entry(maquina).State = EntityState.Modified;
                 db.SaveChanges();
+
+                //desasigna la terminal
+                if (!maquina.CheckAsignarMaquina)
+                {
+                    // Modificar directamente el campo MaquinaID en la base de datos
+                    db.Database.ExecuteSqlCommand("UPDATE Terminal SET MaquinaID = NULL WHERE MaquinaID = {0}", maquina.MaquinaID);
+
+                }
+
                 return RedirectToAction("Index");
             }
 

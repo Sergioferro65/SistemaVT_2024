@@ -72,7 +72,7 @@ namespace BugsMVC.Models.ViewModels
             viewModel.MercadoPagoEstadoTransmisionDescripcion = entity.MercadoPagoEstadoTransmision.Descripcion;
             viewModel.Descripcion = entity.Descripcion;
             viewModel.FechaModificacionEstadoTransmision = entity.FechaModificacionEstadoTransmision;
-            viewModel.MaquinaDescripcion = entity.Maquina.getDescripcionMaquina();
+            viewModel.MaquinaDescripcion = entity.Maquina.NumeroSerie;// entity.Maquina.getDescripcionMaquina();
             viewModel.MostrarDevolverDinero = entity.MercadoPagoEstadoFinancieroId == (int)MercadoPagoEstadoFinanciero.States.ACREDITADO ||
                                               entity.MercadoPagoEstadoTransmisionId == (int)MercadoPagoEstadoTransmision.States.TERMINADO_MAL;
             viewModel.OperadorNombre = entity.Maquina.Operador.Nombre;
