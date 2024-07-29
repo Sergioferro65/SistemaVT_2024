@@ -82,12 +82,12 @@
                     { label: 'MercadoPagoId', name: 'MercadoPagoId', hidden: true },
                     { label: 'Operador', name: 'OperadorNombre', hidden : @Json.Encode((!User.IsInRole("SuperAdmin"))) },
                     { label: 'Comprobante', name: 'Comprobante'},
-                    { label: 'No Serie Maquina', name: 'MaquinaDescripcion' },
+                    { label: 'N° Serie Maquina', name: 'MaquinaDescripcion' },
                     { label: 'Estado Transmisión', name: 'MercadoPagoEstadoTransmisionDescripcion' },
                     { label: 'Estado Financiero', name: 'MercadoPagoEstadoFinancieroDescripcion' },
                     { label: 'ID Caja MP', name: 'NotaService' },
                     { label: 'Locacion', name: 'Locacion' },
-                    { label: 'Nro Serie Terminal', name: 'NroSerieTerminal' },
+                    { label: 'N° Serie Terminal', name: 'NroSerieTerminal' },
                     { label: 'Monto', name: 'Monto', sorttype: 'number', formatter: 'number', formatoptions:{decimalSeparator:",", thousandsSeparator: ".", decimalPlaces: 2, prefix: "$ "}, searchoptions: { sopt: ['eq'] }  },
                     { label: 'Fecha', name: 'Fecha', search: true, searchOnEnter: true, sorttype: 'date', formatter: 'date', formatoptions: { "srcformat": "d/m/Y H:i:s", "newformat": "d/m/Y H:i:s" }
                         , searchoptions: getDefaultSearchOptionsForDate()
@@ -113,7 +113,12 @@
             //
             // Filtering by Columns
             //
-            gridJSON.jqGrid('filterToolbar', { stringResult: true, searchOnEnter: false, defaultSearch: "cn" });
+            //gridJSON.jqGrid('filterToolbar', { stringResult: true, searchOnEnter: true, defaultSearch: "cn" });
+            gridJSON.jqGrid('filterToolbar', {
+                stringResult: true, searchOnEnter: true, defaultSearch: "cn", beforeSearch: function () {
+                    return false;
+                }
+            });
 
 
         });

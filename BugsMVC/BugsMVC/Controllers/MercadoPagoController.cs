@@ -25,6 +25,9 @@ namespace BugsMVC.Controllers
     [AuthorizeRoles]
     public class MercadoPagoController : BaseController
     {
+        private static readonly log4net.ILog Log =
+    log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private BugsContext db = new BugsContext();
 
         public ActionResult Index()
@@ -99,50 +102,58 @@ namespace BugsMVC.Controllers
         public JsonResult DevolverDinero(string Comprobante)
         {
 
-            MercadoPagoTable entity = db.MercadoPago.Where(x => x.Comprobante == Comprobante).First();
-
-            MercadoPago.SDK.CleanConfiguration();
-            MercadoPago.SDK.ClientId = entity.Maquina.Operador.ClientId;
-            MercadoPago.SDK.ClientSecret = entity.Maquina.Operador.SecretToken;
-
-            Maquina maquina = db.Maquinas.Where(x => x.MaquinaID == entity.MaquinaId).FirstOrDefault();
-            Operador operador = db.Operadores.Where(x => x.OperadorID == maquina.OperadorID).FirstOrDefault();
-
-            if (entity != null)
+            try
             {
-                long id = 0;
-                long.TryParse(entity.Comprobante, out id);
-                Payment payment = Payment.FindById(id);
-                if (payment.Errors == null)
-                {
-                    payment.Refund();
 
-                    if (payment.Status == PaymentStatus.approved)
+                MercadoPagoTable entity = db.MercadoPago.Where(x => x.Comprobante == Comprobante).First();
+
+                MercadoPago.SDK.CleanConfiguration();
+                MercadoPago.SDK.ClientId = entity.Maquina.Operador.ClientId;
+                MercadoPago.SDK.ClientSecret = entity.Maquina.Operador.SecretToken;
+
+                Maquina maquina = db.Maquinas.Where(x => x.MaquinaID == entity.MaquinaId).FirstOrDefault();
+                Operador operador = db.Operadores.Where(x => x.OperadorID == maquina.OperadorID).FirstOrDefault();
+
+                if (entity != null)
+                {
+                    long id = 0;
+                    long.TryParse(entity.Comprobante, out id);
+                    Payment payment = Payment.FindById(id);
+                    if (payment.Errors == null)
                     {
+                        payment.Refund();
+
+                        if (payment.Status == PaymentStatus.approved)
+                        {
                         
 
-                        entity.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.DEVUELTO;
+                            entity.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.DEVUELTO;
 
-                        db.Entry(entity).State = EntityState.Modified;
-                        db.SaveChanges();
+                            db.Entry(entity).State = EntityState.Modified;
+                            db.SaveChanges();
 
-                        return Json("", JsonRequestBehavior.AllowGet);
+                            return Json("", JsonRequestBehavior.AllowGet);
+                        }
+                        else
+                        {
+                            return Json("not approved", JsonRequestBehavior.DenyGet);
+                        }
                     }
-                    else
-                    {
-                        return Json("not approved", JsonRequestBehavior.DenyGet);
+                    else {
+                        return Json("not found", JsonRequestBehavior.DenyGet);
                     }
+
                 }
                 else {
-                    return Json("not found", JsonRequestBehavior.DenyGet);
+                    return Json("Not Found", JsonRequestBehavior.DenyGet);
                 }
-
             }
-            else {
+            catch (Exception ex)
+            {    
+                Log.Error("Hubo un error  devolver Dinero", ex);
                 return Json("Not Found", JsonRequestBehavior.DenyGet);
             }
 
-            
         }
 
         //public JsonResult GetAllMercadoPagos()
@@ -194,7 +205,7 @@ namespace BugsMVC.Controllers
             {
                 total = totalPages,
                 page,
-                records = pageSize,
+                records = totalRecords,
                 rows = mercadoPagoList
             };
 
@@ -233,7 +244,7 @@ namespace BugsMVC.Controllers
                             {
                                 Operador = x.Maquina.Operador.Nombre,
                                 Comprobante = x.Comprobante ,
-                                Maquina = x.Maquina.NombreAlias != null ? x.Maquina.MarcaModelo.MarcaModeloNombre + " - " + x.Maquina.NumeroSerie + "(" + x.Maquina.NombreAlias + ")" : x.Maquina.MarcaModelo.MarcaModeloNombre + "-" + x.Maquina.NumeroSerie,
+                                Maquina = x.Maquina.NumeroSerie, //x.Maquina.NombreAlias != null ? x.Maquina.MarcaModelo.MarcaModeloNombre + " - " + x.Maquina.NumeroSerie + "(" + x.Maquina.NombreAlias + ")" : x.Maquina.MarcaModelo.MarcaModeloNombre + "-" + x.Maquina.NumeroSerie,
                                 EstadoTransmision = x.MercadoPagoEstadoTransmision.Descripcion,
                                 EstadoFinanciero = x.MercadoPagoEstadoFinanciero.Descripcion,
                                 IdCajaMP = x.Maquina.NotasService,
@@ -262,7 +273,7 @@ namespace BugsMVC.Controllers
             if (esSuperAdmin)
                 headerRow.CreateCell(amountOfColumns++).SetCellValue("Operador");
             headerRow.CreateCell(amountOfColumns++).SetCellValue("Comprobante");
-            headerRow.CreateCell(amountOfColumns++).SetCellValue("Máquina");
+            headerRow.CreateCell(amountOfColumns++).SetCellValue("N° Serie Maquina");
             headerRow.CreateCell(amountOfColumns++).SetCellValue("Estado Transmisión");
             headerRow.CreateCell(amountOfColumns++).SetCellValue("Estado Financiero");
             headerRow.CreateCell(amountOfColumns++).SetCellValue("Id Caja MP");

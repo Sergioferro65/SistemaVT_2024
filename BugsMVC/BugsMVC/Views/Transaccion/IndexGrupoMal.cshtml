@@ -24,6 +24,41 @@
 
 <script>
             (function (window, document, $, undefined) {
+                   $('body').append("<div id='myModal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true' class='modal fade'>" +
+                       "<div class='modal-dialog' role='document'> " +
+                       "<div class='modal-content'>" +
+                       "<div class='modal-header'> " +
+                       "<button type='button' class='close' data-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>" +
+                       "<h4 class='modal-title'>Eliminar Grupo de transacciones mal</h4>" + "</div>" +
+                          " <div class='modal-body'>" +
+                              " <p>¿ Desea Ud. eliminar todos los registros de Grupo de transacciones mal ?</p>" +
+                          " </div>" +
+                          " <div class='modal-footer'>" +
+                              " <button type='button' class='btn btn-primary' id='removeButton'>Confirmar</button>" +
+                              " <button type='button' class='btn btn-default' data-dismiss='modal'>Volver</button>" +
+                           "</div>" +
+                       "</div>" +
+                       " </div>" +
+                       "</div>"
+                       );
+
+                       $("#removeButton").click(function (e) {
+
+                           $.ajax({
+                               type: 'POST',
+                               url: '@Url.Action("DeleteGrupoTransaccionAll", "Transaccion")',
+                               dataType: 'json',
+                               success: function () {
+                                   window.location.reload();
+                               },
+                               error: function (ex) {
+                                   alert('Hubo un error al eliminar los registros de Grupo de transacciones mal.' + ex);
+                               }
+                           });
+
+                           $('#myModal').modal('toggle');
+
+                       });
 
                 $(function () {
 
@@ -118,6 +153,10 @@
         <input type="submit" name="Export" id="Export" value="Excel" onclick="exportToExcel();" class="btn btn-default" />
         <input type="hidden" name="jqGridPostData" id="jqGridPostData" />
     }
+
+    <a href="#" data-toggle="modal" data-target="#myModal" class="removeButton btn btn-default">
+        Borrar Todas
+    </a>
 
     @*@if (SecurityHelper.IsAllowed((int)Permissions.Transaccion.Delete))
         {

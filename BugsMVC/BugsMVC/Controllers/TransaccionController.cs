@@ -1416,6 +1416,16 @@ namespace BugsMVC.Controllers
             return Json("Ok", JsonRequestBehavior.AllowGet);
         }
 
+
+        public JsonResult DeleteGrupoTransaccionAll()
+        {
+            db.GrupoTransaccionesMal.ToList().ForEach(x => db.GrupoTransaccionesMal.Remove(x));
+            db.SaveChanges();
+            return Json("Ok", JsonRequestBehavior.AllowGet);
+        }
+
+        
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
