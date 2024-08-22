@@ -124,5 +124,18 @@ namespace BugsMVC.Helpers
         {
             Index = 56
         }
+
+        public enum ConfiguracionPagosExternos : int
+        {
+            Index = 57
+        }
+
+        public enum PagosExternos : int
+        {
+            Index = 58,
+            DeleteRange = 59,
+            Delete = 60
+        }
+
     }
 }

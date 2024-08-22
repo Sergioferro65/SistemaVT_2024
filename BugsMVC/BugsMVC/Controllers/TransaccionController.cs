@@ -562,7 +562,7 @@ namespace BugsMVC.Controllers
                 {
                     Dictionary<string, string> sorted = new Dictionary<string, string>();
                     sorted.Add(sidx, sord);
-                     Session[JQGridFilterRule.Keys.Transaccion.SIDX]= sorted;
+                    Session[JQGridFilterRule.Keys.Transaccion.SIDX]= sorted;
                 }
                 else if (sidx == "" || sidx == null)
                 {

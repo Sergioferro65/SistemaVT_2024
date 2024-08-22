@@ -848,6 +848,7 @@
     <Content Include="Views\Transaccion\IndexGrupoMal.cshtml" />
     <Content Include="Views\MercadoPago\DeleteRange.cshtml" />
     <Content Include="Views\Transaccion\DeleteTMRange.cshtml" />
+    <Content Include="Views\MercadoPago\Delete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

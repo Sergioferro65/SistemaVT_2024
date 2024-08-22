@@ -13,32 +13,32 @@
             <li class="has-user-block">
                 <div id="user-block" class="collapse">
                     <div class="item user-block">
-                        <!-- User picture-->    
+                        <!-- User picture-->
                         @*<div class="user-block-picture">
-                            <div class="user-block-status">
-                               <img src="~/Content/Images/user/02.jpg" alt="Avatar" width="60" height="60" class="img-thumbnail img-circle" />*@
+                    <div class="user-block-status">
+                       <img src="~/Content/Images/user/02.jpg" alt="Avatar" width="60" height="60" class="img-thumbnail img-circle" />*@
                         @*<div class="circle circle-success circle-lg"></div>
-                                </div>
-                            </div>*@
+                        </div>
+                    </div>*@
                         <!-- Name and Job-->
                         <div class="user-block-info">
                             <span class="user-block-name">Hola, @User.Identity.Name</span>
                             <span class="user-block-role">
                                 Roles:
                                 @if (User.IsInRole("SuperAdmin"))
-                                { <span class="user-block-role"> "Administrador" </span> }
+                                {<span class="user-block-role"> "Administrador" </span>}
                                 @if (User.IsInRole("Consumidor"))
-                                { <span class="user-block-role"> "Consumidor" </span> }
+                                {<span class="user-block-role"> "Consumidor" </span>}
                                 @if (User.IsInRole("Admin"))
-                                { <span class="user-block-role"> "Admin" </span> }
+                                {<span class="user-block-role"> "Admin" </span>}
                                 @if (User.IsInRole("Operador"))
-                                { <span class="user-block-role"> "Operador" </span> }
+                                {<span class="user-block-role"> "Operador" </span>}
                                 @if (User.IsInRole("Repositor"))
-                                { <span class="user-block-role"> "Repositor" </span> }
+                                {<span class="user-block-role"> "Repositor" </span>}
                                 @if (User.IsInRole("Proveedor"))
-                                { <span class="user-block-role"> "Proveedor" </span> }
+                                {<span class="user-block-role"> "Proveedor" </span>}
                                 @if (User.IsInRole("Técnico"))
-                                { <span class="user-block-role"> "Técnico" </span> }
+                                {<span class="user-block-role"> "Técnico" </span>}
                             </span>
                         </div>
                     </div>
@@ -79,8 +79,8 @@
                 {
                     <li class="@Html.isActive(controller: "Usuario")">
                         @*<a href="@Url.Action("Index", "Usuario")" title="Usuario">
-            <span data-localize="sidebar.nav.element.USUARIO">Consumidores</span>
-        </a>*@
+                        <span data-localize="sidebar.nav.element.USUARIO">Consumidores</span>
+                    </a>*@
                         <a href="#" onclick="loadUsuarios()" title="Usuario">
                             <span data-localize="sidebar.nav.element.USUARIO">Consumidores</span>
                         </a>
@@ -142,7 +142,7 @@
                         <li class="sidebar-subnav-header">Artículos</li>
                         @if (SecurityHelper.IsAllowed((int)Permissions.Articulo.Listado))
                         {
-                          <li class="@MenuHelper.GetActiveMenu(Request,"Articulo")">
+                            <li class="@MenuHelper.GetActiveMenu(Request,"Articulo")">
                                 <a href="@Url.Action("Index", "Articulo")" title="Listado">
                                     <span>Listado</span>
                                 </a>
@@ -183,10 +183,10 @@
                     @if (SecurityHelper.IsAllowed((int)Permissions.Stock.Reposiciones))
                     {
                         <li class="@MenuHelper.GetActiveMenu(Request,"StockHistorico")">
-                        <a href="@Url.Action("Index", "StockHistorico")" title="Reposiciones">
-                            <span>Reposiciones</span>
-                        </a>
-                    </li>
+                            <a href="@Url.Action("Index", "StockHistorico")" title="Reposiciones">
+                                <span>Reposiciones</span>
+                            </a>
+                        </li>
                     }
                 </ul>
             </li>
@@ -225,13 +225,13 @@
             }
 
             @*@if (SecurityHelper.IsAllowed((int)Permissions.Transaccion.Index))
-            {
-            <li class="@Html.isActive(controller: "Transaccion")">
-                <a href="@Url.Action("Index", "Transaccion")" title="Transaccion">
-                    <span data-localize="sidebar.nav.element.TRANSACCION">Transacciones</span>
-                </a>
-            </li>
-            }*@
+        {
+        <li class="@Html.isActive(controller: "Transaccion")">
+            <a href="@Url.Action("Index", "Transaccion")" title="Transaccion">
+                <span data-localize="sidebar.nav.element.TRANSACCION">Transacciones</span>
+            </a>
+        </li>
+        }*@
 
 
             <li>
@@ -242,28 +242,28 @@
                         <span data-localize="sidebar.nav.element.TRANSACCION">Transacciones</span>
                     </a>
                 }
-                    <ul id="layoutTransaction" class="nav sidebar-subnav collapse">
-                        <li class="sidebar-subnav-header"></li>
-                        <li class="@MenuHelper.GetActiveMenu(Request,2, "Transaccion","Index")">
-                            <a href="@Url.Action("Index", "Transaccion")" title="Transaccion">
-                                <span data-localize="sidebar.nav.element.TRANSACCION">Listado</span>
+                <ul id="layoutTransaction" class="nav sidebar-subnav collapse">
+                    <li class="sidebar-subnav-header"></li>
+                    <li class="@MenuHelper.GetActiveMenu(Request,2, "Transaccion","Index")">
+                        <a href="@Url.Action("Index", "Transaccion")" title="Transaccion">
+                            <span data-localize="sidebar.nav.element.TRANSACCION">Listado</span>
+                        </a>
+                    </li>
+
+                    @if (SecurityHelper.IsInRole("SuperAdmin"))
+                    {
+                        <li class="@MenuHelper.GetActiveMenu(Request,2, "Transaccion","IndexMal")">
+                            <a href="@Url.Action("IndexMal", "Transaccion")" title="Transaccion">
+                                <span data-localize="sidebar.nav.element.TRANSACCION">Transacciones Mal</span>
                             </a>
                         </li>
-
-                        @if (SecurityHelper.IsInRole("SuperAdmin"))
-                        {
-                            <li class="@MenuHelper.GetActiveMenu(Request,2, "Transaccion","IndexMal")">
-                                <a href="@Url.Action("IndexMal", "Transaccion")" title="Transaccion">
-                                    <span data-localize="sidebar.nav.element.TRANSACCION">Transacciones Mal</span>
-                                </a>
-                            </li>
-                            <li class="@MenuHelper.GetActiveMenu(Request,2, "Transaccion","IndexGrupoMal")">
-                                <a href="@Url.Action("IndexGrupoMal", "Transaccion")" title="Transaccion">
-                                    <span data-localize="sidebar.nav.element.TRANSACCION">Grupo Mal</span>
-                                </a>
-                            </li>
-                        }
-                    </ul>
+                        <li class="@MenuHelper.GetActiveMenu(Request,2, "Transaccion","IndexGrupoMal")">
+                            <a href="@Url.Action("IndexGrupoMal", "Transaccion")" title="Transaccion">
+                                <span data-localize="sidebar.nav.element.TRANSACCION">Grupo Mal</span>
+                            </a>
+                        </li>
+                    }
+                </ul>
             </li>
 
 
@@ -288,23 +288,26 @@
                 </li>
             }
 
-                @if (SecurityHelper.IsAllowed((int)Permissions.MercadoPago.Index))
-                {
-                    if (SecurityHelper.IsInRole("SuperAdmin"))
-                    {
-                        <li class="@Html.isActive(controller: "MercadoPago", action: "Configure")">
-                            <a href="@Url.Action("Configure", "MercadoPago")" title="Configuración">
-                                <span>Configuración Pagos Externos</span>
-                            </a>
-                        </li>
-                    }
-
-                   <li class="@Html.isActive(controller: "MercadoPago", action: "Index")">
-                        <a href="@Url.Action("Index", "MercadoPago")" title="Pagos Externos">
-                            <span>Pagos Externos</span>
+            @if (SecurityHelper.IsAllowed((int)Permissions.ConfiguracionPagosExternos.Index))
+            {
+                //if (SecurityHelper.IsInRole("SuperAdmin"))
+                
+                    <li class="@Html.isActive(controller: "MercadoPago", action: "Configure")">
+                        <a href="@Url.Action("Configure", "MercadoPago")" title="Configuración">
+                            <span>Configuración Pagos Externos</span>
                         </a>
                     </li>
-                }
+               
+            }
+
+            @if (SecurityHelper.IsAllowed((int)Permissions.PagosExternos.Index))
+            {
+            <li class="@Html.isActive(controller: "MercadoPago", action: "Index")">
+                <a href="@Url.Action("Index", "MercadoPago")" title="Pagos Externos">
+                    <span>Pagos Externos</span>
+                </a>
+            </li>
+            }
 
             @if (SecurityHelper.IsAllowed((int)Permissions.Informes.CertificadoEntregaEpp))
             {
@@ -375,30 +378,30 @@
                 </li>
             }
 
-                <li>
+            <li>
+                @if (SecurityHelper.IsAllowed((int)Permissions.Seguridad.Seguridad))
+                {
+                    <a href="#layoutSeguridad" title="Seguridad" data-toggle="collapse">
+                        <div class="pull-right">+</div>
+                        <span>Seguridad</span>
+                    </a>
+                }
+                <ul id="layoutSeguridad" class="nav sidebar-subnav collapse">
+                    <li class="sidebar-subnav-header">Seguridad</li>
                     @if (SecurityHelper.IsAllowed((int)Permissions.Seguridad.Seguridad))
                     {
-                        <a href="#layoutSeguridad" title="Seguridad" data-toggle="collapse">
-                            <div class="pull-right">+</div>
-                            <span>Seguridad</span>
-                        </a>
+                        <li class="@MenuHelper.GetActiveMenu(Request,"Seguridad")">
+                            <a href="@Url.Action("Create", "Seguridad")" title="Por Rol">
+                                <span>Por Rol</span>
+                            </a>
+                            <a href="@Url.Action("PorInforme", "Seguridad")" title="Por Operador">
+                                <span>Por Operador</span>
+                            </a>
+                        </li>
                     }
-                    <ul id="layoutSeguridad" class="nav sidebar-subnav collapse">
-                        <li class="sidebar-subnav-header">Seguridad</li>
-                        @if (SecurityHelper.IsAllowed((int)Permissions.Seguridad.Seguridad))
-                        {
-                            <li class="@MenuHelper.GetActiveMenu(Request,"Seguridad")">
-                                <a href="@Url.Action("Create", "Seguridad")" title="Por Rol">
-                                    <span>Por Rol</span>
-                                </a>
-                                <a href="@Url.Action("PorInforme", "Seguridad")" title="Por Operador">
-                                    <span>Por Operador</span>
-                                </a>
-                            </li>
-                        }
-                    </ul>
-                </li>
-            
+                </ul>
+            </li>
+
 
             @if (SecurityHelper.IsAllowed((int)Permissions.Auditoria.Index))
             {
