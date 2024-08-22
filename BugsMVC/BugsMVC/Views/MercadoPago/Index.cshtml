@@ -29,7 +29,10 @@
         <input type="hidden" name="jqGridPostData" id="jqGridPostData" />
     }
 
-    @Html.ActionLink("Eliminar Rango", "DeleteRange", null, new { @class = "btn btn-default" })
+    @if (SecurityHelper.IsAllowed((int)Permissions.PagosExternos.DeleteRange))
+    {
+        @Html.ActionLink("Eliminar Rango", "DeleteRange", null, new { @class = "btn btn-default" })
+    }
 
 </div>
 
@@ -65,6 +68,10 @@
 
             var gridJSON = $("#jqGridJSON");
 
+            $('#ClearFilters').on('click', function () {
+                clearSearchOptions(gridJSON, '/MercadoPago/ClearSession');
+            });
+
             gridJSON.jqGrid({
                 url: 'MercadoPago/GetAllMercadoPagos',
                 datatype: "json",
@@ -81,17 +88,18 @@
                     },
                     { label: 'MercadoPagoId', name: 'MercadoPagoId', hidden: true },
                     { label: 'Operador', name: 'OperadorNombre', hidden : @Json.Encode((!User.IsInRole("SuperAdmin"))) },
-                    { label: 'Comprobante', name: 'Comprobante'},
-                    { label: 'N° Serie Maquina', name: 'MaquinaDescripcion' },
+                    { label: 'Comprobante', name: 'Comprobante' },
+                    { label: 'Monto', name: 'Monto', sorttype: 'number', formatter: 'number', formatoptions: { decimalSeparator: ",", thousandsSeparator: ".", decimalPlaces: 2, prefix: "$ " }, searchoptions: { sopt: ['eq'] } },
+                    {
+                        label: 'Fecha', name: 'Fecha', search: true, searchOnEnter: true, sorttype: 'date', formatter: 'date', formatoptions: { "srcformat": "d/m/Y H:i:s", "newformat": "d/m/Y H:i:s" }
+                        , searchoptions: getDefaultSearchOptionsForDate()
+                    },
                     { label: 'Estado Transmisión', name: 'MercadoPagoEstadoTransmisionDescripcion' },
                     { label: 'Estado Financiero', name: 'MercadoPagoEstadoFinancieroDescripcion' },
                     { label: 'ID Caja MP', name: 'NotaService' },
                     { label: 'Locacion', name: 'Locacion' },
+                    { label: 'N° Serie Maquina', name: 'MaquinaDescripcion' },
                     { label: 'N° Serie Terminal', name: 'NroSerieTerminal' },
-                    { label: 'Monto', name: 'Monto', sorttype: 'number', formatter: 'number', formatoptions:{decimalSeparator:",", thousandsSeparator: ".", decimalPlaces: 2, prefix: "$ "}, searchoptions: { sopt: ['eq'] }  },
-                    { label: 'Fecha', name: 'Fecha', search: true, searchOnEnter: true, sorttype: 'date', formatter: 'date', formatoptions: { "srcformat": "d/m/Y H:i:s", "newformat": "d/m/Y H:i:s" }
-                        , searchoptions: getDefaultSearchOptionsForDate()
-                    },
                     { label: 'Entidad', name: 'Entidad' },
                     { label: 'Descripción', name: 'Descripcion' },
 
@@ -120,6 +128,8 @@
                 }
             });
 
+            //agregado new
+            $('.ui-jqgrid-title').after('<label class="filter-help-text"><span class="fa fa-info-circle "></span> Presione enter para aplicar filtros</label>')
 
         });
 
@@ -133,7 +143,7 @@
 
         var linkButton = '<a id="DevolverDinero" data-comprobante=' + rowObject.Comprobante + ' data-placement="left" data-original-title="Devolver Dinero" class="fa '
                          + "fa-plus-circle" + ' cursor-pointer"> </a> ';
-
+        linkButton = @Json.Encode(SecurityHelper.IsAllowed((int)Permissions.PagosExternos.Delete))? linkButton + '<a href="MercadoPago/Delete/' + rowObject.MercadoPagoId + '" data-toggle="tooltip" data-placement="left" data-original-title="Delete" class="fa fa-remove"> </a>' : linkButton;
 
         return linkButton;
     }

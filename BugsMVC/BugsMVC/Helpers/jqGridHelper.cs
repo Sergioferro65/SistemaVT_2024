@@ -48,6 +48,14 @@ namespace BugsMVC.Helpers
                 public static readonly string SORD = "transaccion_sord";
                 public static readonly string PAGE = "transaccion_page";
             }
+
+            public static class MercadoPago
+            {
+                public static readonly string FILTERS = "mercadopago_filters";
+                public static readonly string SIDX = "mercadopago_sidx";
+                public static readonly string SORD = "mercadopago_sord";
+                public static readonly string PAGE = "mercadopago_page";
+            }
         }
 
         public static List<JQGridFilterRule> Parse(string filters)
