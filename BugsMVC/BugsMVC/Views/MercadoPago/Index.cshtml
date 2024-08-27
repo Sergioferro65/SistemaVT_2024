@@ -141,9 +141,11 @@
 
     function actionButtonsFormatter(cellvalue, options, rowObject) {
 
-        var linkButton = '<a id="DevolverDinero" data-comprobante=' + rowObject.Comprobante + ' data-placement="left" data-original-title="Devolver Dinero" class="fa '
-                         + "fa-plus-circle" + ' cursor-pointer"> </a> ';
-        linkButton = @Json.Encode(SecurityHelper.IsAllowed((int)Permissions.PagosExternos.Delete))? linkButton + '<a href="MercadoPago/Delete/' + rowObject.MercadoPagoId + '" data-toggle="tooltip" data-placement="left" data-original-title="Delete" class="fa fa-remove"> </a>' : linkButton;
+        //Este boton es para las devolucion del registro seleccionado
+        //var linkButton = '<a id="DevolverDinero" data-comprobante=' + rowObject.Comprobante + ' data-placement="left" data-original-title="Devolver Dinero" class="fa '
+        //  + "fa-plus-circle" + ' cursor-pointer"> </a> ';
+        // linkButton = @Json.Encode(SecurityHelper.IsAllowed((int)Permissions.PagosExternos.Delete))? linkButton + '<a href="MercadoPago/Delete/' + rowObject.MercadoPagoId + '" data-toggle="tooltip" data-placement="left" data-original-title="Delete" class="fa fa-remove"> </a>' : linkButton;
+        var linkButton = @Json.Encode(SecurityHelper.IsAllowed((int)Permissions.PagosExternos.Delete))? '<a href="MercadoPago/Delete/' + rowObject.MercadoPagoId + '" data-toggle="tooltip" data-placement="left" data-original-title="Delete" class="fa fa-remove"> </a>' : '';
 
         return linkButton;
     }

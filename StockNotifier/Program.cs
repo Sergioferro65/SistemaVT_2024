@@ -175,54 +175,49 @@ namespace StockNotifier
 
                                 payment.Refund();
                                 writeLog("Respuesta Mercado Pago " + payment.Status);
-                                if (payment.Status != PaymentStatus.approved)
+                                if (payment.Status == PaymentStatus.refunded)
                                 {
-
-                                    if (payment.Status == PaymentStatus.refunded)
-                                    {
-                                        writeLog("Actualizando registro en MercadoPagoTable");
-                                        mercadoPago.Descripcion = "Envio ok.";
-                                        mercadoPago.MercadoPagoEstadoTransmisionId = (int)MercadoPagoEstadoTransmision.States.ERROR_CONEXION;
-                                        mercadoPago.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.DEVUELTO;
-                                    }
-                                    else
-                                    {
-                                        mercadoPago.Reintentos = mercadoPago.Reintentos + 1;
-                                        mercadoPago.Descripcion = "Se realizo el intento de devolución: " + mercadoPago.Reintentos.ToString();
-                                        writeLog("Devolución MercadoPagoTable Reintento: " + mercadoPago.Reintentos.ToString());
-
-                                        if (mercadoPago.Reintentos == 3)
-                                        {
-                                            mercadoPago.MercadoPagoEstadoTransmisionId = (int)MercadoPagoEstadoTransmision.States.ERROR_CONEXION;
-                                            mercadoPago.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.AVISO_FALLIDO;
-                                            mercadoPago.Descripcion = "No se logró realizar la devolución, tras 3 intentos.";
-                                        }
-                                    }
-                                    //db.Entry(mercadoPago).State = EntityState.Modified;
-                                    //db.SaveChanges();
-
-                                    var sql = @"
-                                    UPDATE [dbo].[MercadoPagoTable]
-                                    SET 
-                                        [MercadoPagoEstadoFinancieroId] = @EstadoFinancieroId,
-                                        [MercadoPagoEstadoTransmisionId] = @EstadoTransmisionId,
-                                        [Descripcion] = @Descripcion,
-                                        [Reintentos] = @Reintentos
-                                    WHERE 
-                                        [MercadoPagoId] = @MercadoPagoId";
-
-                                        var parameters = new[]
-                                        {
-                                    new SqlParameter("@EstadoFinancieroId", SqlDbType.Int) { Value = mercadoPago.MercadoPagoEstadoFinancieroId },
-                                    new SqlParameter("@EstadoTransmisionId", SqlDbType.Int) { Value = mercadoPago.MercadoPagoEstadoTransmisionId },
-                                    new SqlParameter("@Descripcion", SqlDbType.NVarChar, -1) { Value = mercadoPago.Descripcion },
-                                    new SqlParameter("@Reintentos", SqlDbType.Int) { Value = mercadoPago.Reintentos },
-                                    new SqlParameter("@MercadoPagoId", SqlDbType.Int) { Value = mercadoPago.MercadoPagoId}
-                                    };
-
-                                    db.Database.ExecuteSqlCommand(sql, parameters);
-
+                                    writeLog("Actualizando registro en MercadoPagoTable");
+                                    mercadoPago.Descripcion = "Envio ok.";
+                                    mercadoPago.MercadoPagoEstadoTransmisionId = (int)MercadoPagoEstadoTransmision.States.ERROR_CONEXION;
+                                    mercadoPago.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.DEVUELTO;
                                 }
+                                else
+                                {
+                                    mercadoPago.Reintentos = mercadoPago.Reintentos + 1;
+                                    mercadoPago.Descripcion = "Se realizo el intento de devolución: " + mercadoPago.Reintentos.ToString();
+                                    writeLog("Devolución MercadoPagoTable Reintento: " + mercadoPago.Reintentos.ToString());
+
+                                    if (mercadoPago.Reintentos == 3)
+                                    {
+                                        mercadoPago.MercadoPagoEstadoTransmisionId = (int)MercadoPagoEstadoTransmision.States.ERROR_CONEXION;
+                                        mercadoPago.MercadoPagoEstadoFinancieroId = (int)MercadoPagoEstadoFinanciero.States.AVISO_FALLIDO;
+                                        mercadoPago.Descripcion = "No se logró realizar la devolución, tras 3 intentos. Status Payment: " + payment.Status;
+                                    }
+                                }
+                                //db.Entry(mercadoPago).State = EntityState.Modified;
+                                //db.SaveChanges();
+
+                                var sql = @"
+                                UPDATE [dbo].[MercadoPagoTable]
+                                SET 
+                                    [MercadoPagoEstadoFinancieroId] = @EstadoFinancieroId,
+                                    [MercadoPagoEstadoTransmisionId] = @EstadoTransmisionId,
+                                    [Descripcion] = @Descripcion,
+                                    [Reintentos] = @Reintentos
+                                WHERE 
+                                    [MercadoPagoId] = @MercadoPagoId";
+
+                                    var parameters = new[]
+                                    {
+                                new SqlParameter("@EstadoFinancieroId", SqlDbType.Int) { Value = mercadoPago.MercadoPagoEstadoFinancieroId },
+                                new SqlParameter("@EstadoTransmisionId", SqlDbType.Int) { Value = mercadoPago.MercadoPagoEstadoTransmisionId },
+                                new SqlParameter("@Descripcion", SqlDbType.NVarChar, -1) { Value = mercadoPago.Descripcion },
+                                new SqlParameter("@Reintentos", SqlDbType.Int) { Value = mercadoPago.Reintentos },
+                                new SqlParameter("@MercadoPagoId", SqlDbType.Int) { Value = mercadoPago.MercadoPagoId}
+                                };
+
+                                db.Database.ExecuteSqlCommand(sql, parameters);
 
                             }
                             else
